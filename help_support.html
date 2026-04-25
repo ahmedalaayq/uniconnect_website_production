@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المساعدة والدعم</title>
+<link rel="stylesheet" href="styles/help_support.css">
+</head>
+
+<body>
+
+<div class="support-container">
+
+    <!-- Logo -->
+    <div class="logo-box">
+        <img src="assets/images/logo.png">
+        <h2>GradConnect</h2>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button onclick="showHelp()" class="active" id="helpTab">❓ المساعدة</button>
+        <button onclick="showSupport()" id="supportTab">📞 الدعم الفني</button>
+    </div>
+
+    <!-- Help Section -->
+    <div id="helpSection" class="content">
+        <h3>❓ المساعدة</h3>
+        <p>• استخدم الدردشة للتواصل مع زملائك</p>
+        <p>• انضم للغرف العامة والخاصة</p>
+        <p>• عدل بياناتك من الملف الشخصي</p>
+    </div>
+
+    <!-- Support Section -->
+    <div id="supportSection" class="content" style="display:none;">
+        <h3>📞 الدعم الفني</h3>
+
+        <input type="text" id="name" placeholder="اسمك">
+        <textarea id="message" placeholder="اكتب رسالتك..."></textarea>
+
+        <button onclick="sendMsg()">إرسال</button>
+
+        <p id="done" class="done-msg">✔ تم إرسال الرسالة</p>
+    </div>
+
+    <!-- Back -->
+    <button class="back" onclick="location.href='setting.html'">⬅ رجوع</button>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/users.js"></script>
+<script src="scripts/utils/utils.js"></script>
+
+<script>
+
+// Auth guard
+waitForFirebase(() => {
+    const unsubAuth = auth.onAuthStateChanged((user) => {
+        unsubAuth();
+        if (!user) window.location.href = "index.html";
+    });
+});
+
+function showHelp() {
+    document.getElementById("helpSection").style.display = "block";
+    document.getElementById("supportSection").style.display = "none";
+
+    document.getElementById("helpTab").classList.add("active");
+    document.getElementById("supportTab").classList.remove("active");
+}
+
+function showSupport() {
+    document.getElementById("helpSection").style.display = "none";
+    document.getElementById("supportSection").style.display = "block";
+
+    document.getElementById("supportTab").classList.add("active");
+    document.getElementById("helpTab").classList.remove("active");
+}
+
+function sendMsg() {
+    let name = document.getElementById("name").value;
+    let msg = document.getElementById("message").value;
+
+    if(name.trim() === "" || msg.trim() === "") {
+        alert("اكتب البيانات");
+        return;
+    }
+
+    document.getElementById("done").style.display = "block";
+
+    document.getElementById("name").value = "";
+    document.getElementById("message").value = "";
+}
+
+// Make functions global for onclick
+window.showHelp = showHelp;
+window.showSupport = showSupport;
+window.sendMsg = sendMsg;
+
+// Handle page unload
+window.addEventListener('beforeunload', () => {
+    // Update online status to offline
+    updateOnlineStatus(false);
+});
+</script>
+
+</body>
+</html>

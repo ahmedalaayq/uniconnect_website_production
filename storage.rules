@@ -1,0 +1,51 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════════
+//  GradConnect — Firebase Storage Security Rules
+//
+//  Storage paths used by this project:
+//    /profile_images/{userId}.{ext}
+//
+//  uploadProfileImage() in storage.js stores files as:
+//    profile_images/{userId}.jpg  (or .png / .gif)
+// ═══════════════════════════════════════════════════════════════════
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─────────────────────────────────────────────────────────────
+    //  /profile_images/{fileName}
+    //
+    //  fileName format: "{userId}.{ext}"
+    //  We extract the userId by stripping the extension.
+    //
+    //  READ   — any authenticated user (needed to display avatars)
+    //  WRITE  — only the owner of that userId
+    //           • max 5 MB
+    //           • images only (jpeg, png, gif, webp)
+    //  DELETE — only the owner
+    // ─────────────────────────────────────────────────────────────
+    match /profile_images/{fileName} {
+
+      allow read: if request.auth != null;
+
+      allow write: if request.auth != null
+                   // fileName starts with the caller's uid
+                   && fileName.matches(request.auth.uid + '\\..*')
+                   // max 5 MB
+                   && request.resource.size <= 5 * 1024 * 1024
+                   // images only
+                   && request.resource.contentType.matches('image/(jpeg|png|gif|webp)');
+
+      allow delete: if request.auth != null
+                    && fileName.matches(request.auth.uid + '\\..*');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  CATCH-ALL — deny everything else
+    // ─────────────────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

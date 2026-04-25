@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GradConnect - الصفحة الرئيسية</title>
+<link rel="stylesheet" href="styles/dashboard.css">
+</head>
+
+<body>
+
+<!-- Dashboard Container -->
+<div class="dashboard-container">
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/images/logo.png" class="sidebar-logo">
+            <h3>GradConnect</h3>
+        </div>
+        
+        <div class="user-info">
+            <img id="userImage" src="assets/images/user.png" class="user-avatar">
+            <div class="user-details">
+                <h4 id="username">المستخدم</h4>
+                <p id="userRole">طالب</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <span>🏠</span> الرئيسية
+            </a>
+            <a href="profile.html" class="nav-item">
+                <span>👤</span> الملف الشخصي
+            </a>
+            <a href="dm.html" class="nav-item">
+                <span>💬</span> الرسائل
+            </a>
+            <a href="setting.html" class="nav-item">
+                <span>⚙️</span> الإعدادات
+            </a>
+            <a href="help_support.html" class="nav-item">
+                <span>❓</span> المساعدة
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">
+                <span>🚪</span> تسجيل الخروج
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Header -->
+        <header class="header">
+            <button onclick="toggleMenu()" class="menu-toggle">
+                <span>☰</span>
+            </button>
+            <h1 id="welcomeText">👋 أهلاً بك</h1>
+        </header>
+        
+        <!-- Content Grid -->
+        <div class="content-grid">
+            
+            <!-- Online Users Section -->
+            <section class="card">
+                <h2>🟢 المستخدمين المتصلين</h2>
+                <div id="onlineUsers" class="online-users">
+                    <p class="loading">جاري التحميل...</p>
+                </div>
+            </section>
+            
+            <!-- Global Chat Section -->
+            <section class="card chat-section">
+                <h2>💬 الشات العام</h2>
+                <div id="globalMessages" class="chat-messages">
+                    <p class="loading">جاري التحميل...</p>
+                </div>
+                <div class="chat-input">
+                    <input id="globalInput" type="text" placeholder="اكتب رسالتك...">
+                    <button onclick="sendGlobal()">إرسال</button>
+                </div>
+            </section>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<!-- Scripts -->
+<script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/chat.js"></script>
+<script src="scripts/modules/users.js"></script>
+<script src="scripts/modules/storage.js"></script>
+<script src="scripts/utils/utils.js"></script>
+
+<script>
+let currentUser = null;
+let unsubscribeOnline = null;
+let unsubscribeChat = null;
+
+// Load user data and initialize page
+async function initializePage() {
+    try {
+        waitForFirebase(() => {
+            const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+                unsubscribeAuth(); // only run once
+                if (!user) {
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                const userData = await getCurrentUserData(user.uid);
+                if (!userData) {
+                    // User doc missing — create a minimal one so the page works
+                    await db.collection('users').doc(user.uid).set({
+                        name: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        role: 'طالب',
+                        imageUrl: null,
+                        online: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    currentUser = await getCurrentUserData(user.uid);
+                } else {
+                    currentUser = userData;
+                }
+
+                if (!currentUser) return; // safety guard
+
+                // Mark user online
+                await db.collection('users').doc(user.uid).update({
+                    online: true,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+
+                // Update UI
+                document.getElementById("username").innerText = currentUser.name;
+                document.getElementById("welcomeText").innerText = `👋 أهلاً بك ${currentUser.name}`;
+                document.getElementById("userRole").innerText = currentUser.role;
+
+                if (currentUser.imageUrl) {
+                    document.getElementById("userImage").src = currentUser.imageUrl;
+                }
+
+                // Load online users
+                loadOnlineUsers();
+
+                // Load global chat
+                loadGlobalChat();
+            });
+        });
+    } catch (error) {
+        console.error("Error initializing page:", error);
+        showMessage("حدث خطأ في تحميل البيانات", "error");
+    }
+}
+
+// Load online users
+function loadOnlineUsers() {
+    unsubscribeOnline = listenToOnlineUsers((users) => {
+        const box = document.getElementById("onlineUsers");
+        box.innerHTML = "";
+        
+        users.forEach((user) => {
+            // Don't show current user
+            if (user.uid === currentUser.uid) return;
+            
+            const div = document.createElement("div");
+            div.className = "online-user";
+            div.innerHTML = `
+                <span class="online-dot">🟢</span>
+                <span class="online-name">${user.name}</span>
+                <span class="online-role">(${user.role})</span>
+            `;
+            box.appendChild(div);
+        });
+        
+        if (box.children.length === 0) {
+            box.innerHTML = '<p class="no-users">لا يوجد مستخدمين متصلين حالياً</p>';
+        }
+    });
+}
+
+// Send global message
+async function sendGlobal() {
+    const input = document.getElementById("globalInput");
+    const message = input.value.trim();
+    
+    if (message === "" || !currentUser) return;
+    
+    const result = await sendGlobalMessage(currentUser.uid, currentUser.name, currentUser.role, message);
+    
+    if (result.success) {
+        input.value = "";
+    } else {
+        showMessage(result.error, "error");
+    }
+}
+
+// Load global chat
+function loadGlobalChat() {
+    unsubscribeChat = listenToGlobalChat((messages) => {
+        const box = document.getElementById("globalMessages");
+        box.innerHTML = "";
+        
+        messages.forEach((msg) => {
+            let color = "#4facfe";
+            if (msg.role === "خريج") color = "#48bb78";
+            if (msg.role === "دكتور") color = "#9b59b6";
+            
+            const badge = msg.role === "دكتور" ? " 👑" : "";
+            
+            const div = document.createElement("div");
+            div.classList.add("msg");
+            
+            if (msg.userId === currentUser.uid) {
+                div.classList.add("my-msg");
+            }
+            
+            const timestamp = formatTimestamp(msg.timestamp);
+            
+            div.innerHTML = `
+                <span style="color:${color}; font-weight:bold;">
+                    ${msg.name} (${msg.role})${badge}
+                </span>: ${msg.text}
+                <small style="color:#666; font-size:0.8em;">${timestamp}</small>
+            `;
+            
+            box.appendChild(div);
+        });
+        
+        // Scroll to bottom
+        box.scrollTop = box.scrollHeight;
+    });
+}
+
+// Enter key support - will be added after DOM loads
+
+// Toggle mobile menu
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+// Logout functionality
+async function logout() {
+    if (!confirm("هل تريد تسجيل الخروج؟")) return;
+    
+    // Unsubscribe from listeners
+    if (unsubscribeOnline) unsubscribeOnline();
+    if (unsubscribeChat) unsubscribeChat();
+    
+    const result = await logoutUser();
+    
+    if (result.success) {
+        window.location.href = "index.html";
+    } else {
+        showMessage(result.error, "error");
+    }
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (unsubscribeOnline) unsubscribeOnline();
+    if (unsubscribeChat) unsubscribeChat();
+    
+    // Update online status to offline
+    if (currentUser) {
+        updateOnlineStatus(false);
+    }
+});
+
+// Initialize page when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializePage();
+    
+    // Add Enter key support for chat input
+    const chatInput = document.getElementById("globalInput");
+    if (chatInput) {
+        chatInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendGlobal();
+        });
+    }
+});
+
+// Make functions global for onclick
+window.sendGlobal = sendGlobal;
+window.toggleMenu = toggleMenu;
+window.logout = logout;
+</script>
+
+</body>
+</html>

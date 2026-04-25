@@ -1,0 +1,154 @@
+/* ═══════════════════════════════════════════════
+   GRADCONNECT — GLOBAL DESIGN SYSTEM
+   Premium Academic Social Platform
+═══════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Brand Palette */
+  --brand-1: #667eea;
+  --brand-2: #764ba2;
+  --brand-3: #5b21b6;
+  --brand-glow: rgba(102, 126, 234, 0.35);
+
+  /* Accent Colors */
+  --accent-green:  #10b981;
+  --accent-red:    #ef4444;
+  --accent-amber:  #f59e0b;
+  --accent-cyan:   #06b6d4;
+
+  /* Dark Surface Palette */
+  --surface-0: #060b18;
+  --surface-1: #0d1526;
+  --surface-2: #111d35;
+  --surface-3: #1a2744;
+  --surface-4: #243358;
+
+  /* Glass */
+  --glass-light:  rgba(255, 255, 255, 0.06);
+  --glass-medium: rgba(255, 255, 255, 0.10);
+  --glass-heavy:  rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.10);
+
+  /* Text */
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+
+  /* Radius */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-brand: 0 8px 32px rgba(102, 126, 234, 0.3);
+  --shadow-dark:  0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-card:  0 4px 24px rgba(0, 0, 0, 0.3);
+
+  /* Transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast:   0.15s;
+  --t-normal: 0.3s;
+  --t-slow:   0.5s;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  direction: rtl;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--brand-1), var(--brand-2));
+  border-radius: var(--r-full);
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: #fff;
+}
+
+/* ── Shared Loader ── */
+.loader {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ── Shared Message Box ── */
+.message-box {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 28px;
+  border-radius: var(--r-md);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 99999;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  animation: toastIn 0.4s var(--ease);
+  white-space: nowrap;
+}
+.message-box.success { background: linear-gradient(135deg, #10b981, #059669); }
+.message-box.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.message-box.info    { background: linear-gradient(135deg, #667eea, #764ba2); }
+
+/* ── Keyframes ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, -16px) scale(0.95); }
+  to   { opacity: 1; transform: translate(-50%, 0)     scale(1); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}

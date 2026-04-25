@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إنشاء حساب - GradConnect</title>
+
+<link rel="stylesheet" href="styles/login.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left">
+        <div class="left-text">
+            ابدأ رحلتك من هنا
+        </div>
+    </div>
+
+    <div class="right">
+
+        <div class="title">ابدأ مستقبلك معنا 🚀</div>
+    
+        <form onsubmit="saveuser(event)">
+    
+            <input class="input-box" type="text" id="username" placeholder="الاسم بالكامل" required>
+
+            <input class="input-box" type="email" id="email" placeholder="البريد الإلكتروني" required>
+
+            <input class="input-box" type="password" id="password" placeholder="كلمة المرور (6 أحرف على الأقل)" required minlength="6">
+
+            <input class="input-box" type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required>
+
+            <input class="input-box" type="file" id="image" accept="image/*">
+
+            <div class="radio-group">
+
+                <label>
+                    <input type="radio" name="user" value="طالب" required> <h3>طالب</h3>
+                </label>
+
+                <label>
+                    <input type="radio" name="user" value="دكتور"> <h3>دكتور</h3>
+                </label>
+
+                <label>
+                    <input type="radio" name="user" value="خريج"> <h3>خريج</h3>
+                </label>
+
+            </div>
+
+            <button type="submit" class="btn" id="registerBtn">
+                <span id="btnText">تسجيل</span>
+                <span id="btnLoader" class="loader" style="display:none;"></span>
+            </button>
+
+        </form>
+
+        <div class="links">
+            <p>لديك حساب بالفعل؟ <a href="index.html">تسجيل الدخول</a></p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<!-- Scripts -->
+<script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/users.js"></script>
+<script src="scripts/modules/storage.js"></script>
+<script src="scripts/utils/utils.js"></script>
+
+<!-- Page Script -->
+<script>
+// waitForFirebase and auth are available globally
+
+// Wait for Firebase to be ready
+waitForFirebase(() => {
+    const unsubAuth = auth.onAuthStateChanged((user) => {
+        unsubAuth();
+        if (user) {
+            window.location.href = "dashboard.html";
+        }
+    });
+});
+
+async function saveuser(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const role = document.querySelector('input[name="user"]:checked');
+
+    // Validation
+    if (username === "") {
+        showMessage("من فضلك اكتب اسمك", "error");
+        return;
+    }
+
+    const emailValidation = validateEmail(email);
+    if (!emailValidation) {
+        showMessage("البريد الإلكتروني غير صالح", "error");
+        return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+        showMessage(passwordValidation.message, "error");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showMessage("كلمة المرور غير متطابقة", "error");
+        return;
+    }
+
+    if (!role) {
+        showMessage("من فضلك اختر نوع المستخدم", "error");
+        return;
+    }
+
+    // Show loader
+    toggleLoader(true, "registerBtn");
+
+    const result = await signupUser(username, email, password, role.value);
+    
+    if (result.success) {
+        showMessage("تم إنشاء الحساب بنجاح! ✓", "success");
+
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1500);
+    } else {
+        showMessage(result.error, "error");
+        toggleLoader(false, "registerBtn");
+    }
+}
+
+// Make saveuser function global for onsubmit
+window.saveuser = saveuser;
+</script>
+
+</body>
+</html>

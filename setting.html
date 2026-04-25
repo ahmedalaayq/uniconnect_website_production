@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الإعدادات - GradConnect</title>
+<link rel="stylesheet" href="styles/setting.css">
+</head>
+
+<body>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<div class="settings-container">
+
+    <h2>⚙️ الإعدادات</h2>
+
+    <form id="settingsForm" onsubmit="updateSettings(event)">
+        <div class="form-group">
+            <label for="name">الاسم:</label>
+            <input type="text" id="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="role">نوع المستخدم:</label>
+            <select id="role" required>
+                <option value="طالب">طالب</option>
+                <option value="دكتور">دكتور</option>
+                <option value="خريج">خريج</option>
+            </select>
+        </div>
+
+        <button type="submit" id="updateBtn">تحديث البيانات</button>
+    </form>
+
+    <div class="navigation-buttons">
+        <button onclick="location.href='profile.html'">👤 الملف الشخصي</button>
+        <button onclick="location.href='dashboard.html'">🏠 الصفحة الرئيسية</button>
+        <button onclick="location.href='help_support.html'">❓ المساعدة والدعم</button>
+    </div>
+
+</div>
+
+<script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/users.js"></script>
+<script src="scripts/modules/storage.js"></script>
+<script src="scripts/utils/utils.js"></script>
+
+<script>
+// Auth guard + load settings after Firebase is ready
+waitForFirebase(() => {
+    const unsubAuth = auth.onAuthStateChanged(async (user) => {
+        unsubAuth();
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+        await loadSettings(user.uid);
+    });
+});
+
+// Load current user data into form
+async function loadSettings(uid) {
+    try {
+        const userData = await getCurrentUserData(uid);
+        if (!userData) {
+            console.warn('User doc not found for uid:', uid);
+            return;
+        }
+        
+        // Populate form fields
+        document.getElementById("name").value = userData.name || "";
+        document.getElementById("email").value = userData.email || "";
+        document.getElementById("role").value = userData.role || "طالب";
+        
+    } catch (error) {
+        console.error("Error loading settings:", error);
+        showMessage("حدث خطأ في تحميل البيانات", "error");
+    }
+}
+
+// Update settings form submission
+async function updateSettings(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const role = document.getElementById("role").value;
+    
+    // Validation
+    if (name === "") {
+        showMessage("من فضلك أدخل الاسم", "error");
+        return;
+    }
+    
+    const emailValidation = validateEmail(email);
+    if (!emailValidation) {
+        showMessage("البريد الإلكتروني غير صالح", "error");
+        return;
+    }
+    
+    if (!role) {
+        showMessage("من فضلك اختر نوع المستخدم", "error");
+        return;
+    }
+    
+    try {
+        const uid = auth.currentUser && auth.currentUser.uid;
+        if (!uid) return;
+
+        const updateData = { name, email, role };
+        const result = await updateUserProfile(uid, updateData);
+        
+        if (result.success) {
+            showMessage("تم تحديث البيانات بنجاح ✓", "success");
+        } else {
+            showMessage(result.error, "error");
+        }
+        
+    } catch (error) {
+        console.error("Error updating settings:", error);
+        showMessage("حدث خطأ في تحديث البيانات", "error");
+    }
+}
+
+// Logout functionality
+async function logout() {
+    if (!confirm("هل تريد تسجيل الخروج؟")) return;
+    
+    const result = await logoutUser();
+    
+    if (result.success) {
+        window.location.href = "index.html";
+    } else {
+        showMessage(result.error, "error");
+    }
+}
+
+// Remove old DOMContentLoaded listener since we use waitForFirebase
+window.addEventListener('beforeunload', () => updateOnlineStatus(false));
+
+// Make functions global for onclick
+window.updateSettings = updateSettings;
+window.logout = logout;
+</script>
+
+</body>
+</html>

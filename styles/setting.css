@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════
+   SETTINGS PAGE
+═══════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --brand-1: #667eea;
+  --brand-2: #764ba2;
+  --bg-0: #060b18;
+  --glass:   rgba(255,255,255,0.05);
+  --glass-md: rgba(255,255,255,0.08);
+  --border:  rgba(255,255,255,0.08);
+  --text:    #f1f5f9;
+  --text-dim: #94a3b8;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --t: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  direction: rtl;
+  background: var(--bg-0);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(102,126,234,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(118,75,162,0.10) 0%, transparent 55%);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Settings Card ── */
+.settings-container {
+  width: 100%;
+  max-width: 480px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 44px 40px;
+  backdrop-filter: blur(24px);
+  animation: fadeScale 0.6s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent line */
+.settings-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-1), var(--brand-2), var(--brand-1));
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+.settings-container h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Form Groups ── */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--glass-md);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all var(--t);
+  appearance: none;
+}
+
+.form-group input::placeholder { color: var(--text-dim); }
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--brand-1);
+  background: rgba(102,126,234,0.08);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+}
+
+.form-group select option {
+  background: #1a2744;
+  color: var(--text);
+}
+
+/* ── Buttons ── */
+.settings-container button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.97rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--t);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(102,126,234,0.25);
+}
+
+.settings-container button::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.6s;
+}
+
+.settings-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(102,126,234,0.4);
+}
+.settings-container button:hover::before { left: 100%; }
+.settings-container button:active { transform: scale(0.98); }
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.navigation-buttons button {
+  background: var(--glass-md);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  box-shadow: none;
+}
+
+.navigation-buttons button:hover {
+  background: rgba(102,126,234,0.12);
+  border-color: rgba(102,126,234,0.3);
+  color: var(--text);
+  box-shadow: none;
+}
+
+/* Logout button */
+.logout {
+  background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.15)) !important;
+  border: 1px solid rgba(239,68,68,0.3) !important;
+  color: #fca5a5 !important;
+  box-shadow: none !important;
+  margin-top: 20px !important;
+}
+
+.logout:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 24px rgba(239,68,68,0.3) !important;
+}
+
+/* ── Message Box ── */
+.message-box {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%);
+  padding: 13px 26px;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-weight: 700;
+  z-index: 99999;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  animation: toastIn 0.35s ease;
+  font-family: inherit;
+}
+.message-box.success { background: linear-gradient(135deg, #10b981, #059669); }
+.message-box.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+/* ── Keyframes ── */
+@keyframes fadeScale {
+  from { opacity:0; transform:scale(0.96) translateY(10px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes toastIn {
+  from { opacity:0; transform:translate(-50%,-12px) scale(0.95); }
+  to   { opacity:1; transform:translate(-50%,0) scale(1); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+  .settings-container { padding: 32px 24px; }
+  .settings-container h2 { font-size: 1.4rem; }
+}

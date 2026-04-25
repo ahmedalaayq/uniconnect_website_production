@@ -1,0 +1,174 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════════
+//  GradConnect — Firestore Security Rules
+//
+//  Collections used by this project:
+//    /users/{userId}
+//    /globalChat/{messageId}
+//    /directMessages/{conversationId}/messages/{messageId}
+//    /typing/{conversationId}
+//
+//  Auth roles: طالب | دكتور | خريج
+// ═══════════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────
+    //  HELPER FUNCTIONS
+    // ─────────────────────────────────────────────────────────────
+
+    // User must be signed in
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Signed-in user matches the target uid
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    // Valid role values for this platform
+    function isValidRole(data) {
+      return data.role in ['طالب', 'دكتور', 'خريج'];
+    }
+
+    // Message text: non-empty string, max 1000 chars
+    function isValidText(data) {
+      return data.text is string
+          && data.text.size() > 0
+          && data.text.size() <= 1000;
+    }
+
+    // Name: 2–60 characters
+    function isValidName(data) {
+      return data.name is string
+          && data.name.size() >= 2
+          && data.name.size() <= 60;
+    }
+
+    // Conversation ID must contain the caller's uid
+    // Format produced by getConversationId(): "uid1_uid2" (sorted)
+    function isParticipant(conversationId) {
+      return isAuth()
+          && request.auth.uid in conversationId.split('_');
+    }
+
+    // Fields that are allowed to change on a user update
+    function onlyAllowedUserFields() {
+      return request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasOnly(['name', 'role', 'imageUrl', 'online', 'lastSeen']);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  /users/{userId}
+    //
+    //  READ  — any authenticated user (needed for DM list, chat names)
+    //  CREATE — only the owner, with required fields + valid values
+    //  UPDATE — only the owner, restricted to safe fields
+    //  DELETE — never from the client
+    // ─────────────────────────────────────────────────────────────
+    match /users/{userId} {
+
+      allow read: if isAuth();
+
+      allow create: if isOwner(userId)
+                    && isValidName(request.resource.data)
+                    && isValidRole(request.resource.data)
+                    && request.resource.data.email == request.auth.token.email
+                    && request.resource.data.keys().hasAll([
+                         'name', 'email', 'role',
+                         'online', 'createdAt', 'lastSeen'
+                       ]);
+
+      allow update: if isOwner(userId)
+                    && onlyAllowedUserFields()
+                    // Prevent escalating to a fake role
+                    && (
+                         !('role' in request.resource.data.diff(resource.data).affectedKeys())
+                         || isValidRole(request.resource.data)
+                       )
+                    // Prevent changing email via Firestore
+                    && request.resource.data.email == resource.data.email;
+
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  /globalChat/{messageId}
+    //
+    //  READ   — any authenticated user
+    //  CREATE — authenticated, sender must be caller, text validated
+    //  UPDATE / DELETE — never (messages are immutable)
+    // ─────────────────────────────────────────────────────────────
+    match /globalChat/{messageId} {
+
+      allow read: if isAuth();
+
+      allow create: if isAuth()
+                    && isValidText(request.resource.data)
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.keys().hasAll([
+                         'userId', 'name', 'role', 'text', 'timestamp'
+                       ])
+                    // Prevent spoofing role in message
+                    && isValidRole(request.resource.data);
+
+      allow update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  /directMessages/{conversationId}
+    //
+    //  The conversationId is produced by:
+    //    [uid1, uid2].sort().join('_')
+    //  so both participants are encoded in the document path.
+    // ─────────────────────────────────────────────────────────────
+    match /directMessages/{conversationId} {
+
+      // Participants can read/write the conversation container doc
+      allow read, write: if isParticipant(conversationId);
+
+      // ── /directMessages/{conversationId}/messages/{messageId} ──
+      match /messages/{messageId} {
+
+        allow read: if isParticipant(conversationId);
+
+        allow create: if isParticipant(conversationId)
+                      && request.resource.data.fromId == request.auth.uid
+                      && isValidText(request.resource.data)
+                      && request.resource.data.keys().hasAll([
+                           'fromId', 'toId', 'text', 'timestamp', 'read'
+                         ])
+                      // toId must be the other participant
+                      && request.resource.data.toId != request.auth.uid;
+
+        // Only allow flipping the 'read' flag — nothing else
+        allow update: if isParticipant(conversationId)
+                      && request.resource.data.diff(resource.data)
+                           .affectedKeys()
+                           .hasOnly(['read']);
+
+        allow delete: if false;
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  /typing/{conversationId}
+    //
+    //  Ephemeral typing indicators — participants only
+    // ─────────────────────────────────────────────────────────────
+    match /typing/{conversationId} {
+      allow read, write: if isParticipant(conversationId);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    //  CATCH-ALL — deny everything not explicitly allowed above
+    // ─────────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

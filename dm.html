@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الرسائل المباشرة - GradConnect</title>
+<link rel="stylesheet" href="styles/dm.css">
+</head>
+
+<body>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<!-- 🔝 شريط التنقل -->
+<div class="top-bar">
+    <h2><a href="dashboard.html">🏠 الرئيسية</a></h2>
+    <h2><a href="#" onclick="logout()">🚪 خروج</a></h2>
+</div>
+
+<div class="container">
+
+    <!-- 👥 المستخدمين -->
+    <div class="users">
+        <h1>👫 الأشخاص</h1>
+        <div id="usersList"></div>
+    </div>
+
+    <!-- 💬 الشات -->
+    <div class="chat">
+
+        <h2 id="chatTitle">💬 اختر شخصاً للمحادثة</h2>
+
+        <div id="typing" class="typing"></div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="send">
+            <input id="msgInput" placeholder="اكتب رسالة..." oninput="typingNow()">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Firebase Config -->
+<script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
+<script src="scripts/modules/chat.js"></script>
+<script src="scripts/modules/users.js"></script>
+<script src="scripts/modules/storage.js"></script>
+<script src="scripts/utils/utils.js"></script>
+
+<script>
+let currentUser = null;
+let chatUser = null;
+let chatUserId = null;
+let unsubscribeMessages = null;
+let unsubscribeUsers = null;  // real-time users listener
+
+// Initialize page after Firebase is ready
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById("msgInput");
+    if (input) {
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    }
+});
+
+waitForFirebase(() => {
+    const unsubAuth = auth.onAuthStateChanged(async (user) => {
+        unsubAuth();
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+        await initializePage(user.uid);
+    });
+});
+
+// Load users list — real-time listener so new users appear instantly
+function loadUsersList() {
+    if (unsubscribeUsers) unsubscribeUsers(); // clean up previous
+
+    unsubscribeUsers = listenToAllUsers(({ success, users }) => {
+        if (!success) {
+            showMessage("حدث خطأ في تحميل المستخدمين", "error");
+            return;
+        }
+
+        const box = document.getElementById("usersList");
+        box.innerHTML = "";
+
+        // Filter out current user, sort: online first
+        const others = users
+            .filter(u => u.uid !== currentUser.uid)
+            .sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
+
+        if (others.length === 0) {
+            box.innerHTML = '<p class="no-users">لا يوجد مستخدمين آخرين</p>';
+            return;
+        }
+
+        others.forEach(user => {
+            const div = document.createElement("div");
+            div.className = "user-item";
+            div.innerHTML = `
+                <span class="user-status">${user.online ? '🟢' : '⚪'}</span>
+                <span class="user-name">${user.name || 'مستخدم'}</span>
+                <span class="user-role">(${user.role || ''})</span>
+            `;
+            div.onclick = () => openChat(user.uid, user.name);
+            box.appendChild(div);
+        });
+    });
+}
+
+// Open chat with selected user
+function openChat(userId, userName) {
+    chatUserId = userId;
+    chatUser = userName;
+    
+    document.getElementById("chatTitle").innerText = `💬 محادثة مع ${userName}`;
+    document.getElementById("msgInput").disabled = false;
+    
+    // Unsubscribe from previous chat
+    if (unsubscribeMessages) unsubscribeMessages();
+    
+    // Load messages
+    loadMessages();
+}
+
+// Load direct messages for selected conversation
+function loadMessages() {
+    if (!chatUserId || !currentUser) return;
+    
+    unsubscribeMessages = listenToDirectMessages(currentUser.uid, chatUserId, (messages) => {
+        const box = document.getElementById("messages");
+        box.innerHTML = "";
+        
+        messages.forEach((msg) => {
+            const div = document.createElement("div");
+            div.classList.add("msg");
+            
+            if (msg.fromId === currentUser.uid) {
+                div.classList.add("me");
+            }
+            
+            const timestamp = formatTimestamp(msg.timestamp);
+            
+            div.innerHTML = `<b>${msg.fromId === currentUser.uid ? 'أنت' : chatUser}</b>: ${msg.text}
+                            <small style="color:#666; font-size:0.8em;">${timestamp}</small>`;
+            
+            box.appendChild(div);
+        });
+        
+        // Scroll to bottom
+        box.scrollTop = box.scrollHeight;
+    });
+}
+
+// Handle typing indicator (placeholder for future implementation)
+function typingNow() {
+    // This function is called when user types but doesn't send anything yet
+    // Future implementation: show "user is typing..." indicator
+}
+
+// Send direct message
+async function sendMessage() {
+    if (!chatUserId || !currentUser) return;
+    
+    const input = document.getElementById("msgInput");
+    const message = input.value.trim();
+    
+    if (message === "") return;
+    
+    const result = await sendDirectMessage(currentUser.uid, chatUserId, message);
+    
+    if (result.success) {
+        input.value = "";
+    } else {
+        showMessage(result.error, "error");
+    }
+}
+
+// Logout functionality
+async function logout() {
+    if (!confirm("هل تريد تسجيل الخروج؟")) return;
+    
+    // Unsubscribe from listeners
+    if (unsubscribeMessages) unsubscribeMessages();
+    
+    const result = await logoutUser();
+    
+    if (result.success) {
+        window.location.href = "index.html";
+    } else {
+        showMessage(result.error, "error");
+    }
+}
+
+// Initialize page
+async function initializePage(uid) {
+    try {
+        const userData = await getCurrentUserData(uid);
+        if (!userData) {
+            console.warn('User doc not found for uid:', uid);
+            return;
+        }
+
+        currentUser = userData;
+        loadUsersList();
+
+    } catch (error) {
+        console.error("Error initializing page:", error);
+        showMessage("حدث خطأ في تحميل الصفحة", "error");
+    }
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (unsubscribeMessages) unsubscribeMessages();
+    if (unsubscribeUsers) unsubscribeUsers();
+    updateOnlineStatus(false);
+});
+
+// Make functions global for onclick
+window.send = sendMessage;
+window.logout = logout;
+</script>
+
+</body>
+</html>
