@@ -5,6 +5,18 @@
 /* ── Mobile Layout Fixes ── */
 @media (max-width: 768px) {
   /* Fix sidebar and main container */
+  .sidebar {
+    transform: translateX(100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar__close-btn {
+    display: flex !important;
+  }
+
   .app-shell {
     overflow-x: hidden;
   }

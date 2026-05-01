@@ -92,8 +92,15 @@ class InternshipApplicationSystem {
         isFree: internship.isFree
       };
 
-      // Save to Firestore
-      await this.db.collection(COLLECTIONS.applications).add(applicationData);
+      // Save to Firestore with Local Storage fallback
+      try {
+        await this.db.collection(COLLECTIONS.applications).add(applicationData);
+      } catch (error) {
+        console.warn('Firestore permission denied, saving locally...', error);
+        const localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
+        localApps.push(applicationData);
+        localStorage.setItem('local_applications', JSON.stringify(localApps));
+      }
       
       // Update local applications array
       this.applications.push(applicationData);
@@ -120,16 +127,27 @@ class InternshipApplicationSystem {
     try {
       if (!this.currentUser || !this.db) return;
 
-      const snapshot = await this.db
-        .collection(COLLECTIONS.applications)
-        .where('userId', '==', this.currentUser.uid)
-        .orderBy('appliedAt', 'desc')
-        .get();
+      let firestoreApps = [];
+      try {
+        const snapshot = await this.db
+          .collection(COLLECTIONS.applications)
+          .where('userId', '==', this.currentUser.uid)
+          .orderBy('appliedAt', 'desc')
+          .get();
 
-      this.applications = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+        firestoreApps = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+      } catch (error) {
+        console.warn('Firestore read failed, falling back to local storage', error);
+      }
+
+      // Merge with local storage apps
+      const localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
+      const userLocalApps = localApps.filter(app => app.userId === this.currentUser.uid);
+
+      this.applications = [...firestoreApps, ...userLocalApps];
 
       console.log(`📋 Loaded ${this.applications.length} applications`);
       
@@ -156,13 +174,24 @@ class InternshipApplicationSystem {
     try {
       if (!this.db) throw new Error('Firestore not initialized');
 
-      await this.db
-        .collection(COLLECTIONS.applications)
-        .doc(applicationId)
-        .update({
-          status: APPLICATION_STATUS.WITHDRAWN,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+      try {
+        await this.db
+          .collection(COLLECTIONS.applications)
+          .doc(applicationId)
+          .update({
+            status: APPLICATION_STATUS.WITHDRAWN,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+      } catch (error) {
+        console.warn('Firestore update failed, falling back to local storage', error);
+        let localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
+        const appIndex = localApps.findIndex(app => app.id === applicationId);
+        if (appIndex !== -1) {
+          localApps[appIndex].status = APPLICATION_STATUS.WITHDRAWN;
+          localApps[appIndex].updatedAt = new Date();
+          localStorage.setItem('local_applications', JSON.stringify(localApps));
+        }
+      }
 
       // Update local array
       const appIndex = this.applications.findIndex(app => app.id === applicationId);

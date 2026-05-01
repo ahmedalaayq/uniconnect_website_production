@@ -3264,37 +3264,32 @@ input {
   }
 }
 
-/* ╔══════════════════════════════════════════════════════════════════
-   ║  22. RESPONSIVE - SMALL MOBILE (≤480px)
-   ╚══════════════════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
-  .search {
+  .services-grid {
+    grid-template-columns: unset;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .services-grid::-webkit-scrollbar {
     display: none;
   }
 
-  .hero__search {
-    max-width: 100%;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .service-card {
-    padding: var(--space-4);
+    flex: 0 0 85%;
+    scroll-snap-align: start;
   }
 
-  .service-card__icon {
-    width: 42px;
-    height: 42px;
-    font-size: 1rem;
-  }
-
-  .service-card__title {
-    font-size: 0.82rem;
+  /* Hide description in horizontal scroll */
+  .service-card__desc {
+    display: none;
   }
 }
-
 /* ╔══════════════════════════════════════════════════════════════════
    ║  23. REDUCED MOTION
    ╚══════════════════════════════════════════════════════════════════ */

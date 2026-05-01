@@ -103,7 +103,7 @@ const STUDENT_SERVICES = [
     desc:'شارك في استطلاع تقييم المقررات وأعضاء هيئة التدريس بشكل إلكتروني.',
     tags:['إلكتروني','تقييم','استطلاع'],
     btn:'تقييم الآن',
-    url:'https://bu.edu.eg/student/logCode.php',
+    url:'https://fsed.bu.edu.eg/students/polling-the-student-opinion-on-the-course',
   },
   {
     id:'s-e5', cat:'electronic', icon:'📖', ib:'ib-elearn',
@@ -390,11 +390,11 @@ const STUDENT_SERVICES = [
   },
   {
     id:'s-li3', cat:'links', icon:'🎓', ib:'ib-links',
-    title:'بوابة الطلاب — جامعة بنها',
-    desc:'البوابة الإلكترونية المركزية لخدمات طلاب جامعة بنها.',
+    title:'بوابة الطلاب — التربية النوعية',
+    desc:'البوابة الإلكترونية المركزية لخدمات طلاب كلية التربية النوعية.',
     tags:['روابط','طلاب','خدمات'],
     btn:'الانتقال',
-    url:'https://bu.edu.eg/students/f10',
+    url:'https://fsed.bu.edu.eg/students',
     outline:true,
   },
   {
