@@ -3,116 +3,592 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GradConnect — Services Hub</title>
-
-  <link rel="stylesheet" href="app.css"/>
+  <title>GradConnect — مركز الخدمات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/student-services.css"/>
 </head>
 
-<body data-role="student">
+<body data-role="طالب">
 
-<div class="app">
+<!-- ═══════════════════════════════════════════════════════════
+     MOBILE OVERLAY (sidebar backdrop)
+═══════════════════════════════════════════════════════════════ -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
 
-  <!-- ================= SIDEBAR ================= -->
-  <aside class="sidebar">
+<!-- ═══════════════════════════════════════════════════════════
+     NOTIFICATION OVERLAY
+═══════════════════════════════════════════════════════════════ -->
+<div class="notif-overlay hidden" id="notifOverlay"></div>
 
-    <div class="brand">
-      GradConnect
+<!-- ═══════════════════════════════════════════════════════════
+     CATEGORY DRAWER OVERLAY (mobile)
+═══════════════════════════════════════════════════════════════ -->
+<div class="drawer-overlay hidden" id="drawerOverlay"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="sidebar" id="mainSidebar" role="navigation" aria-label="القائمة الرئيسية">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <img src="assets/images/logo.png" alt="GradConnect" onerror="this.style.display='none'"/>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">GradConnect</span>
+        <span class="brand-sub">كلية التربية النوعية</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" onclick="closeSidebar()" aria-label="إغلاق القائمة">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <nav class="nav">
-      <a class="active">🏠 الرئيسية</a>
-      <a>⚡ الخدمات</a>
-      <a>👤 الملف الشخصي</a>
-      <a>💬 الرسائل</a>
-      <a>⚙️ الإعدادات</a>
+    <!-- User Card -->
+    <div class="sidebar-user-card">
+      <div class="suc-avatar-wrap">
+        <img class="suc-avatar" id="sidebarAvatar" src="assets/images/user.png" alt="صورة المستخدم"/>
+        <span class="suc-online-dot" title="متصل الآن"></span>
+      </div>
+      <div class="suc-info">
+        <span class="suc-name" id="sidebarName">جاري التحميل...</span>
+        <span class="suc-role-badge" id="roleBadge">
+          <span class="rb-dot"></span>طالب
+        </span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="روابط التنقل">
+      <a href="dashboard.html" class="snav-item">
+        <span class="snav-icon"><i class="fa-solid fa-house"></i></span>
+        <span class="snav-label">الرئيسية</span>
+      </a>
+      <a href="student-services.html" class="snav-item active" aria-current="page">
+        <span class="snav-icon"><i class="fa-solid fa-bolt"></i></span>
+        <span class="snav-label">مركز الخدمات</span>
+        <span class="snav-badge">جديد</span>
+      </a>
+      <a href="profile.html" class="snav-item">
+        <span class="snav-icon"><i class="fa-solid fa-user"></i></span>
+        <span class="snav-label">الملف الشخصي</span>
+      </a>
+      <a href="dm.html" class="snav-item">
+        <span class="snav-icon"><i class="fa-solid fa-comment-dots"></i></span>
+        <span class="snav-label">الرسائل</span>
+        <span class="snav-msg-dot"></span>
+      </a>
+      <a href="setting.html" class="snav-item">
+        <span class="snav-icon"><i class="fa-solid fa-gear"></i></span>
+        <span class="snav-label">الإعدادات</span>
+      </a>
+      <a href="help_support.html" class="snav-item">
+        <span class="snav-icon"><i class="fa-solid fa-circle-question"></i></span>
+        <span class="snav-label">المساعدة</span>
+      </a>
     </nav>
 
-    <button class="logout">
-      🚪 تسجيل الخروج
-    </button>
+    <!-- Mini Progress (sidebar) -->
+    <div class="sidebar-progress" id="miniProgress">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <button class="snav-logout" onclick="logout()" aria-label="تسجيل الخروج">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
 
   </aside>
 
-  <!-- ================= MAIN LAYOUT ================= -->
-  <div class="layout">
+  <!-- ══════════════════════════════════════
+       MAIN AREA
+  ══════════════════════════════════════ -->
+  <div class="main-area">
 
-    <!-- TOPBAR -->
-    <header class="topbar">
+    <!-- ── TOPBAR ── -->
+    <header class="topbar" role="banner">
 
-      <div class="title">
-        <h1>خدمات المنصة</h1>
-        <small>كلية التربية النوعية - جامعة بنها</small>
+      <!-- Mobile menu toggle -->
+      <button class="topbar-menu-btn" id="menuToggle" onclick="openSidebar()" aria-label="فتح القائمة" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <!-- Page title chip -->
+      <div class="topbar-title-chip">
+        <img class="chip-avatar" id="chipAvatar" src="assets/images/user.png" alt=""/>
+        <span class="chip-text">مركز الخدمات</span>
+        <span class="chip-sep">·</span>
+        <span class="chip-role" id="sidebarRole">طالب</span>
       </div>
 
-      <div class="actions">
-        <input type="search" placeholder="ابحث عن خدمة..."/>
-        <button>🔔</button>
-        <div class="avatar"></div>
-      </div>
+      <!-- Topbar actions -->
+      <div class="topbar-actions">
 
+        <!-- Search -->
+        <div class="search-wrap" role="search">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="search"
+            class="topbar-search"
+            id="searchInput"
+            placeholder="ابحث عن خدمة..."
+            autocomplete="off"
+            aria-label="بحث في الخدمات"
+          />
+          <ul class="search-dropdown" id="searchDropdown" role="listbox" aria-label="نتائج البحث"></ul>
+        </div>
+
+        <!-- Notifications -->
+        <div class="notif-wrap">
+          <button class="topbar-icon-btn notif-btn" id="notifBtn" aria-label="الإشعارات" aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-badge" id="notifBadge">3</span>
+          </button>
+
+          <!-- Notification Panel -->
+          <div class="notif-panel" id="notifPanel" role="dialog" aria-label="الإشعارات" aria-hidden="true">
+            <div class="np-header">
+              <span class="np-title"><i class="fa-solid fa-bell"></i> الإشعارات</span>
+              <button class="np-mark-all" id="markAllRead">تحديد الكل كمقروء</button>
+            </div>
+            <div class="np-list" id="notifList">
+              <div class="notif-item unread">
+                <div class="ni-icon ni-blue"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="ni-body">
+                  <p class="ni-text">تم نشر جدول امتحانات الفصل الدراسي الثاني</p>
+                  <span class="ni-time">منذ ساعتين</span>
+                </div>
+                <button class="notif-close" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="notif-item unread">
+                <div class="ni-icon ni-green"><i class="fa-solid fa-check-circle"></i></div>
+                <div class="ni-body">
+                  <p class="ni-text">نتائج امتحانات الفصل الأول متاحة الآن</p>
+                  <span class="ni-time">منذ يوم</span>
+                </div>
+                <button class="notif-close" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="notif-item unread">
+                <div class="ni-icon ni-amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="ni-body">
+                  <p class="ni-text">آخر موعد لتسليم طلبات الاعتراض على النتائج غداً</p>
+                  <span class="ni-time">منذ 3 أيام</span>
+                </div>
+                <button class="notif-close" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="np-empty hidden" id="notifEmpty">
+              <i class="fa-regular fa-bell-slash"></i>
+              <p>لا توجد إشعارات جديدة</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme toggle placeholder -->
+        <button class="topbar-icon-btn" id="themeToggle" aria-label="تبديل المظهر" title="قريباً">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+      </div>
     </header>
 
-    <!-- CONTENT -->
-    <main class="content">
+    <!-- ── PAGE CONTENT ── -->
+    <main class="page-content" id="pageContent" role="main">
 
-      <!-- HERO -->
-      <section class="hero">
-        <h2>كل خدماتك في مكان واحد</h2>
-        <p>نظام متكامل لإدارة الخدمات الطلابية</p>
+      <!-- ════════════════════════════════
+           HERO SECTION
+      ════════════════════════════════ -->
+      <section class="hero-section" aria-label="قسم الترحيب">
+        <div class="hero-bg-orbs" aria-hidden="true">
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="orb orb-3"></div>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-pill" id="heroPill">✨ منصة خدمات الطلاب</div>
+          <h1 class="hero-title" id="heroTitle">
+            كل ما تحتاجه <span class="ht-grad">كطالب</span>
+          </h1>
+          <p class="hero-sub" id="heroSub">
+            خدمات أكاديمية، امتحانات، تدريب، نماذج وأكثر — مصممة لتسهيل رحلتك التعليمية في كلية التربية النوعية بجامعة بنها.
+          </p>
+
+          <!-- Hero Search -->
+          <div class="hero-search-bar" role="search">
+            <i class="fa-solid fa-magnifying-glass hsi-icon"></i>
+            <input
+              type="search"
+              class="hero-search-input"
+              id="heroSearchInput"
+              placeholder="ابحث: جداول، امتحانات، نتائج، نماذج..."
+              autocomplete="off"
+              aria-label="بحث في الخدمات"
+            />
+            <button class="hero-search-btn" id="heroSearchBtn" aria-label="بحث">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+
+          <!-- Hero Stats -->
+          <div class="hero-stats" id="heroStats" aria-label="إحصائيات المنصة">
+            <div class="hero-stat"><strong>+45</strong><span>خدمة متاحة</span></div>
+            <div class="hero-stat-div" aria-hidden="true"></div>
+            <div class="hero-stat"><strong>10</strong><span>تصنيف</span></div>
+            <div class="hero-stat-div" aria-hidden="true"></div>
+            <div class="hero-stat"><strong>24/7</strong><span>وصول مستمر</span></div>
+          </div>
+        </div>
+
+        <!-- Quick Widgets -->
+        <div class="quick-widgets" id="quickWidgets" aria-label="الوصول السريع">
+          <!-- Rendered by JS -->
+        </div>
       </section>
 
-      <!-- QUICK STATS -->
-      <section class="stats">
-        <div>+47 خدمة</div>
-        <div>12 تصنيف</div>
-        <div>99.9% uptime</div>
-      </section>
+      <!-- ════════════════════════════════
+           SERVICES LAYOUT
+      ════════════════════════════════ -->
+      <section class="services-layout" id="servicesLayout" aria-label="قائمة الخدمات">
 
-      <!-- GRID -->
-      <section class="grid">
+        <!-- ── CATEGORIES SIDEBAR ── -->
+        <aside class="cat-sidebar" aria-label="تصنيفات الخدمات">
 
-        <!-- CATEGORIES -->
-        <aside class="categories">
-          <h4>التصنيفات</h4>
-          <ul>
-            <li>📘 الامتحانات</li>
-            <li>📢 الإعلانات</li>
-            <li>📁 الملفات</li>
-            <li>🎓 التدريب</li>
-          </ul>
+          <!-- Mobile cat toggle -->
+          <button class="cat-toggle-mobile" id="catToggleMobile" aria-label="عرض التصنيفات">
+            <i class="fa-solid fa-filter"></i>
+            <span>التصنيفات</span>
+            <span class="ctm-active" id="activeCatName">جميع الخدمات</span>
+            <i class="fa-solid fa-chevron-down ctm-chevron"></i>
+          </button>
+
+          <!-- Desktop category list -->
+          <div class="cat-list-wrap">
+            <h3 class="cat-list-title">
+              <i class="fa-solid fa-layer-group"></i> التصنيفات
+            </h3>
+            <ul class="cat-list" id="catList" role="tablist" aria-label="تصنيفات الخدمات">
+              <!-- Rendered by JS -->
+            </ul>
+          </div>
+
         </aside>
 
-        <!-- SERVICES -->
-        <section class="services">
+        <!-- ── SERVICES PANEL ── -->
+        <div class="services-panel">
 
-          <div class="service-card">خدمة 1</div>
-          <div class="service-card">خدمة 2</div>
-          <div class="service-card">خدمة 3</div>
-          <div class="service-card">خدمة 4</div>
+          <!-- Services toolbar -->
+          <div class="services-toolbar">
+            <div class="stb-left">
+              <span class="stb-count">
+                <span id="resultCount">0</span> خدمة
+              </span>
+            </div>
+            <div class="stb-right">
+              <!-- View toggle -->
+              <div class="view-toggle" role="group" aria-label="طريقة العرض">
+                <button class="vbtn active" data-view="grid" aria-label="عرض شبكي" title="شبكي">
+                  <i class="fa-solid fa-grip"></i>
+                </button>
+                <button class="vbtn" data-view="list" aria-label="عرض قائمة" title="قائمة">
+                  <i class="fa-solid fa-list"></i>
+                </button>
+              </div>
+            </div>
+          </div>
 
-        </section>
+          <!-- Skeleton loader -->
+          <div class="skeleton-grid" id="skeletonGrid" aria-hidden="true">
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w70"></div><div class="skel-line w90"></div><div class="skel-line w50"></div></div>
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w80"></div><div class="skel-line w60"></div><div class="skel-line w70"></div></div>
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w60"></div><div class="skel-line w80"></div><div class="skel-line w40"></div></div>
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w75"></div><div class="skel-line w55"></div><div class="skel-line w65"></div></div>
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w85"></div><div class="skel-line w70"></div><div class="skel-line w50"></div></div>
+            <div class="skel-card"><div class="skel-icon"></div><div class="skel-line w65"></div><div class="skel-line w90"></div><div class="skel-line w60"></div></div>
+          </div>
+
+          <!-- Services grid -->
+          <div class="services-grid hidden" id="servicesGrid" role="list" aria-label="بطاقات الخدمات">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state hidden" id="emptyState" role="status" aria-live="polite">
+            <div class="es-icon">🔍</div>
+            <h3>لا توجد نتائج</h3>
+            <p>لم نجد خدمات تطابق بحثك. جرب كلمات مختلفة أو تصفح التصنيفات.</p>
+            <button class="es-reset-btn" onclick="resetFilters()">
+              <i class="fa-solid fa-rotate-right"></i> إعادة تعيين الفلاتر
+            </button>
+          </div>
+
+        </div>
 
       </section>
 
-      <!-- FAQ -->
-      <section class="faq">
-        <h3>الأسئلة الشائعة</h3>
+      <!-- ════════════════════════════════
+           DOCTOR SERVICES SECTION (للدكاترة فقط)
+      ════════════════════════════════ -->
+      <section class="doctor-services-section" id="doctorServicesSection" aria-label="خدمات أعضاء هيئة التدريس" data-role-visibility="دكتور">
+        <div class="section-header">
+          <div class="sh-icon sh-icon-doctor">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div class="sh-text-wrap">
+            <h2 class="sh-title">خدمات أعضاء هيئة التدريس</h2>
+            <p class="sh-sub">أدوات وخدمات مخصصة لإدارة المقررات والبحث العلمي ومتابعة الطلاب</p>
+          </div>
+          <div class="sh-stats">
+            <div class="sh-stat-item">
+              <strong id="doctorServicesCount">35</strong>
+              <span>خدمة أكاديمية</span>
+            </div>
+            <div class="sh-stat-divider"></div>
+            <div class="sh-stat-item sh-stat-highlight">
+              <strong>8</strong>
+              <span>أقسام</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctor Quick Actions -->
+        <div class="doctor-quick-actions">
+          <div class="dqa-card dqa-primary">
+            <div class="dqa-icon">📖</div>
+            <div class="dqa-content">
+              <h3>إدارة المقررات</h3>
+              <p>رفع المحاضرات والمواد التعليمية</p>
+            </div>
+            <button class="dqa-btn" onclick="openUrl('https://fsed.bu.edu.eg/students/learning')">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+
+          <div class="dqa-card dqa-success">
+            <div class="dqa-icon">🔬</div>
+            <div class="dqa-content">
+              <h3>المجلة العلمية</h3>
+              <p>نشر الأبحاث والأوراق العلمية</p>
+            </div>
+            <button class="dqa-btn" onclick="openUrl('https://sjse.journals.ekb.eg/')">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+
+          <div class="dqa-card dqa-info">
+            <div class="dqa-icon">👥</div>
+            <div class="dqa-content">
+              <h3>سجلات الطلاب</h3>
+              <p>متابعة الحضور والدرجات</p>
+            </div>
+            <button class="dqa-btn" onclick="openUrl('http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx')">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+
+          <div class="dqa-card dqa-warning">
+            <div class="dqa-icon">📅</div>
+            <div class="dqa-content">
+              <h3>الجداول الدراسية</h3>
+              <p>جداول المحاضرات والامتحانات</p>
+            </div>
+            <button class="dqa-btn" onclick="openUrl('https://fsed.bu.edu.eg/study-schedules')">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Doctor Services Categories -->
+        <div class="doctor-categories">
+          <button class="doc-cat-btn active" data-doc-cat="all">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>جميع الخدمات</span>
+          </button>
+          <button class="doc-cat-btn" data-doc-cat="courses">
+            <i class="fa-solid fa-book-open"></i>
+            <span>إدارة المقررات</span>
+          </button>
+          <button class="doc-cat-btn" data-doc-cat="research">
+            <i class="fa-solid fa-flask"></i>
+            <span>البحث العلمي</span>
+          </button>
+          <button class="doc-cat-btn" data-doc-cat="students">
+            <i class="fa-solid fa-users"></i>
+            <span>متابعة الطلاب</span>
+          </button>
+          <button class="doc-cat-btn" data-doc-cat="postgrad">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>الدراسات العليا</span>
+          </button>
+          <button class="doc-cat-btn" data-doc-cat="quality">
+            <i class="fa-solid fa-award"></i>
+            <span>ضمان الجودة</span>
+          </button>
+        </div>
+
+        <!-- Doctor Services Grid -->
+        <div class="doctor-services-grid" id="doctorServicesGrid">
+          <!-- Rendered by JS -->
+        </div>
       </section>
 
-      <!-- ROADMAP -->
-      <section class="roadmap">
-        <h3>الميزات القادمة</h3>
+      <!-- ════════════════════════════════
+           INTERNSHIP OPPORTUNITIES SECTION (للخريجين)
+      ════════════════════════════════ -->
+      <section class="internship-section" id="internshipSection" aria-label="فرص التدريب" data-role-visibility="خريج">
+        <div class="section-header">
+          <div class="sh-icon sh-icon-gradient">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="sh-text-wrap">
+            <h2 class="sh-title">فرص التدريب والتوظيف</h2>
+            <p class="sh-sub">فرص تدريب حصرية للخريجين — قدم الآن وابدأ مسيرتك المهنية</p>
+          </div>
+          <div class="sh-stats">
+            <div class="sh-stat-item">
+              <strong id="totalOpportunities">12</strong>
+              <span>فرصة متاحة</span>
+            </div>
+            <div class="sh-stat-divider"></div>
+            <div class="sh-stat-item sh-stat-highlight">
+              <strong id="appliedCount">3</strong>
+              <span>قدمت عليها</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="internship-filter-bar">
+          <div class="ifb-left">
+            <button class="filter-chip active" data-filter="all">
+              <i class="fa-solid fa-layer-group"></i> الكل
+            </button>
+            <button class="filter-chip" data-filter="remote">
+              <i class="fa-solid fa-laptop-house"></i> عن بُعد
+            </button>
+            <button class="filter-chip" data-filter="onsite">
+              <i class="fa-solid fa-building"></i> في الموقع
+            </button>
+            <button class="filter-chip" data-filter="hybrid">
+              <i class="fa-solid fa-arrows-split-up-and-left"></i> هجين
+            </button>
+          </div>
+          <div class="ifb-right">
+            <button class="filter-sort-btn" id="sortBtn">
+              <i class="fa-solid fa-arrow-down-short-wide"></i>
+              <span>الأحدث</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Internship Grid -->
+        <div class="internship-grid" id="internshipGrid" role="list">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Load More Button -->
+        <div class="load-more-wrap">
+          <button class="load-more-btn" id="loadMoreBtn">
+            <i class="fa-solid fa-plus"></i>
+            <span>عرض المزيد من الفرص</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════
+           FAQ SECTION
+      ════════════════════════════════ -->
+      <section class="faq-section" aria-label="الأسئلة الشائعة">
+        <div class="section-header">
+          <div class="sh-icon"><i class="fa-solid fa-circle-question"></i></div>
+          <div>
+            <h2 class="sh-title">الأسئلة الشائعة</h2>
+            <p class="sh-sub">إجابات سريعة على أكثر الأسئلة شيوعاً</p>
+          </div>
+        </div>
+        <div class="faq-grid" id="faqGrid" role="list">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════
+           FUTURE FEATURES SECTION
+      ════════════════════════════════ -->
+      <section class="future-section" aria-label="الميزات القادمة">
+        <div class="section-header">
+          <div class="sh-icon sh-icon-amber"><i class="fa-solid fa-rocket"></i></div>
+          <div>
+            <h2 class="sh-title">الميزات القادمة</h2>
+            <p class="sh-sub">ما نعمل عليه لتحسين تجربتك</p>
+          </div>
+        </div>
+        <div class="future-grid" id="futureGrid" role="list">
+          <!-- Rendered by JS -->
+        </div>
       </section>
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-      © 2025 GradConnect
+    <!-- ── FOOTER ── -->
+    <footer class="page-footer" role="contentinfo">
+      <div class="footer-inner">
+        <span>© 2026 GradConnect — كلية التربية النوعية، جامعة بنها</span>
+        <div class="footer-links">
+          <a href="https://fsed.bu.edu.eg" target="_blank" rel="noopener noreferrer">موقع الكلية</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://bu.edu.eg" target="_blank" rel="noopener noreferrer">جامعة بنها</a>
+          <span aria-hidden="true">·</span>
+          <a href="help_support.html">الدعم الفني</a>
+        </div>
+      </div>
     </footer>
 
+  </div><!-- /main-area -->
+
+</div><!-- /app-shell -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     MOBILE CATEGORY DRAWER
+═══════════════════════════════════════════════════════════════ -->
+<div class="cat-drawer" id="catDrawer" role="dialog" aria-label="تصنيفات الخدمات" aria-hidden="true">
+  <div class="cd-header">
+    <span>التصنيفات</span>
+    <button class="cd-close" id="closeDrawer" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
   </div>
+  <ul class="cat-list cat-list-mobile" id="catListMobile" role="tablist">
+    <!-- Rendered by JS -->
+  </ul>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIREBASE SDK
+═══════════════════════════════════════════════════════════════ -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<script src="scripts/config/firebase-config.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODULE
+═══════════════════════════════════════════════════════════════ -->
+<script src="scripts/modules/student-services.js"></script>
 
 </body>
 </html>

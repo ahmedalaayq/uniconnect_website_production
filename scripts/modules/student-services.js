@@ -115,8 +115,8 @@ const STUDENT_SERVICES = [
   },
   {
     id:'s-e6', cat:'electronic', icon:'📄', ib:'ib-student',
-    title:'دليل الطالب 2025',
-    desc:'تحميل دليل الطالب المحدث لعام 2025 المشتمل على كافة اللوائح والإجراءات.',
+    title:'دليل الطالب 2026',
+    desc:'تحميل دليل الطالب المحدث لعام 2026 المشتمل على كافة اللوائح والإجراءات.',
     tags:['إلكتروني','دليل','تحميل'],
     btn:'تحميل الدليل',
     url:'https://drive.google.com/file/d/12pstEld4I1q21sVBUbbdlISP16YgFJfi/view',
@@ -810,7 +810,7 @@ const FAQ_DATA = {
   student: [
     { q:'كيف أجد جدول الامتحانات؟', icon:'📋', a:'انتقل لقسم "خدمات الامتحانات" واختر "جداول الامتحانات"، أو اضغط على الرابط المباشر لموقع الكلية.' },
     { q:'من أين أعرف نتيجتي؟', icon:'✅', a:'من قسم "خدمات الامتحانات" اختر "نتائج الامتحانات" للوصول المباشر لنتائجك من موقع الكلية الرسمي.' },
-    { q:'كيف أحصل على دليل الطالب؟', icon:'📄', a:'يمكنك تحميل دليل الطالب المحدث 2025 من قسم "النماذج والتحميلات" مباشرةً.' },
+    { q:'كيف أحصل على دليل الطالب؟', icon:'📄', a:'يمكنك تحميل دليل الطالب المحدث 2026 من قسم "النماذج والتحميلات" مباشرةً.' },
     { q:'كيف أعرف بريدي التعليمي؟', icon:'📧', a:'من قسم "الخدمات الإلكترونية" اختر "معرفة البريد التعليمي" للوصول لبوابة استخراج الإيميل.' },
     { q:'أين أجد رقم جلوسي؟', icon:'🔢', a:'من قسم "خدمات الامتحانات" اختر "أرقام الجلوس" لعرض رقمك في كل مادة.' },
     { q:'كيف أقدم شكوى؟', icon:'⚠️', a:'من قسم "شؤون الطلاب" اختر "آلية تلقي الشكاوى" لتقديم شكواك بشكل رسمي ومتابعتها.' },
@@ -1473,4 +1473,380 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const prog = document.getElementById('miniProgress');
   if (prog) observer.observe(prog);
+
+  // Initialize internship section for graduates
+  initInternshipSection();
 });
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERNSHIP OPPORTUNITIES (للخريجين فقط)
+═══════════════════════════════════════════════════════════════ */
+const INTERNSHIP_DATA = [
+  {
+    id: 'int-1',
+    company: 'شركة مايكروسوفت مصر',
+    logo: '🏢',
+    title: 'مطور برمجيات - تدريب صيفي',
+    location: 'القاهرة، مصر',
+    type: 'hybrid',
+    desc: 'فرصة تدريب مدفوعة الأجر لمدة 3 أشهر في فريق تطوير المنتجات السحابية. ستعمل على مشاريع حقيقية باستخدام Azure وC#.',
+    tags: ['برمجة', 'سحابة', 'مدفوع'],
+    salary: '8,000 جنيه/شهر',
+    deadline: '15 يونيو 2026',
+    posted: 'منذ يومين',
+    applicants: 45,
+    applied: false,
+    url: 'https://careers.microsoft.com/egypt',
+  },
+  {
+    id: 'int-2',
+    company: 'بنك مصر',
+    logo: '🏦',
+    title: 'محلل بيانات - برنامج الخريجين',
+    location: 'القاهرة، مصر',
+    type: 'onsite',
+    desc: 'برنامج تدريبي شامل لمدة 6 أشهر في قسم تحليل البيانات والذكاء الاصطناعي. يشمل تدريب على Power BI وPython وSQL.',
+    tags: ['تحليل بيانات', 'AI', 'بنوك'],
+    salary: '6,500 جنيه/شهر',
+    deadline: '20 يونيو 2026',
+    posted: 'منذ 5 أيام',
+    applicants: 78,
+    applied: true,
+    url: 'https://www.banquemisr.com/en/careers',
+  },
+  {
+    id: 'int-3',
+    company: 'أوراسكوم للإنشاء',
+    logo: '🏗️',
+    title: 'مهندس مشاريع - تدريب',
+    location: 'القاهرة الجديدة، مصر',
+    type: 'onsite',
+    desc: 'فرصة للعمل على مشاريع إنشائية ضخمة مع فريق هندسي محترف. التدريب يشمل إدارة المشاريع والإشراف الهندسي.',
+    tags: ['هندسة', 'إنشاءات', 'مشاريع'],
+    salary: '7,000 جنيه/شهر',
+    deadline: '25 يونيو 2026',
+    posted: 'منذ أسبوع',
+    applicants: 32,
+    applied: false,
+    url: 'https://www.orascom.com/careers',
+  },
+  {
+    id: 'int-4',
+    company: 'فودافون مصر',
+    logo: '📱',
+    title: 'أخصائي تسويق رقمي',
+    location: 'عن بُعد',
+    type: 'remote',
+    desc: 'تدريب في قسم التسويق الرقمي لمدة 4 أشهر. ستتعلم استراتيجيات التسويق عبر وسائل التواصل الاجتماعي وتحليل الحملات الإعلانية.',
+    tags: ['تسويق', 'رقمي', 'عن بُعد'],
+    salary: '5,500 جنيه/شهر',
+    deadline: '30 يونيو 2026',
+    posted: 'منذ 3 أيام',
+    applicants: 120,
+    applied: false,
+    url: 'https://careers.vodafone.com.eg',
+  },
+  {
+    id: 'int-5',
+    company: 'شركة IBM مصر',
+    logo: '💻',
+    title: 'مطور Full Stack - برنامج الخريجين',
+    location: 'القاهرة، مصر',
+    type: 'hybrid',
+    desc: 'برنامج تدريبي مكثف لمدة 6 أشهر يغطي تطوير الويب الكامل باستخدام React وNode.js وقواعد البيانات السحابية.',
+    tags: ['Full Stack', 'React', 'Node.js'],
+    salary: '9,000 جنيه/شهر',
+    deadline: '10 يوليو 2026',
+    posted: 'منذ يوم',
+    applicants: 67,
+    applied: true,
+    url: 'https://www.ibm.com/eg-en/employment',
+  },
+  {
+    id: 'int-6',
+    company: 'وزارة التربية والتعليم',
+    logo: '🎓',
+    title: 'معلم متدرب - برنامج المعلمين الجدد',
+    location: 'القاهرة، مصر',
+    type: 'onsite',
+    desc: 'برنامج تدريبي حكومي لمدة سنة كاملة للخريجين الجدد. يشمل تدريب تربوي وتأهيل للتعيين الدائم.',
+    tags: ['تعليم', 'حكومي', 'تربوي'],
+    salary: '4,500 جنيه/شهر',
+    deadline: '15 يوليو 2026',
+    posted: 'منذ أسبوعين',
+    applicants: 250,
+    applied: true,
+    url: 'https://moe.gov.eg',
+  },
+  {
+    id: 'int-7',
+    company: 'أمازون ويب سيرفيسز',
+    logo: '☁️',
+    title: 'مهندس حلول سحابية - تدريب',
+    location: 'عن بُعد',
+    type: 'remote',
+    desc: 'تدريب عن بُعد لمدة 3 أشهر في مجال الحوسبة السحابية. ستحصل على شهادات AWS معتمدة وخبرة عملية.',
+    tags: ['AWS', 'سحابة', 'شهادات'],
+    salary: '10,000 جنيه/شهر',
+    deadline: '5 يوليو 2026',
+    posted: 'منذ 4 أيام',
+    applicants: 89,
+    applied: false,
+    url: 'https://aws.amazon.com/careers',
+  },
+  {
+    id: 'int-8',
+    company: 'شركة أوبر مصر',
+    logo: '🚗',
+    title: 'محلل عمليات - تدريب',
+    location: 'القاهرة، مصر',
+    type: 'hybrid',
+    desc: 'فرصة للعمل في قسم العمليات وتحليل البيانات. ستتعلم كيفية تحسين الكفاءة التشغيلية باستخدام البيانات.',
+    tags: ['عمليات', 'تحليل', 'تقنية'],
+    salary: '7,500 جنيه/شهر',
+    deadline: '18 يونيو 2026',
+    posted: 'منذ 6 أيام',
+    applicants: 54,
+    applied: false,
+    url: 'https://www.uber.com/eg/en/careers',
+  },
+  {
+    id: 'int-9',
+    company: 'المصرية للاتصالات WE',
+    logo: '📡',
+    title: 'مهندس شبكات - برنامج التدريب',
+    location: 'القاهرة، مصر',
+    type: 'onsite',
+    desc: 'برنامج تدريبي متخصص في هندسة الشبكات والاتصالات لمدة 5 أشهر. يشمل شهادات Cisco المعتمدة.',
+    tags: ['شبكات', 'اتصالات', 'Cisco'],
+    salary: '6,000 جنيه/شهر',
+    deadline: '22 يونيو 2026',
+    posted: 'منذ أسبوع',
+    applicants: 41,
+    applied: false,
+    url: 'https://te.eg/wps/portal/te/careers',
+  },
+  {
+    id: 'int-10',
+    company: 'شركة جوجل - الشرق الأوسط',
+    logo: '🔍',
+    title: 'مطور Android - تدريب صيفي',
+    location: 'دبي، الإمارات',
+    type: 'onsite',
+    desc: 'تدريب صيفي مدفوع بالكامل في مكاتب جوجل بدبي. ستعمل على تطوير تطبيقات Android باستخدام Kotlin وJetpack Compose.',
+    tags: ['Android', 'Kotlin', 'دولي'],
+    salary: '$2,500/شهر',
+    deadline: '1 يوليو 2026',
+    posted: 'منذ 3 أيام',
+    applicants: 156,
+    applied: false,
+    url: 'https://careers.google.com',
+  },
+  {
+    id: 'int-11',
+    company: 'البنك الأهلي المصري',
+    logo: '🏛️',
+    title: 'أخصائي خدمة عملاء - تدريب',
+    location: 'القاهرة، مصر',
+    type: 'onsite',
+    desc: 'برنامج تدريبي في خدمة العملاء والعمليات المصرفية. فرصة للتعيين الدائم بعد انتهاء التدريب.',
+    tags: ['خدمة عملاء', 'بنوك', 'تعيين'],
+    salary: '5,000 جنيه/شهر',
+    deadline: '28 يونيو 2026',
+    posted: 'منذ 9 أيام',
+    applicants: 98,
+    applied: false,
+    url: 'https://www.nbe.com.eg/NBE/E/Careers.aspx',
+  },
+  {
+    id: 'int-12',
+    company: 'شركة سامسونج مصر',
+    logo: '📱',
+    title: 'مهندس ضمان جودة - QA Engineer',
+    location: 'القاهرة، مصر',
+    type: 'hybrid',
+    desc: 'تدريب في قسم ضمان الجودة لمدة 4 أشهر. ستتعلم اختبار البرمجيات والأتمتة باستخدام Selenium وJUnit.',
+    tags: ['QA', 'اختبار', 'أتمتة'],
+    salary: '7,200 جنيه/شهر',
+    deadline: '12 يوليو 2026',
+    posted: 'منذ يومين',
+    applicants: 63,
+    applied: false,
+    url: 'https://www.samsung.com/eg/about-us/careers',
+  },
+];
+
+let internshipState = {
+  filter: 'all',
+  appliedIds: new Set(['int-2', 'int-5', 'int-6']), // IDs of applied internships
+  visibleCount: 6,
+};
+
+function initInternshipSection() {
+  // Only show for graduates
+  const section = document.getElementById('internshipSection');
+  if (!section) return;
+  
+  if (STATE.role !== 'خريج') {
+    section.style.display = 'none';
+    return;
+  }
+  
+  section.style.display = 'block';
+  
+  // Update stats
+  updateInternshipStats();
+  
+  // Render internships
+  renderInternships();
+  
+  // Setup filter buttons
+  setupInternshipFilters();
+  
+  // Setup load more button
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  loadMoreBtn?.addEventListener('click', () => {
+    internshipState.visibleCount += 6;
+    renderInternships();
+  });
+}
+
+function updateInternshipStats() {
+  const totalEl = document.getElementById('totalOpportunities');
+  const appliedEl = document.getElementById('appliedCount');
+  
+  if (totalEl) totalEl.textContent = INTERNSHIP_DATA.length;
+  if (appliedEl) appliedEl.textContent = internshipState.appliedIds.size;
+}
+
+function setupInternshipFilters() {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      internshipState.filter = chip.dataset.filter;
+      internshipState.visibleCount = 6;
+      renderInternships();
+    });
+  });
+}
+
+function renderInternships() {
+  const grid = document.getElementById('internshipGrid');
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (!grid) return;
+  
+  // Filter internships
+  let filtered = [...INTERNSHIP_DATA];
+  if (internshipState.filter !== 'all') {
+    filtered = filtered.filter(int => int.type === internshipState.filter);
+  }
+  
+  // Apply visible count
+  const visible = filtered.slice(0, internshipState.visibleCount);
+  
+  // Render cards
+  grid.innerHTML = visible.map(int => {
+    const isApplied = internshipState.appliedIds.has(int.id);
+    const typeLabels = {
+      remote: 'عن بُعد',
+      onsite: 'في الموقع',
+      hybrid: 'هجين'
+    };
+    const typeIcons = {
+      remote: 'fa-laptop-house',
+      onsite: 'fa-building',
+      hybrid: 'fa-arrows-split-up-and-left'
+    };
+    
+    return `
+      <article class="internship-card ${isApplied ? 'applied' : ''}" data-id="${int.id}">
+        <div class="ic-header">
+          <div class="ic-logo">${int.logo}</div>
+          <div class="ic-info">
+            <span class="ic-company">${int.company}</span>
+            <h3 class="ic-title">${int.title}</h3>
+            <div class="ic-location">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>${int.location}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ic-body">
+          <p class="ic-desc">${int.desc}</p>
+          
+          <div class="ic-tags">
+            <span class="ic-tag ic-tag-${int.type}">
+              <i class="fa-solid ${typeIcons[int.type]}"></i>
+              ${typeLabels[int.type]}
+            </span>
+            ${int.tags.slice(0, 3).map(tag => `<span class="ic-tag">${tag}</span>`).join('')}
+          </div>
+        </div>
+        
+        <div class="ic-footer">
+          <div class="ic-meta">
+            <div class="ic-meta-item">
+              <i class="fa-solid fa-money-bill-wave"></i>
+              <span>${int.salary}</span>
+            </div>
+            <div class="ic-meta-item ic-deadline">
+              <i class="fa-solid fa-clock"></i>
+              <span>${int.deadline}</span>
+            </div>
+          </div>
+          <button class="ic-apply-btn" onclick="applyToInternship('${int.id}')" ${isApplied ? 'disabled' : ''}>
+            ${isApplied ? '<i class="fa-solid fa-check"></i> قدمت' : '<i class="fa-solid fa-paper-plane"></i> قدم الآن'}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+  
+  // Show/hide load more button
+  if (loadMoreBtn) {
+    if (visible.length < filtered.length) {
+      loadMoreBtn.style.display = 'inline-flex';
+      loadMoreBtn.querySelector('span').textContent = `عرض المزيد (${filtered.length - visible.length} متبقية)`;
+    } else {
+      loadMoreBtn.style.display = 'none';
+    }
+  }
+  
+  // Animate cards
+  grid.querySelectorAll('.internship-card').forEach((card, i) => {
+    card.style.animationDelay = `${i * 0.05}s`;
+  });
+}
+
+function applyToInternship(id) {
+  const internship = INTERNSHIP_DATA.find(int => int.id === id);
+  if (!internship) return;
+  
+  if (internshipState.appliedIds.has(id)) {
+    showToast('لقد قدمت على هذه الفرصة بالفعل', 'info');
+    return;
+  }
+  
+  // Simulate application
+  internshipState.appliedIds.add(id);
+  updateInternshipStats();
+  renderInternships();
+  
+  showToast(`تم التقديم على ${internship.title} بنجاح! 🎉`, 'success', 3500);
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem('gc_applied_internships', JSON.stringify([...internshipState.appliedIds]));
+  } catch(e) {}
+}
+
+// Load applied internships from localStorage
+try {
+  const saved = localStorage.getItem('gc_applied_internships');
+  if (saved) {
+    internshipState.appliedIds = new Set(JSON.parse(saved));
+  }
+} catch(e) {}
+
