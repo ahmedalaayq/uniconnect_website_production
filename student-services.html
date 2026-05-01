@@ -1,281 +1,118 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GradConnect — خدمات المنصة</title>
-<link rel="stylesheet" href="styles/student-services.css">
-<link rel="icon" href="assets/images/logo.png">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GradConnect — Services Hub</title>
+
+  <link rel="stylesheet" href="app.css"/>
 </head>
-<body data-role="طالب">
 
-<div class="app-shell">
+<body data-role="student">
 
-  <!-- ═══════════════════ MAIN SIDEBAR ═══════════════════════ -->
-  <aside class="main-sidebar" id="mainSidebar">
-    <div class="sidebar-header">
-      <img src="assets/images/logo.png" alt="logo" class="sidebar-logo" loading="lazy">
-      <span class="sidebar-brand">GradConnect</span>
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+
+    <div class="brand">
+      GradConnect
     </div>
 
-    <div class="sidebar-user">
-      <img src="assets/images/user.png" alt="avatar" class="user-avatar" id="sidebarAvatar" loading="lazy">
-      <div class="user-meta">
-        <span class="user-name" id="sidebarName">جاري التحميل…</span>
-        <span class="user-role" id="sidebarRole">طالب</span>
-      </div>
-    </div>
-
-    <nav class="main-nav" aria-label="التنقل الرئيسي">
-      <a href="dashboard.html"        class="nav-link"        ><i class="ni ni-home"     ></i><span>الرئيسية</span></a>
-      <a href="student-services.html" class="nav-link active" ><i class="ni ni-services"></i><span>خدمات المنصة</span></a>
-      <a href="profile.html"          class="nav-link"        ><i class="ni ni-user"     ></i><span>الملف الشخصي</span></a>
-      <a href="dm.html"               class="nav-link"        ><i class="ni ni-chat"     ></i><span>الرسائل</span></a>
-      <a href="setting.html"          class="nav-link"        ><i class="ni ni-settings" ></i><span>الإعدادات</span></a>
-      <a href="help_support.html"     class="nav-link"        ><i class="ni ni-help"     ></i><span>المساعدة</span></a>
+    <nav class="nav">
+      <a class="active">🏠 الرئيسية</a>
+      <a>⚡ الخدمات</a>
+      <a>👤 الملف الشخصي</a>
+      <a>💬 الرسائل</a>
+      <a>⚙️ الإعدادات</a>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="logout-btn" onclick="logout()">
-        <i class="ni ni-logout"></i><span>تسجيل الخروج</span>
-      </button>
-    </div>
+    <button class="logout">
+      🚪 تسجيل الخروج
+    </button>
+
   </aside>
 
-  <!-- ═══════════════════ PAGE CONTENT ════════════════════════ -->
-  <div class="page-content">
+  <!-- ================= MAIN LAYOUT ================= -->
+  <div class="layout">
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <button class="menu-toggle" id="menuToggle" aria-label="فتح القائمة" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
 
-      <div class="topbar-title">
-        <h1 id="topbarTitle">خدمات المنصة</h1>
-        <p>كلية التربية النوعية — جامعة بنها</p>
+      <div class="title">
+        <h1>خدمات المنصة</h1>
+        <small>كلية التربية النوعية - جامعة بنها</small>
       </div>
 
-      <div class="topbar-actions">
-        <!-- Search -->
-        <div class="search-wrap">
-          <input type="text" id="searchInput" class="search-input"
-                 placeholder="🔍 بحث عن خدمة…" autocomplete="off" aria-label="بحث">
-          <button class="search-btn" aria-label="بحث"><i class="ni ni-search"></i></button>
-          <ul class="search-dropdown" id="searchDropdown" role="listbox"></ul>
-        </div>
-
-        <!-- Role badge -->
-        <div class="role-badge" id="roleBadge">
-          <span class="rb-dot"></span>طالب
-        </div>
-
-        <!-- Notifications -->
-        <button class="icon-btn" id="notifBtn" aria-label="الإشعارات">
-          <i class="ni ni-bell"></i>
-          <span class="notif-badge" id="notifBadge">3</span>
-        </button>
-
-        <!-- Avatar -->
-        <div class="user-chip" id="userChip">
-          <img src="assets/images/user.png" alt="avatar" id="chipAvatar" loading="lazy">
-        </div>
+      <div class="actions">
+        <input type="search" placeholder="ابحث عن خدمة..."/>
+        <button>🔔</button>
+        <div class="avatar"></div>
       </div>
+
     </header>
 
-    <!-- NOTIFICATION PANEL -->
-    <div class="notif-panel" id="notifPanel" aria-hidden="true">
-      <div class="notif-panel-head">
-        <h3>الإشعارات</h3>
-        <button class="mark-read-btn" id="markAllRead">تحديد الكل كمقروء</button>
-      </div>
-      <ul class="notif-list" id="notifList">
-        <li class="notif-item unread" data-id="1" tabindex="0">
-          <span class="notif-icon ib-student"><i class="ni ni-star"></i></span>
-          <div class="notif-body">
-            <p>✅ تم فتح تسجيل الامتحانات للفصل الثاني</p>
-            <time datetime="2025-01-15T10:30">منذ ساعتين</time>
-          </div>
-          <button class="notif-close" data-id="1" aria-label="إغلاق">✕</button>
-        </li>
-        <li class="notif-item unread" data-id="2" tabindex="0">
-          <span class="notif-icon ib-grad"><i class="ni ni-check"></i></span>
-          <div class="notif-body">
-            <p>📋 تم إتاحة نماذج التقديم على التدريب الصيفي</p>
-            <time datetime="2025-01-15T07:15">منذ 5 ساعات</time>
-          </div>
-          <button class="notif-close" data-id="2" aria-label="إغلاق">✕</button>
-        </li>
-        <li class="notif-item" data-id="3" tabindex="0">
-          <span class="notif-icon ib-exam"><i class="ni ni-bell"></i></span>
-          <div class="notif-body">
-            <p>⚠️ إعلان هام: موعد انتهاء التسجيل في دورة ICDL غداً</p>
-            <time datetime="2025-01-14T14:00">منذ يوم</time>
-          </div>
-          <button class="notif-close" data-id="3" aria-label="إغلاق">✕</button>
-        </li>
-      </ul>
-      <div class="notif-empty hidden" id="notifEmpty">
-        <i class="ni ni-check-circle"></i>
-        <p>لا توجد إشعارات جديدة</p>
-      </div>
-    </div>
-    <div class="notif-overlay hidden" id="notifOverlay"></div>
+    <!-- CONTENT -->
+    <main class="content">
 
-    <!-- HERO -->
-    <section class="services-hero">
-      <div class="hero-orb orb-1"></div>
-      <div class="hero-orb orb-2"></div>
-      <div class="hero-inner">
-        <div class="hero-pill" id="heroPill">
-          <i class="ni ni-spark"></i> منصة خدمات الطلاب
-        </div>
-        <h2 class="hero-title">
-          كل ما تحتاجه <span class="ht-grad">في مكان واحد</span>
-        </h2>
-        <p class="hero-sub">
-          خدمات أكاديمية، امتحانات، تدريب، نماذج وأكثر — 
-          <strong>مصممة لتسهيل رحلتك التعليمية</strong>
-        </p>
-        <div class="hero-search">
-          <i class="ni ni-search"></i>
-          <input type="text" id="heroSearchInput" placeholder="ابحث عن خدمة مثل: امتحانات، تدريب..." autocomplete="off">
-          <button class="hero-search-btn" id="heroSearchBtn">🔍 بحث سريع</button>
-        </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><strong>+47</strong><span>خدمة متاحة</span></div>
-          <div class="hero-stat-div"></div>
-          <div class="hero-stat"><strong>12</strong><span>تصنيف</span></div>
-          <div class="hero-stat-div"></div>
-          <div class="hero-stat"><strong>24/7</strong><span>دعم مستمر</span></div>
-        </div>
-      </div>
-    </section>
+      <!-- HERO -->
+      <section class="hero">
+        <h2>كل خدماتك في مكان واحد</h2>
+        <p>نظام متكامل لإدارة الخدمات الطلابية</p>
+      </section>
 
-    <!-- QUICK WIDGETS -->
-    <div class="quick-widgets" id="quickWidgets">
-      <!-- سيتم ملؤها بالـ JS -->
-    </div>
+      <!-- QUICK STATS -->
+      <section class="stats">
+        <div>+47 خدمة</div>
+        <div>12 تصنيف</div>
+        <div>99.9% uptime</div>
+      </section>
 
-    <!-- SERVICES LAYOUT -->
-    <div class="services-layout">
+      <!-- GRID -->
+      <section class="grid">
 
-      <!-- Category Sidebar -->
-      <aside class="cat-sidebar">
-        <span class="cat-section-label">التصنيفات</span>
-        <ul class="cat-list" id="catList" role="tablist">
-          <!-- سيتم ملؤها بالـ JS -->
-        </ul>
-        <div class="mini-progress">
-          <h4>تقدم الخدمات</h4>
-          <div class="mp-row">
-            <div class="mp-top">
-              <span>مكتملة</span><span>32/47</span>
-            </div>
-            <div class="mp-bar">
-              <div class="mp-fill" style="width:68%"></div>
-            </div>
-          </div>
-          <div class="mp-row">
-            <div class="mp-top">
-              <span>جديدة</span><span>9</span>
-            </div>
-            <div class="mp-bar">
-              <div class="mp-fill" style="width:92%"></div>
-            </div>
-          </div>
-        </div>
-      </aside>
+        <!-- CATEGORIES -->
+        <aside class="categories">
+          <h4>التصنيفات</h4>
+          <ul>
+            <li>📘 الامتحانات</li>
+            <li>📢 الإعلانات</li>
+            <li>📁 الملفات</li>
+            <li>🎓 التدريب</li>
+          </ul>
+        </aside>
 
-      <!-- Services Main -->
-      <main class="services-main">
+        <!-- SERVICES -->
+        <section class="services">
 
-        <!-- Filter Bar -->
-        <div class="filter-bar">
-          <div class="fb-left">
-            <span class="fb-cat-name" id="activeCatName">جميع الخدمات</span>
-            <span class="fb-count" id="resultCount">47 خدمة</span>
-          </div>
-          <div class="fb-right">
-            <div class="view-toggle">
-              <button class="vbtn active" data-view="grid" aria-label="شبكي"><i class="ni ni-grid"></i></button>
-              <button class="vbtn" data-view="list" aria-label="قائمة"><i class="ni ni-list"></i></button>
-            </div>
-            <button class="filter-mobile-btn" id="catToggleMobile">
-              <i class="ni ni-filter"></i> تصفية
-            </button>
-          </div>
-        </div>
+          <div class="service-card">خدمة 1</div>
+          <div class="service-card">خدمة 2</div>
+          <div class="service-card">خدمة 3</div>
+          <div class="service-card">خدمة 4</div>
 
-        <!-- Skeleton -->
-        <div class="skel-grid" id="skeletonGrid"></div>
+        </section>
 
-        <!-- Services Grid -->
-        <div class="services-grid hidden" id="servicesGrid"></div>
+      </section>
 
-        <!-- Empty State -->
-        <div class="empty-state hidden" id="emptyState">
-          <div class="empty-icon">🔍</div>
-          <h3>لم يتم العثور على نتائج</h3>
-          <p>جرب كلمات بحث مختلفة أو تصفح جميع الخدمات</p>
-          <button class="btn-primary" id="showAllBtn">عرض جميع الخدمات</button>
-        </div>
-      </main>
-    </div>
+      <!-- FAQ -->
+      <section class="faq">
+        <h3>الأسئلة الشائعة</h3>
+      </section>
 
-    <!-- FAQ -->
-    <section class="faq-section">
-      <div class="section-head">
-        <div class="section-pill"><i class="ni ni-help-circle"></i> الأسئلة الشائعة</div>
-        <h2>الأسئلة الأكثر شيوعاً</h2>
-        <p>إجابات سريعة على أكثر الأسئلة التي يطرحها المستخدمون</p>
-      </div>
-      <div class="faq-grid" id="faqGrid">
-        <!-- سيتم ملؤها بالـ JS -->
-      </div>
-    </section>
+      <!-- ROADMAP -->
+      <section class="roadmap">
+        <h3>الميزات القادمة</h3>
+      </section>
 
-    <!-- FUTURE FEATURES -->
-    <section class="future-section">
-      <div class="section-head">
-        <div class="section-pill"><i class="ni ni-rocket"></i> قريباً</div>
-        <h2>خارطة طريق التطوير</h2>
-        <p>ميزات مقترحة بناءً على احتياجات الطلاب والخريجين</p>
-      </div>
-      <div class="future-grid" id="futureGrid">
-        <!-- سيتم ملؤها بالـ JS -->
-      </div>
-    </section>
+    </main>
 
-    <footer class="page-footer">
-      <p>© 2025 GradConnect — كلية التربية النوعية، جامعة بنها</p>
+    <!-- FOOTER -->
+    <footer class="footer">
+      © 2025 GradConnect
     </footer>
 
   </div>
 </div>
-
-<!-- Mobile Category Drawer -->
-<div class="cat-drawer" id="catDrawer" aria-hidden="true">
-  <div class="cat-drawer-head">
-    <h3>التصنيفات</h3>
-    <button id="closeDrawer" aria-label="إغلاق">✕</button>
-  </div>
-  <ul class="cat-list" id="catListMobile"></ul>
-</div>
-<div class="drawer-overlay hidden" id="drawerOverlay"></div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Firebase & Scripts -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-<script src="scripts/config/firebase-config.js"></script>
-<script src="scripts/modules/auth.js"></script>
-<script src="scripts/utils/utils.js"></script>
-<script src="scripts/modules/student-services.js"></script>
 
 </body>
 </html>
