@@ -3,393 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GradConnect — خدمات المنصة المتكاملة</title>
+<title>GradConnect — خدمات المنصة</title>
 <link rel="stylesheet" href="styles/student-services.css">
-<link rel="icon" href="assets/images/logo.png" type="image/png">
-<meta name="description" content="منصة خدمات الطلاب المتكاملة - كلية التربية النوعية، جامعة بنها">
+<link rel="icon" href="assets/images/logo.png">
 </head>
 <body data-role="طالب">
 
 <div class="app-shell">
 
-  <!-- ════════════════════ MAIN SIDEBAR ═══════════════════════ -->
-  <aside class="main-sidebar" id="mainSidebar" role="complementary" aria-label="القائمة الجانبية الرئيسية">
-    
-    <!-- Brand Header -->
+  <!-- ═══════════════════ MAIN SIDEBAR ═══════════════════════ -->
+  <aside class="main-sidebar" id="mainSidebar">
     <div class="sidebar-header">
-      <img src="assets/images/logo.png" alt="شعار GradConnect" class="sidebar-logo" loading="lazy">
-      <span class="sidebar-brand" aria-label="GradConnect">GradConnect</span>
+      <img src="assets/images/logo.png" alt="logo" class="sidebar-logo" loading="lazy">
+      <span class="sidebar-brand">GradConnect</span>
     </div>
 
-    <!-- User Profile Card -->
-    <div class="sidebar-user" role="img" aria-label="بيانات المستخدم">
-      <img src="assets/images/user.png" alt="صورة المستخدم" class="user-avatar" id="sidebarAvatar" loading="lazy">
+    <div class="sidebar-user">
+      <img src="assets/images/user.png" alt="avatar" class="user-avatar" id="sidebarAvatar" loading="lazy">
       <div class="user-meta">
-        <span class="user-name" id="sidebarName" aria-live="polite">أحمد محمد أحمد</span>
-        <span class="user-role" id="sidebarRole" aria-label="الدور">طالب - السنة الثالثة</span>
+        <span class="user-name" id="sidebarName">جاري التحميل…</span>
+        <span class="user-role" id="sidebarRole">طالب</span>
       </div>
     </div>
 
-    <!-- Main Navigation -->
     <nav class="main-nav" aria-label="التنقل الرئيسي">
-      <a href="dashboard.html" class="nav-link" data-page="dashboard" tabindex="-1">
-        <i class="ni ni-home"></i><span>الرئيسية</span>
-      </a>
-      <a href="student-services.html" class="nav-link active" aria-current="page" data-page="services">
-        <i class="ni ni-services"></i><span>خدمات المنصة</span>
-      </a>
-      <a href="profile.html" class="nav-link" data-page="profile" tabindex="-1">
-        <i class="ni ni-user"></i><span>الملف الشخصي</span>
-      </a>
-      <a href="messages.html" class="nav-link" data-page="messages" tabindex="-1">
-        <i class="ni ni-chat"></i><span>الرسائل</span>
-        <span class="notif-badge" style="position:absolute;top:8px;left:8px">2</span>
-      </a>
-      <a href="settings.html" class="nav-link" data-page="settings" tabindex="-1">
-        <i class="ni ni-settings"></i><span>الإعدادات</span>
-      </a>
-      <a href="help.html" class="nav-link" data-page="help" tabindex="-1">
-        <i class="ni ni-help"></i><span>الدعم</span>
-      </a>
+      <a href="dashboard.html"        class="nav-link"        ><i class="ni ni-home"     ></i><span>الرئيسية</span></a>
+      <a href="student-services.html" class="nav-link active" ><i class="ni ni-services"></i><span>خدمات المنصة</span></a>
+      <a href="profile.html"          class="nav-link"        ><i class="ni ni-user"     ></i><span>الملف الشخصي</span></a>
+      <a href="dm.html"               class="nav-link"        ><i class="ni ni-chat"     ></i><span>الرسائل</span></a>
+      <a href="setting.html"          class="nav-link"        ><i class="ni ni-settings" ></i><span>الإعدادات</span></a>
+      <a href="help_support.html"     class="nav-link"        ><i class="ni ni-help"     ></i><span>المساعدة</span></a>
     </nav>
 
-    <!-- Sidebar Footer -->
     <div class="sidebar-footer">
-      <button class="logout-btn" onclick="handleLogout()" aria-label="تسجيل الخروج">
+      <button class="logout-btn" onclick="logout()">
         <i class="ni ni-logout"></i><span>تسجيل الخروج</span>
       </button>
     </div>
   </aside>
 
-  <!-- ════════════════════ PAGE CONTENT ════════════════════════ -->
-  <div class="page-content" role="main">
+  <!-- ═══════════════════ PAGE CONTENT ════════════════════════ -->
+  <div class="page-content">
 
-    <!-- ════════════════════ TOPBAR ════════════════════════ -->
-    <header class="topbar" role="banner">
-      <button class="menu-toggle" id="menuToggle" aria-label="فتح/إغلاق القائمة الجانبية" aria-expanded="false">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="فتح القائمة" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
 
-      <div class="topbar-title" id="topbarTitleContainer">
-        <h1 id="topbarTitle">خدمات المنصة المتكاملة</h1>
-        <p>كلية التربية النوعية • جامعة بنها 2024/2025</p>
+      <div class="topbar-title">
+        <h1 id="topbarTitle">خدمات المنصة</h1>
+        <p>كلية التربية النوعية — جامعة بنها</p>
       </div>
 
       <div class="topbar-actions">
-        <!-- Global Search -->
-        <div class="search-wrap" role="search">
-          <input type="search" id="globalSearch" class="search-input" 
-                 placeholder="🔍 ابحث عن خدمة، إعلان، أو ملف..." 
-                 autocomplete="off" aria-label="البحث العام">
-          <button class="search-btn" id="searchTrigger" aria-label="بدء البحث">
-            <i class="ni ni-search"></i>
-          </button>
-          <ul class="search-dropdown" id="searchResults" role="listbox" aria-label="نتائج البحث"></ul>
+        <!-- Search -->
+        <div class="search-wrap">
+          <input type="text" id="searchInput" class="search-input"
+                 placeholder="🔍 بحث عن خدمة…" autocomplete="off" aria-label="بحث">
+          <button class="search-btn" aria-label="بحث"><i class="ni ni-search"></i></button>
+          <ul class="search-dropdown" id="searchDropdown" role="listbox"></ul>
         </div>
 
-        <!-- Role Status -->
-        <div class="role-badge" id="userRoleBadge" role="status" aria-live="polite">
-          <span class="rb-dot" aria-hidden="true"></span>
-          <span id="roleText">طالب</span>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="icon-btn" id="quickHelp" aria-label="المساعدة السريعة" title="مساعدة">
-          <i class="ni ni-help-circle"></i>
+        <!-- Role badge -->
+        <div class="role-badge" id="roleBadge">
+          <span class="rb-dot"></span>طالب
         </div>
 
         <!-- Notifications -->
-        <button class="icon-btn" id="notificationCenter" aria-label="الإشعارات (3 جديدة)" aria-expanded="false">
+        <button class="icon-btn" id="notifBtn" aria-label="الإشعارات">
           <i class="ni ni-bell"></i>
-          <span class="notif-badge" id="topbarNotifCount">3</span>
+          <span class="notif-badge" id="notifBadge">3</span>
         </button>
 
-        <!-- Profile Chip -->
-        <div class="user-chip" id="profileChip" role="button" tabindex="0" aria-label="الملف الشخصي" aria-haspopup="menu">
-          <img src="assets/images/user.png" alt="أحمد محمد" id="profileAvatar" loading="lazy">
+        <!-- Avatar -->
+        <div class="user-chip" id="userChip">
+          <img src="assets/images/user.png" alt="avatar" id="chipAvatar" loading="lazy">
         </div>
       </div>
     </header>
 
-    <!-- ════════════════════ NOTIFICATION CENTER ════════════════════════ -->
-    <div class="notif-panel" id="notificationPanel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="notifTitle">
+    <!-- NOTIFICATION PANEL -->
+    <div class="notif-panel" id="notifPanel" aria-hidden="true">
       <div class="notif-panel-head">
-        <h3 id="notifTitle">الإشعارات</h3>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="mark-read-btn" id="markAllReadBtn">تحديد الكل كمقروء</button>
-          <span class="notif-badge" id="panelNotifCount" style="font-size:.7rem">3</span>
-        </div>
+        <h3>الإشعارات</h3>
+        <button class="mark-read-btn" id="markAllRead">تحديد الكل كمقروء</button>
       </div>
-      
-      <ul class="notif-list" id="notificationList" role="list">
-        <!-- Dynamic notifications loaded here -->
+      <ul class="notif-list" id="notifList">
+        <li class="notif-item unread" data-id="1" tabindex="0">
+          <span class="notif-icon ib-student"><i class="ni ni-star"></i></span>
+          <div class="notif-body">
+            <p>✅ تم فتح تسجيل الامتحانات للفصل الثاني</p>
+            <time datetime="2025-01-15T10:30">منذ ساعتين</time>
+          </div>
+          <button class="notif-close" data-id="1" aria-label="إغلاق">✕</button>
+        </li>
+        <li class="notif-item unread" data-id="2" tabindex="0">
+          <span class="notif-icon ib-grad"><i class="ni ni-check"></i></span>
+          <div class="notif-body">
+            <p>📋 تم إتاحة نماذج التقديم على التدريب الصيفي</p>
+            <time datetime="2025-01-15T07:15">منذ 5 ساعات</time>
+          </div>
+          <button class="notif-close" data-id="2" aria-label="إغلاق">✕</button>
+        </li>
+        <li class="notif-item" data-id="3" tabindex="0">
+          <span class="notif-icon ib-exam"><i class="ni ni-bell"></i></span>
+          <div class="notif-body">
+            <p>⚠️ إعلان هام: موعد انتهاء التسجيل في دورة ICDL غداً</p>
+            <time datetime="2025-01-14T14:00">منذ يوم</time>
+          </div>
+          <button class="notif-close" data-id="3" aria-label="إغلاق">✕</button>
+        </li>
       </ul>
-      
-      <div class="notif-empty hidden" id="emptyNotifications" role="status">
+      <div class="notif-empty hidden" id="notifEmpty">
         <i class="ni ni-check-circle"></i>
-        <p>🎉 لا توجد إشعارات جديدة</p>
-        <small>ستظهر هنا التحديثات المهمة</small>
+        <p>لا توجد إشعارات جديدة</p>
       </div>
     </div>
+    <div class="notif-overlay hidden" id="notifOverlay"></div>
 
-    <div class="notif-overlay hidden" id="notifBackdrop" aria-hidden="true"></div>
-
-    <!-- ════════════════════ HERO SECTION ════════════════════════ -->
-    <section class="services-hero" role="banner" aria-labelledby="heroMainTitle">
-      <div class="hero-orb orb-1" aria-hidden="true"></div>
-      <div class="hero-orb orb-2" aria-hidden="true"></div>
-      
+    <!-- HERO -->
+    <section class="services-hero">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
       <div class="hero-inner">
-        <div class="hero-pill" role="status">
-          <i class="ni ni-spark" aria-hidden="true"></i>
-          ✨ منصة خدمات الطلاب المتكاملة
+        <div class="hero-pill" id="heroPill">
+          <i class="ni ni-spark"></i> منصة خدمات الطلاب
         </div>
-        
-        <h1 class="hero-title" id="heroMainTitle">
-          كل <span class="ht-grad">خدماتك الأكاديمية</span><br>
-          <span style="font-weight:600;font-size:.95em">في مكان <strong>واحد</strong></span>
-        </h1>
-        
+        <h2 class="hero-title">
+          كل ما تحتاجه <span class="ht-grad">في مكان واحد</span>
+        </h2>
         <p class="hero-sub">
-          خدمات الامتحانات • التدريب • النماذج • الإعلانات • الروابط الخارجية • 
-          والمزيد... مصممة لتوفير <strong>تجربة سلسة وسريعة</strong>
+          خدمات أكاديمية، امتحانات، تدريب، نماذج وأكثر — 
+          <strong>مصممة لتسهيل رحلتك التعليمية</strong>
         </p>
-
-        <!-- Enhanced Hero Search -->
-        <div class="hero-search" role="search">
-          <i class="ni ni-search" aria-hidden="true"></i>
-          <input type="search" id="heroSearch" class="hero-search-input" 
-                 placeholder="اكتب اسم الخدمة أو الفئة..." autocomplete="off"
-                 aria-label="البحث في الخدمات">
-          <button class="hero-search-btn" id="heroSearchSubmit">
-            <i class="ni ni-search" aria-hidden="true"></i> ابدأ البحث
-          </button>
+        <div class="hero-search">
+          <i class="ni ni-search"></i>
+          <input type="text" id="heroSearchInput" placeholder="ابحث عن خدمة مثل: امتحانات، تدريب..." autocomplete="off">
+          <button class="hero-search-btn" id="heroSearchBtn">🔍 بحث سريع</button>
         </div>
-
-        <!-- Live Stats -->
-        <div class="hero-stats" role="status" aria-live="polite" id="liveStats">
-          <div class="hero-stat">
-            <strong id="totalServices">+47</strong>
-            <span>خدمة متاحة</span>
-          </div>
-          <div class="hero-stat-div" aria-hidden="true"></div>
-          <div class="hero-stat">
-            <strong id="activeCategories">12</strong>
-            <span>تصنيف نشط</span>
-          </div>
-          <div class="hero-stat-div" aria-hidden="true"></div>
-          <div class="hero-stat">
-            <strong>99.9%</strong>
-            <span>وقت تشغيل</span>
-          </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>+47</strong><span>خدمة متاحة</span></div>
+          <div class="hero-stat-div"></div>
+          <div class="hero-stat"><strong>12</strong><span>تصنيف</span></div>
+          <div class="hero-stat-div"></div>
+          <div class="hero-stat"><strong>24/7</strong><span>دعم مستمر</span></div>
         </div>
       </div>
     </section>
 
-    <!-- ════════════════════ QUICK ACCESS WIDGETS ════════════════════════ -->
-    <section class="quick-widgets" id="quickAccess" role="navigation" aria-label="الوصول السريع">
-      <!-- Dynamic widgets populated by JS -->
-    </section>
+    <!-- QUICK WIDGETS -->
+    <div class="quick-widgets" id="quickWidgets">
+      <!-- سيتم ملؤها بالـ JS -->
+    </div>
 
-    <!-- ════════════════════ SERVICES LAYOUT ════════════════════════ -->
+    <!-- SERVICES LAYOUT -->
     <div class="services-layout">
 
-      <!-- ════════════════════ CATEGORIES SIDEBAR ════════════════════════ -->
-      <aside class="cat-sidebar" id="categoriesSidebar" role="navigation" aria-label="تصنيفات الخدمات">
-        <span class="cat-section-label" aria-hidden="true">التصنيفات</span>
-        <ul class="cat-list" id="categoriesList" role="tablist" aria-label="قائمة التصنيفات"></ul>
-
-        <!-- Completion Progress -->
-        <div class="mini-progress" id="completionProgress">
-          <h4 aria-hidden="true">تقدم الخدمات</h4>
+      <!-- Category Sidebar -->
+      <aside class="cat-sidebar">
+        <span class="cat-section-label">التصنيفات</span>
+        <ul class="cat-list" id="catList" role="tablist">
+          <!-- سيتم ملؤها بالـ JS -->
+        </ul>
+        <div class="mini-progress">
+          <h4>تقدم الخدمات</h4>
           <div class="mp-row">
             <div class="mp-top">
-              <span>الخدمات المكتملة</span>
-              <span>28/47</span>
+              <span>مكتملة</span><span>32/47</span>
             </div>
             <div class="mp-bar">
-              <div class="mp-fill" style="width:60%"></div>
+              <div class="mp-fill" style="width:68%"></div>
             </div>
           </div>
           <div class="mp-row">
             <div class="mp-top">
-              <span>الخدمات الجديدة</span>
-              <span>8</span>
+              <span>جديدة</span><span>9</span>
             </div>
             <div class="mp-bar">
-              <div class="mp-fill" style="width:85%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div>
+              <div class="mp-fill" style="width:92%"></div>
             </div>
           </div>
         </div>
       </aside>
 
-      <!-- ════════════════════ MAIN SERVICES AREA ════════════════════════ -->
-      <main class="services-main" id="servicesMain" role="main" aria-label="منطقة الخدمات الرئيسية">
+      <!-- Services Main -->
+      <main class="services-main">
 
-        <!-- Enhanced Filter Bar -->
-        <div class="filter-bar" role="toolbar" aria-label="أدوات التصفية والعرض">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
           <div class="fb-left">
-            <span class="fb-cat-name" id="currentCategory" aria-live="polite">جميع الخدمات</span>
-            <span class="fb-count" id="servicesCount" aria-live="polite">47 خدمة</span>
+            <span class="fb-cat-name" id="activeCatName">جميع الخدمات</span>
+            <span class="fb-count" id="resultCount">47 خدمة</span>
           </div>
-          
           <div class="fb-right">
-            <!-- View Toggle -->
-            <div class="view-toggle" role="group" aria-label="تبديل طريقة العرض">
-              <button class="vbtn active" data-view="grid" aria-label="عرض شبكي" aria-pressed="true">
-                <i class="ni ni-grid"></i>
-              </button>
-              <button class="vbtn" data-view="list" aria-label="عرض قائمة" aria-pressed="false">
-                <i class="ni ni-list"></i>
-              </button>
+            <div class="view-toggle">
+              <button class="vbtn active" data-view="grid" aria-label="شبكي"><i class="ni ni-grid"></i></button>
+              <button class="vbtn" data-view="list" aria-label="قائمة"><i class="ni ni-list"></i></button>
             </div>
-            
-            <!-- Mobile Category Toggle -->
-            <button class="filter-mobile-btn" id="mobileCategoryToggle" aria-label="فتح تصفية التصنيفات">
-              <i class="ni ni-filter"></i><span>تصفية</span>
+            <button class="filter-mobile-btn" id="catToggleMobile">
+              <i class="ni ni-filter"></i> تصفية
             </button>
           </div>
         </div>
 
-        <!-- Loading Skeleton -->
-        <div class="skel-grid" id="loadingSkeleton" aria-hidden="true">
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w65"></div>
-            <div class="sk-line sk-w85"></div>
-            <div class="sk-line sk-w40"></div>
-          </div>
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w75"></div>
-            <div class="sk-line sk-w55"></div>
-            <div class="sk-line sk-w55"></div>
-          </div>
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w55"></div>
-            <div class="sk-line sk-w95"></div>
-            <div class="sk-line sk-w40"></div>
-          </div>
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w65"></div>
-            <div class="sk-line sk-w75"></div>
-            <div class="sk-line sk-w65"></div>
-          </div>
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w85"></div>
-            <div class="sk-line sk-w65"></div>
-            <div class="sk-line sk-w40"></div>
-          </div>
-          <div class="skel-card">
-            <div class="sk-icon"></div>
-            <div class="sk-line sk-w55"></div>
-            <div class="sk-line sk-w85"></div>
-            <div class="sk-line sk-w55"></div>
-          </div>
-        </div>
+        <!-- Skeleton -->
+        <div class="skel-grid" id="skeletonGrid"></div>
 
         <!-- Services Grid -->
-        <div class="services-grid" id="servicesContainer" role="grid" aria-live="polite">
-          <!-- Services cards populated dynamically -->
-        </div>
+        <div class="services-grid hidden" id="servicesGrid"></div>
 
-        <!-- No Results State -->
-        <div class="empty-state hidden" id="noResultsState" role="status">
-          <div class="empty-icon" aria-hidden="true">🔍</div>
-          <h2>لم يتم العثور على نتائج</h2>
-          <p>جرب تعديل كلمات البحث أو تصفح جميع الخدمات المتاحة</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-            <button class="btn-primary" onclick="resetFilters()">عرض الكل</button>
-            <button class="btn-primary svc-btn-outline" onclick="clearSearch()">مسح البحث</button>
-          </div>
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-icon">🔍</div>
+          <h3>لم يتم العثور على نتائج</h3>
+          <p>جرب كلمات بحث مختلفة أو تصفح جميع الخدمات</p>
+          <button class="btn-primary" id="showAllBtn">عرض جميع الخدمات</button>
         </div>
       </main>
     </div>
 
-    <!-- ════════════════════ FAQ SECTION ════════════════════════ -->
-    <section class="faq-section" aria-labelledby="faqTitle">
+    <!-- FAQ -->
+    <section class="faq-section">
       <div class="section-head">
-        <div class="section-pill">
-          <i class="ni ni-help-circle" aria-hidden="true"></i>
-          الأسئلة الشائعة
-        </div>
-        <h2 id="faqTitle">إجابات سريعة لأسئلتك</h2>
-        <p>اكتشف الحلول لأكثر الأسئلة شيوعاً حول الخدمات</p>
+        <div class="section-pill"><i class="ni ni-help-circle"></i> الأسئلة الشائعة</div>
+        <h2>الأسئلة الأكثر شيوعاً</h2>
+        <p>إجابات سريعة على أكثر الأسئلة التي يطرحها المستخدمون</p>
       </div>
-      
-      <div class="faq-grid" id="faqContainer" role="region" aria-label="الأسئلة الشائعة">
-        <!-- FAQ items populated dynamically -->
+      <div class="faq-grid" id="faqGrid">
+        <!-- سيتم ملؤها بالـ JS -->
       </div>
     </section>
 
-    <!-- ════════════════════ FUTURE FEATURES ════════════════════════ -->
-    <section class="future-section" aria-labelledby="roadmapTitle">
+    <!-- FUTURE FEATURES -->
+    <section class="future-section">
       <div class="section-head">
-        <div class="section-pill">
-          <i class="ni ni-rocket" aria-hidden="true"></i>
-          خارطة الطريق
-        </div>
-        <h2 id="roadmapTitle">الميزات القادمة</h2>
-        <p>نعمل باستمرار على تطوير منصتكم بناءً على اقتراحاتكم</p>
+        <div class="section-pill"><i class="ni ni-rocket"></i> قريباً</div>
+        <h2>خارطة طريق التطوير</h2>
+        <p>ميزات مقترحة بناءً على احتياجات الطلاب والخريجين</p>
       </div>
-      
-      <div class="future-grid" id="futureFeatures" role="region" aria-label="الميزات المستقبلية">
-        <!-- Future features populated dynamically -->
+      <div class="future-grid" id="futureGrid">
+        <!-- سيتم ملؤها بالـ JS -->
       </div>
     </section>
 
-    <!-- ════════════════════ FOOTER ════════════════════════ -->
-    <footer class="page-footer" role="contentinfo">
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;margin-bottom:12px">
-        <span>© 2025 GradConnect</span>
-        <span>•</span>
-        <span>كلية التربية النوعية، جامعة بنها</span>
-        <span>•</span>
-        <span>جميع الحقوق محفوظة</span>
-      </div>
-      <div style="opacity:.6;font-size:.65rem">
-        <span>آخر تحديث: <time datetime="2025-01-15">15 يناير 2025</time></span>
-      </div>
+    <footer class="page-footer">
+      <p>© 2025 GradConnect — كلية التربية النوعية، جامعة بنها</p>
     </footer>
+
   </div>
 </div>
 
-<!-- ════════════════════ MOBILE CATEGORY DRAWER ════════════════════════ -->
-<nav class="cat-drawer" id="mobileCategories" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="drawerTitle">
+<!-- Mobile Category Drawer -->
+<div class="cat-drawer" id="catDrawer" aria-hidden="true">
   <div class="cat-drawer-head">
-    <h3 id="drawerTitle">تصنيفات الخدمات</h3>
-    <button id="closeMobileDrawer" class="icon-btn" aria-label="إغلاق القائمة">
-      <i class="ni ni-chevron-left"></i>
-    </button>
+    <h3>التصنيفات</h3>
+    <button id="closeDrawer" aria-label="إغلاق">✕</button>
   </div>
-  <ul class="cat-list" id="mobileCategoriesList" role="tablist"></ul>
-</nav>
-<div class="drawer-overlay hidden" id="mobileDrawerBackdrop"></div>
-
-<!-- ════════════════════ TOAST NOTIFICATIONS ════════════════════════ -->
-<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true">
-  <!-- Dynamic toasts -->
+  <ul class="cat-list" id="catListMobile"></ul>
 </div>
+<div class="drawer-overlay hidden" id="drawerOverlay"></div>
 
-<!-- ════════════════════ SCRIPTS ════════════════════════ -->
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Firebase & Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-
 <script src="scripts/config/firebase-config.js"></script>
-<script src="scripts/core/app-init.js"></script>
 <script src="scripts/modules/auth.js"></script>
-<script src="scripts/modules/notifications.js"></script>
-<script src="scripts/modules/services.js"></script>
-<script src="scripts/modules/categories.js"></script>
-<script src="scripts/modules/search.js"></script>
-<script src="scripts/modules/ui-controls.js"></script>
-<script src="scripts/utils/toast.js"></script>
-<script src="scripts/utils/accessibility.js"></script>
+<script src="scripts/utils/utils.js"></script>
+<script src="scripts/modules/student-services.js"></script>
 
 </body>
 </html>
