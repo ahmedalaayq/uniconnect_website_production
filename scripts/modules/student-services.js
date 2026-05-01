@@ -32,7 +32,7 @@ const ROLE_CONFIG = {
     dataKey:    'graduate',
     quickWidgets:[
       { icon:'📜', label:'توثيق الشهادة', count:'ابدأ الإجراءات', url:'https://fsed.bu.edu.eg/graduate-follow-up-office' },
-      { icon:'💼', label:'فرص العمل', count:'وظائف حصرية', url:'https://bu.edu.eg/students/f10' },
+      { icon:'💼', label:'فرص العمل', count:'وظائف حصرية', url:'https://fsed.bu.edu.eg/graduate-studies' },
       { icon:'🌐', label:'مجتمع الخريجين', count:'تواصل معنا', url:'https://fsed.bu.edu.eg/students/graduate-follow-up-office' },
       { icon:'🔬', label:'الدراسات العليا', count:'ماجستير ودكتوراه', url:'https://fsed.bu.edu.eg/graduate-studies' },
     ]
@@ -469,10 +469,10 @@ const GRADUATE_SERVICES = [
   {
     id:'g-jo1', cat:'jobs', icon:'💼', ib:'ib-grad',
     title:'مواقع الطلاب والخريجين',
-    desc:'تصفح المنصات الإلكترونية والمواقع المتاحة لطلاب وخريجي جامعة بنها.',
+    desc:'تصفح المنصات الإلكترونية والمواقع المتاحة لطلاب وخريجي كلية التربية النوعية.',
     tags:['توظيف','مواقع','خريجون'],
     btn:'استعراض المواقع',
-    url:'https://bu.edu.eg/students/f10',
+    url:'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
   },
   {
     id:'g-po1', cat:'postgrad', icon:'🎓', ib:'ib-grad',
@@ -1926,33 +1926,87 @@ function renderInternships() {
   });
 }
 
-function applyToInternship(id) {
+async function applyToInternship(id) {
   const internship = INTERNSHIP_DATA.find(int => int.id === id);
   if (!internship) return;
-  
+
   if (internshipState.appliedIds.has(id)) {
     showToast('لقد قدمت على هذه الفرصة بالفعل', 'info');
     return;
   }
-  
-  // Simulate application
-  internshipState.appliedIds.add(id);
-  updateInternshipStats();
-  renderInternships();
-  
-  showToast(`تم التقديم على ${internship.title} بنجاح! 🎉`, 'success', 3500);
-  
-  // Save to localStorage
+
+  // Build formData from internship data + current user
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    showToast('يجب تسجيل الدخول أولاً', 'error');
+    return;
+  }
+
+  const formData = {
+    fullName: user.displayName || user.email,
+    email: user.email,
+    phone: '',
+    coverLetter: ''
+  };
+
+  // Build application document
+  const applicationData = {
+    userId: user.uid,
+    userEmail: user.email,
+    userName: formData.fullName,
+    userPhone: formData.phone,
+    internshipId: id,
+    internshipCompany: internship.company,
+    internshipPosition: internship.title,
+    internshipType: internship.type,
+    internshipLocation: internship.location,
+    internshipDuration: internship.salary || '',
+    coverLetter: formData.coverLetter,
+    status: 'pending',
+    appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
   try {
-    localStorage.setItem('gc_applied_internships', JSON.stringify([...internshipState.appliedIds]));
-  } catch(e) {}
+    const db = firebase.firestore();
+    await db.collection('internship_applications').add(applicationData);
+
+    // Mark as applied in UI
+    internshipState.appliedIds.add(id);
+    updateInternshipStats();
+    renderInternships();
+
+    showToast(`تم التقديم على ${internship.title} بنجاح! 🎉`, 'success', 3500);
+
+    // Refresh "طلباتي" list if visible
+    if (typeof internshipAppSystem !== 'undefined' && internshipAppSystem) {
+      await internshipAppSystem.loadUserApplications();
+    }
+
+  } catch (error) {
+    console.error('❌ Firestore error:', error);
+    showToast('حدث خطأ أثناء التقديم: ' + error.message, 'error');
+  }
 }
 
-// Load applied internships from localStorage
-try {
-  const saved = localStorage.getItem('gc_applied_internships');
-  if (saved) {
-    internshipState.appliedIds = new Set(JSON.parse(saved));
+// Load applied internship IDs from Firestore on page load
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) return;
+  try {
+    const db = firebase.firestore();
+    const snapshot = await db
+      .collection('internship_applications')
+      .where('userId', '==', user.uid)
+      .get();
+    snapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.internshipId) internshipState.appliedIds.add(data.internshipId);
+    });
+    updateInternshipStats();
+    renderInternships();
+  } catch (e) {
+    console.warn('Could not load applied internships from Firestore:', e);
   }
-} catch(e) {}
+});
+
 

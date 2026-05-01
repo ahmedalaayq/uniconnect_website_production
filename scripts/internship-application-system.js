@@ -55,8 +55,10 @@ class InternshipApplicationSystem {
         throw new Error('User not authenticated');
       }
 
-      // Get internship details
-      const internship = ENHANCED_SERVICES_DATA.internship.find(i => i.id === internshipId);
+      // Get internship details from INTERNSHIP_DATA (defined in student-services.js)
+      const internship = (typeof INTERNSHIP_DATA !== 'undefined')
+        ? INTERNSHIP_DATA.find(i => i.id === internshipId)
+        : null;
       if (!internship) {
         throw new Error('Internship not found');
       }
@@ -80,10 +82,10 @@ class InternshipApplicationSystem {
         userPhone: formData.phone,
         internshipId: internshipId,
         internshipCompany: internship.company,
-        internshipPosition: internship.position,
+        internshipPosition: internship.title,      // INTERNSHIP_DATA uses 'title'
         internshipType: internship.type,
         internshipLocation: internship.location,
-        internshipDuration: internship.duration,
+        internshipDuration: internship.salary || '',
         coverLetter: formData.coverLetter,
         status: APPLICATION_STATUS.PENDING,
         appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -92,15 +94,8 @@ class InternshipApplicationSystem {
         isFree: internship.isFree
       };
 
-      // Save to Firestore with Local Storage fallback
-      try {
-        await this.db.collection(COLLECTIONS.applications).add(applicationData);
-      } catch (error) {
-        console.warn('Firestore permission denied, saving locally...', error);
-        const localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
-        localApps.push(applicationData);
-        localStorage.setItem('local_applications', JSON.stringify(localApps));
-      }
+      // Save to Firestore
+      await this.db.collection(COLLECTIONS.applications).add(applicationData);
       
       // Update local applications array
       this.applications.push(applicationData);
@@ -127,27 +122,16 @@ class InternshipApplicationSystem {
     try {
       if (!this.currentUser || !this.db) return;
 
-      let firestoreApps = [];
-      try {
-        const snapshot = await this.db
-          .collection(COLLECTIONS.applications)
-          .where('userId', '==', this.currentUser.uid)
-          .orderBy('appliedAt', 'desc')
-          .get();
+      const snapshot = await this.db
+        .collection(COLLECTIONS.applications)
+        .where('userId', '==', this.currentUser.uid)
+        .orderBy('appliedAt', 'desc')
+        .get();
 
-        firestoreApps = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-      } catch (error) {
-        console.warn('Firestore read failed, falling back to local storage', error);
-      }
-
-      // Merge with local storage apps
-      const localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
-      const userLocalApps = localApps.filter(app => app.userId === this.currentUser.uid);
-
-      this.applications = [...firestoreApps, ...userLocalApps];
+      this.applications = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
       console.log(`📋 Loaded ${this.applications.length} applications`);
       
@@ -174,24 +158,13 @@ class InternshipApplicationSystem {
     try {
       if (!this.db) throw new Error('Firestore not initialized');
 
-      try {
-        await this.db
-          .collection(COLLECTIONS.applications)
-          .doc(applicationId)
-          .update({
-            status: APPLICATION_STATUS.WITHDRAWN,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-      } catch (error) {
-        console.warn('Firestore update failed, falling back to local storage', error);
-        let localApps = JSON.parse(localStorage.getItem('local_applications') || '[]');
-        const appIndex = localApps.findIndex(app => app.id === applicationId);
-        if (appIndex !== -1) {
-          localApps[appIndex].status = APPLICATION_STATUS.WITHDRAWN;
-          localApps[appIndex].updatedAt = new Date();
-          localStorage.setItem('local_applications', JSON.stringify(localApps));
-        }
-      }
+      await this.db
+        .collection(COLLECTIONS.applications)
+        .doc(applicationId)
+        .update({
+          status: APPLICATION_STATUS.WITHDRAWN,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
       // Update local array
       const appIndex = this.applications.findIndex(app => app.id === applicationId);
@@ -529,26 +502,33 @@ function closeInternshipModal() {
 }
 
 // Show/Hide My Applications
-function showMyApplications() {
+async function showMyApplications() {
   // Hide other sections
   document.getElementById('studentServicesSection').style.display = 'none';
-  document.getElementById('internshipShowcase').style.display = 'none';
+  const internshipEl = document.getElementById('internshipShowcase');
+  if (internshipEl) internshipEl.style.display = 'none';
   
   // Show applications section
   document.getElementById('myApplicationsSection').style.display = 'block';
   
-  // Load applications if system is ready
-  if (internshipAppSystem) {
-    internshipAppSystem.updateApplicationsUI();
-  } else {
-    // Initialize if not ready
-    internshipAppSystem = new InternshipApplicationSystem();
-    setTimeout(() => {
-      if (internshipAppSystem) {
-        internshipAppSystem.updateApplicationsUI();
-      }
-    }, 1500);
+  // Show loading state
+  const container = document.getElementById('myApplications');
+  if (container) {
+    container.innerHTML = `
+      <div class="empty-applications">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <h3>جاري تحميل طلباتك...</h3>
+      </div>
+    `;
   }
+
+  // Ensure system is ready then LOAD from Firestore FIRST
+  if (!internshipAppSystem) {
+    internshipAppSystem = new InternshipApplicationSystem();
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
+  
+  await internshipAppSystem.loadUserApplications();
 }
 
 function hideMyApplications() {
