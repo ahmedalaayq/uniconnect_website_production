@@ -1873,44 +1873,52 @@ function renderInternships() {
     };
     
     return `
-      <article class="internship-card ${isApplied ? 'applied' : ''}" data-id="${int.id}">
-        <div class="ic-header">
-          <div class="ic-logo">${int.logo}</div>
-          <div class="ic-info">
-            <span class="ic-company">${int.company}</span>
-            <h3 class="ic-title">${int.title}</h3>
-            <div class="ic-location">
-              <i class="fa-solid fa-location-dot"></i>
-              <span>${int.location}</span>
+      <article class="internship-card ${isApplied ? 'internship-card--applied' : ''}" data-id="${int.id}" role="listitem">
+        <div class="internship-card__header">
+          <div class="internship-card__company">
+            <div class="internship-card__logo">${int.logo}</div>
+            <div class="internship-card__info">
+              <span class="internship-card__info-company">${int.company}</span>
+              <h3 class="internship-card__info-title">${int.title}</h3>
+              <div class="internship-card__info-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>${int.location}</span>
+              </div>
             </div>
           </div>
+          <span class="internship-card__type">${typeLabels[int.type]}</span>
         </div>
-        
-        <div class="ic-body">
-          <p class="ic-desc">${int.desc}</p>
-          
-          <div class="ic-tags">
-            <span class="ic-tag ic-tag-${int.type}">
-              <i class="fa-solid ${typeIcons[int.type]}"></i>
-              ${typeLabels[int.type]}
-            </span>
-            ${int.tags.slice(0, 3).map(tag => `<span class="ic-tag">${tag}</span>`).join('')}
+
+        <p class="internship-card__description">${int.desc}</p>
+
+        <div class="internship-card__details">
+          <div class="internship-detail">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            <span>${int.salary}</span>
           </div>
+          <div class="internship-detail">
+            <i class="fa-solid ${typeIcons[int.type]}"></i>
+            <span>${typeLabels[int.type]}</span>
+          </div>
+          ${int.tags.slice(0, 2).map(tag => `
+            <div class="internship-detail">
+              <i class="fa-solid fa-tag"></i>
+              <span>${tag}</span>
+            </div>
+          `).join('')}
         </div>
-        
-        <div class="ic-footer">
-          <div class="ic-meta">
-            <div class="ic-meta-item">
-              <i class="fa-solid fa-money-bill-wave"></i>
-              <span>${int.salary}</span>
-            </div>
-            <div class="ic-meta-item ic-deadline">
-              <i class="fa-solid fa-clock"></i>
-              <span>${int.deadline}</span>
-            </div>
-          </div>
-          <button class="ic-apply-btn" onclick="applyToInternship('${int.id}')" ${isApplied ? 'disabled' : ''}>
-            ${isApplied ? '<i class="fa-solid fa-check"></i> قدمت' : '<i class="fa-solid fa-paper-plane"></i> قدم الآن'}
+
+        <div class="internship-card__footer">
+          <span class="internship-card__deadline">
+            <i class="fa-solid fa-clock"></i>
+            آخر موعد: ${int.deadline}
+          </span>
+          <button class="internship-card__apply ${isApplied ? 'disabled' : ''}"
+                  onclick="applyToInternship('${int.id}')"
+                  ${isApplied ? 'disabled' : ''}>
+            ${isApplied
+              ? '<i class="fa-solid fa-check"></i> قدمت بالفعل'
+              : '<i class="fa-solid fa-paper-plane"></i> قدم الآن'}
           </button>
         </div>
       </article>

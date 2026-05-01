@@ -77,16 +77,15 @@ class InternshipApplicationSystem {
         throw new Error('لقد قدمت بالفعل على هذه الفرصة');
       }
 
-      // Create application document
+      // Create application document (بدون id مخصص — نترك Firestore يولده)
       const applicationData = {
-        id: this.generateId(),
         userId: this.currentUser.uid,
         userEmail: this.currentUser.email,
         userName: formData.fullName,
         userPhone: formData.phone,
         internshipId: internshipId,
         internshipCompany: internship.company,
-        internshipPosition: internship.title,      // INTERNSHIP_DATA uses 'title'
+        internshipPosition: internship.title,
         internshipType: internship.type,
         internshipLocation: internship.location,
         internshipDuration: internship.salary || '',
@@ -94,21 +93,20 @@ class InternshipApplicationSystem {
         status: APPLICATION_STATUS.PENDING,
         appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        eligibility: internship.eligibleFor,
-        isFree: internship.isFree
       };
 
-      // Save to Firestore
-      await this.db.collection(COLLECTIONS.applications).add(applicationData);
-      
-      // Update local applications array
-      this.applications.push(applicationData);
+      // Save to Firestore — .add() يرجع docRef بالـ ID الحقيقي
+      const docRef = await this.db.collection(COLLECTIONS.applications).add(applicationData);
 
-      console.log('✅ Application submitted successfully:', applicationData.id);
-      
+      // نحفظ الـ Firestore document ID (مش custom ID) عشان withdraw يشتغل صح
+      const savedApplication = { id: docRef.id, ...applicationData };
+      this.applications.unshift(savedApplication); // نضيفه في الأول (أحدث)
+
+      console.log('✅ Application submitted successfully — Firestore ID:', docRef.id);
+
       return {
         success: true,
-        applicationId: applicationData.id,
+        applicationId: docRef.id,
         message: 'تم تقديم طلبك بنجاح!'
       };
 
@@ -191,9 +189,12 @@ class InternshipApplicationSystem {
   // Withdraw application
   async withdrawApplication(applicationId) {
     try {
-      if (!this.db) throw new Error('Firestore not initialized');
+      // Fallback: استخدم firebase.firestore() مباشرة لو this.db لم يُهيَّأ بعد
+      const db = this.db || (typeof firebase !== 'undefined' ? firebase.firestore() : null);
+      if (!db) throw new Error('Firestore غير متاح — تحقق من الاتصال بالإنترنت');
 
-      await this.db
+      // نُحدّث مباشرة — Firestore يرفض تلقائياً لو الـ document غير موجود
+      await db
         .collection(COLLECTIONS.applications)
         .doc(applicationId)
         .update({
@@ -201,19 +202,19 @@ class InternshipApplicationSystem {
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-      // Update local array
+      // تحديث المصفوفة المحلية فوراً بدون انتظار
       const appIndex = this.applications.findIndex(app => app.id === applicationId);
       if (appIndex !== -1) {
         this.applications[appIndex].status = APPLICATION_STATUS.WITHDRAWN;
         this.applications[appIndex].updatedAt = new Date();
       }
 
-      console.log('✅ Application withdrawn successfully');
-      return true;
+      console.log('✅ Application withdrawn successfully:', applicationId);
+      return { success: true };
 
     } catch (error) {
       console.error('❌ Error withdrawing application:', error);
-      return false;
+      return { success: false, message: error.message };
     }
   }
 
@@ -496,9 +497,19 @@ function showApplicationModal(internship) {
 //  Modal تفاصيل الطلب
 // ═══════════════════════════════════════════════════════
 function viewApplicationDetails(applicationId) {
+  if (!internshipAppSystem) {
+    showToast('جاري تحميل النظام، حاول مرة أخرى', 'info');
+    return;
+  }
   const application = internshipAppSystem.getApplication(applicationId);
   if (!application) {
-    showToast('لم يتم العثور على تفاصيل الطلب', 'error');
+    // قد يكون الطلب محملاً من Firestore لكن غير موجود في الذاكرة — أعد التحميل
+    showToast('جاري تحميل تفاصيل الطلب...', 'info');
+    internshipAppSystem.loadUserApplications().then(() => {
+      const app = internshipAppSystem.getApplication(applicationId);
+      if (app) viewApplicationDetails(applicationId);
+      else showToast('لم يتم العثور على تفاصيل الطلب', 'error');
+    });
     return;
   }
 
@@ -646,19 +657,28 @@ function confirmWithdrawApplication(applicationId) {
 async function executeWithdraw(applicationId) {
   const confirmModal = document.getElementById('withdrawConfirmModal');
   const btn = document.getElementById('confirmWithdrawBtn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري السحب...'; }
 
-  const success = await internshipAppSystem.withdrawApplication(applicationId);
+  if (!internshipAppSystem) {
+    if (confirmModal) confirmModal.remove();
+    showToast('النظام غير جاهز، حاول مرة أخرى', 'error');
+    return;
+  }
 
+  const result = await internshipAppSystem.withdrawApplication(applicationId);
+
+  // أغلق الـ modals في كل الأحوال
   if (confirmModal) confirmModal.remove();
   closeApplicationDetailsModal();
 
-  if (success) {
+  if (result && result.success) {
     showToast('تم سحب الطلب بنجاح ✅', 'success');
     internshipAppSystem.updateApplicationsUI();
     updateApplicationsCount();
   } else {
-    showToast('حدث خطأ أثناء سحب الطلب', 'error');
+    const errMsg = result?.message || 'حدث خطأ غير متوقع أثناء سحب الطلب';
+    showToast('❌ ' + errMsg, 'error', 4000);
+    console.error('Withdraw failed:', errMsg);
   }
 }
 
