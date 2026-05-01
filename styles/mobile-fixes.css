@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Mobile Layout Fixes ── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* Fix sidebar and main container */
   .sidebar {
     transform: translateX(100%);
@@ -457,7 +457,7 @@
 }
 
 /* ── Fix Modal on Mobile ── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .internship-modal__content {
     width: 95%;
     margin: var(--space-2);
