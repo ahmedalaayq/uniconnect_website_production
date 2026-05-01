@@ -165,6 +165,36 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    //  /internship_applications/{applicationId}
+    //
+    //  READ   — owner only (the student who applied)
+    //  CREATE — authenticated user, must set their own userId
+    //  UPDATE — owner only (e.g. withdraw)
+    //  DELETE — never from client
+    // ─────────────────────────────────────────────────────────────
+    match /internship_applications/{applicationId} {
+
+      allow read: if isAuth()
+                  && request.auth.uid == resource.data.userId;
+
+      allow create: if isAuth()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.keys().hasAll([
+                         'userId', 'userEmail', 'internshipId',
+                         'internshipCompany', 'internshipPosition',
+                         'status', 'appliedAt'
+                       ]);
+
+      allow update: if isAuth()
+                    && request.auth.uid == resource.data.userId
+                    && request.resource.data.diff(resource.data)
+                         .affectedKeys()
+                         .hasOnly(['status', 'updatedAt']);
+
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     //  CATCH-ALL — deny everything not explicitly allowed above
     // ─────────────────────────────────────────────────────────────
     match /{document=**} {

@@ -137,7 +137,7 @@
         <img class="topbar__chip-avatar" id="chipAvatar" src="assets/images/user.png" alt=""/>
         <span class="topbar__chip-text">مركز الخدمات</span>
         <span class="topbar__chip-sep">·</span>
-        <span class="topbar__chip-role" id="sidebarRole">طالب</span>
+        <span class="topbar__chip-role" id="topbarRole">طالب</span>
       </div>
 
       <!-- Topbar actions -->
@@ -465,11 +465,24 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 <script src="scripts/config/firebase-config.js"></script>
+<script src="scripts/modules/auth.js"></script>
 <script src="scripts/modules/student-services.js"></script>
 <script src="scripts/enhanced-services.js"></script>
 <script src="scripts/internship-application-system.js"></script>
 <script src="scripts/ui-interactions.js"></script>
-<script src="scripts/student-services.js"></script>
+<script src="scripts/modules/student-services-enhanced.js"></script>
+<script>
+  // Global logout — delegates to logoutUser() defined in auth.js
+  async function logout() {
+    try {
+      await logoutUser();
+    } catch(e) {
+      // Fallback: sign out directly
+      try { await firebase.auth().signOut(); } catch(_) {}
+    }
+    window.location.href = 'index.html';
+  }
+</script>
 
 </body>
 </html>

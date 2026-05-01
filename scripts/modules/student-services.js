@@ -1784,7 +1784,7 @@ const INTERNSHIP_DATA = [
 
 let internshipState = {
   filter: 'all',
-  appliedIds: new Set(['int-2', 'int-5', 'int-6']), // IDs of applied internships
+  appliedIds: new Set(), // Loaded from Firestore on auth state change
   visibleCount: 6,
 };
 
