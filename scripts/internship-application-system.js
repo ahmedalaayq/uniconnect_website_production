@@ -492,29 +492,179 @@ function showApplicationModal(internship) {
   modal.classList.add('show');
 }
 
-// View application details
+// ═══════════════════════════════════════════════════════
+//  Modal تفاصيل الطلب
+// ═══════════════════════════════════════════════════════
 function viewApplicationDetails(applicationId) {
   const application = internshipAppSystem.getApplication(applicationId);
-  if (!application) return;
-  
+  if (!application) {
+    showToast('لم يتم العثور على تفاصيل الطلب', 'error');
+    return;
+  }
+
   const statusConfig = internshipAppSystem.getStatusConfig(application.status);
-  const appliedDate = application.appliedAt?.toDate() || new Date();
-  
-  showToast(`تفاصيل الطلب: ${application.internshipCompany} - ${statusConfig.text}`, 'info');
+  let appliedDate = 'غير محدد';
+  try {
+    const d = application.appliedAt?.toDate
+      ? application.appliedAt.toDate()
+      : application.appliedAt?.seconds
+        ? new Date(application.appliedAt.seconds * 1000)
+        : new Date();
+    appliedDate = d.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+  } catch(_) {}
+
+  // حذف أي modal تفاصيل قديم وأعد إنشاءه
+  const old = document.getElementById('applicationDetailsModal');
+  if (old) old.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'applicationDetailsModal';
+  modal.className = 'app-details-modal';
+  modal.innerHTML = `
+    <div class="app-details-modal__backdrop" onclick="closeApplicationDetailsModal()"></div>
+    <div class="app-details-modal__content">
+      <div class="app-details-modal__header">
+        <h3><i class="fa-solid fa-file-lines"></i> تفاصيل الطلب</h3>
+        <button class="app-details-modal__close" onclick="closeApplicationDetailsModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="app-details-modal__body">
+
+        <div class="app-details-company">
+          <div class="app-details-company__logo">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="app-details-company__info">
+            <h4>${application.internshipCompany || 'غير محدد'}</h4>
+            <p>${application.internshipPosition || ''}</p>
+          </div>
+          <span class="app-details-modal__status ${statusConfig.class}">
+            <i class="${statusConfig.icon}"></i>
+            ${statusConfig.text}
+          </span>
+        </div>
+
+        <div class="app-details-grid">
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-location-dot"></i> الموقع</span>
+            <span class="app-details-value">${application.internshipLocation || 'غير محدد'}</span>
+          </div>
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-money-bill-wave"></i> الراتب</span>
+            <span class="app-details-value">${application.internshipDuration || 'غير محدد'}</span>
+          </div>
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-tag"></i> نوع التدريب</span>
+            <span class="app-details-value">${application.internshipType || 'غير محدد'}</span>
+          </div>
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-calendar-check"></i> تاريخ التقديم</span>
+            <span class="app-details-value">${appliedDate}</span>
+          </div>
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني</span>
+            <span class="app-details-value">${application.userEmail || 'غير محدد'}</span>
+          </div>
+          <div class="app-details-item">
+            <span class="app-details-label"><i class="fa-solid fa-phone"></i> رقم الهاتف</span>
+            <span class="app-details-value">${application.userPhone || 'لم يذكر'}</span>
+          </div>
+        </div>
+
+        ${application.coverLetter ? `
+          <div class="app-details-cover">
+            <span class="app-details-label"><i class="fa-solid fa-pen-to-square"></i> الرسالة التعريفية</span>
+            <p class="app-details-cover__text">${application.coverLetter}</p>
+          </div>
+        ` : ''}
+
+      </div>
+
+      <div class="app-details-modal__footer">
+        ${application.status === 'pending' || application.status === 'under_review' ? `
+          <button class="btn btn--danger" onclick="confirmWithdrawApplication('${application.id}')">
+            <i class="fa-solid fa-xmark"></i> سحب الطلب
+          </button>
+        ` : ''}
+        <button class="btn btn--secondary" onclick="closeApplicationDetailsModal()">
+          <i class="fa-solid fa-arrow-left"></i> إغلاق
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  requestAnimationFrame(() => modal.classList.add('show'));
 }
 
-// Withdraw application
-async function withdrawApplication(applicationId) {
-  if (!confirm('هل أنت متأكد من سحب هذا الطلب؟')) return;
-  
+function closeApplicationDetailsModal() {
+  const modal = document.getElementById('applicationDetailsModal');
+  if (!modal) return;
+  modal.classList.remove('show');
+  setTimeout(() => modal.remove(), 300);
+}
+
+// ═══════════════════════════════════════════════════════
+//  تأكيد سحب الطلب (in-app بدل confirm())
+// ═══════════════════════════════════════════════════════
+function confirmWithdrawApplication(applicationId) {
+  // حذف أي confirm modal قديم
+  const old = document.getElementById('withdrawConfirmModal');
+  if (old) old.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'withdrawConfirmModal';
+  modal.className = 'app-details-modal';
+  modal.innerHTML = `
+    <div class="app-details-modal__backdrop"></div>
+    <div class="app-details-modal__content app-details-modal__content--sm">
+      <div class="app-details-modal__header">
+        <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger,#ef4444)"></i> تأكيد سحب الطلب</h3>
+      </div>
+      <div class="app-details-modal__body">
+        <p style="text-align:center;padding:1rem 0;color:var(--text-secondary,#94a3b8);line-height:1.8">
+          هل أنت متأكد من سحب هذا الطلب؟<br/>
+          <small>لا يمكن التراجع عن هذه العملية.</small>
+        </p>
+      </div>
+      <div class="app-details-modal__footer">
+        <button class="btn btn--danger" id="confirmWithdrawBtn" onclick="executeWithdraw('${applicationId}')">
+          <i class="fa-solid fa-check"></i> نعم، سحب الطلب
+        </button>
+        <button class="btn btn--secondary" onclick="document.getElementById('withdrawConfirmModal').remove()">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  requestAnimationFrame(() => modal.classList.add('show'));
+}
+
+async function executeWithdraw(applicationId) {
+  const confirmModal = document.getElementById('withdrawConfirmModal');
+  const btn = document.getElementById('confirmWithdrawBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...'; }
+
   const success = await internshipAppSystem.withdrawApplication(applicationId);
+
+  if (confirmModal) confirmModal.remove();
+  closeApplicationDetailsModal();
+
   if (success) {
-    showToast('تم سحب الطلب بنجاح', 'success');
+    showToast('تم سحب الطلب بنجاح ✅', 'success');
     internshipAppSystem.updateApplicationsUI();
     updateApplicationsCount();
   } else {
     showToast('حدث خطأ أثناء سحب الطلب', 'error');
   }
+}
+
+// Withdraw application (legacy — للتوافق مع application cards القديمة)
+async function withdrawApplication(applicationId) {
+  confirmWithdrawApplication(applicationId);
 }
 
 // Update applications count
