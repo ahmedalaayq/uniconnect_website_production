@@ -1,0 +1,474 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE DISPLAY FIXES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Mobile Layout Fixes ── */
+@media (max-width: 768px) {
+  /* Fix sidebar and main container */
+  .app-shell {
+    overflow-x: hidden;
+  }
+  
+  .main-area {
+    margin-right: 0 !important;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .services-container {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4) !important;
+    padding: var(--space-3) !important;
+    max-width: 100%;
+  }
+  
+  .services-sidebar {
+    position: static !important;
+    width: 100% !important;
+    max-height: none !important;
+    order: -1;
+    margin-bottom: var(--space-4);
+  }
+  
+  .services-main {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Fix role navigation */
+  .role-navigation {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  
+  .role-nav-btn {
+    flex: 1;
+    min-width: 100px;
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+  
+  .role-nav-btn span {
+    font-size: 11px;
+  }
+  
+  /* Fix section headers */
+  .services-section__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  
+  .services-section__title-group {
+    width: 100%;
+  }
+  
+  .services-section__title {
+    font-size: var(--text-lg);
+    line-height: 1.3;
+    margin-bottom: var(--space-1);
+  }
+  
+  .services-section__subtitle {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  
+  .services-section__stats {
+    width: 100%;
+    justify-content: space-around;
+    padding: var(--space-3);
+    background: var(--glass-1);
+    border-radius: var(--r-lg);
+  }
+  
+  /* Fix quick actions */
+  .quick-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    overflow-x: auto;
+  }
+  
+  .quick-action {
+    flex: 1;
+    min-width: 120px;
+    max-width: 140px;
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .quick-action__badge {
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+  
+  /* Fix services grid */
+  .services-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3) !important;
+    padding: 0 var(--space-3) var(--space-3);
+  }
+  
+  .service-card {
+    padding: var(--space-4);
+    height: auto;
+    min-height: 120px;
+  }
+  
+  .service-card__header {
+    margin-bottom: var(--space-3);
+  }
+  
+  .service-card__icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .service-card__title {
+    font-size: var(--text-sm);
+    line-height: 1.3;
+    margin-bottom: var(--space-1);
+  }
+  
+  .service-card__description {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Fix internship cards */
+  .internship-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3) !important;
+    padding: 0 var(--space-3) var(--space-3);
+  }
+  
+  .internship-card {
+    padding: var(--space-4);
+  }
+  
+  .internship-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .internship-card__company {
+    width: 100%;
+  }
+  
+  .internship-card__info h3 {
+    font-size: var(--text-sm);
+    line-height: 1.3;
+  }
+  
+  .internship-card__info p {
+    font-size: var(--text-xs);
+  }
+  
+  .internship-card__type {
+    align-self: flex-start;
+  }
+  
+  .internship-card__description {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    margin-bottom: var(--space-3);
+  }
+  
+  .internship-card__details {
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  
+  .internship-detail {
+    font-size: var(--text-xs);
+  }
+  
+  .internship-card__footer {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .internship-card__apply {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Fix application cards */
+  .application-card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  
+  .application-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .application-card__company {
+    width: 100%;
+  }
+  
+  .application-card__info h4 {
+    font-size: var(--text-sm);
+    line-height: 1.3;
+  }
+  
+  .application-card__info p {
+    font-size: var(--text-xs);
+  }
+  
+  .application-card__status {
+    align-self: flex-start;
+    font-size: 10px;
+  }
+  
+  .application-card__details {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .application-detail {
+    font-size: var(--text-xs);
+  }
+  
+  .application-card__footer {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  /* Fix topbar */
+  .topbar {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+  
+  .topbar__menu-btn {
+    display: flex;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .topbar__title {
+    font-size: var(--text-sm);
+  }
+  
+  .search {
+    flex: 1;
+    max-width: 200px;
+  }
+  
+  .search__input {
+    font-size: var(--text-sm);
+    padding: var(--space-2);
+  }
+  
+  .topbar__actions {
+    gap: var(--space-2);
+  }
+  
+  .notif-toggle {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Fix hero section */
+  .hero {
+    padding: var(--space-6) var(--space-3);
+  }
+  
+  .hero__title {
+    font-size: var(--text-xl);
+    line-height: 1.3;
+  }
+  
+  .hero__subtitle {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  
+  .hero__stats {
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+  }
+  
+  .hero__stat {
+    text-align: center;
+  }
+  
+  .hero__stat strong {
+    font-size: var(--text-lg);
+  }
+  
+  .hero__stat span {
+    font-size: var(--text-xs);
+  }
+  
+  /* Fix footer */
+  .page-footer {
+    padding: var(--space-4) var(--space-3);
+    text-align: center;
+  }
+  
+  .page-footer__inner {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .page-footer__links {
+    flex-direction: column;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+  }
+  
+  .page-footer__links span[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* ── Small Mobile Devices ── */
+@media (max-width: 480px) {
+  .services-container {
+    padding: var(--space-2) !important;
+  }
+  
+  .quick-actions {
+    padding: var(--space-2);
+    gap: var(--space-1);
+  }
+  
+  .quick-action {
+    min-width: 100px;
+    max-width: 120px;
+    padding: var(--space-2);
+    font-size: 10px;
+  }
+  
+  .service-card {
+    padding: var(--space-3);
+    min-height: 100px;
+  }
+  
+  .service-card__icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+  
+  .service-card__title {
+    font-size: var(--text-xs);
+  }
+  
+  .service-card__description {
+    font-size: 10px;
+  }
+  
+  .role-nav-btn {
+    min-width: 80px;
+    padding: var(--space-1) var(--space-2);
+    font-size: 10px;
+  }
+  
+  .role-nav-btn i {
+    font-size: 0.9rem;
+  }
+  
+  .role-nav-btn span {
+    font-size: 9px;
+  }
+  
+  .topbar {
+    padding: var(--space-2);
+  }
+  
+  .topbar__title {
+    font-size: var(--text-xs);
+  }
+  
+  .search__input {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* ── Fix Text Overlapping Issues ── */
+.role-nav-btn span,
+.service-card__title,
+.service-card__description,
+.internship-card__info h3,
+.internship-card__info p,
+.application-card__info h4,
+.application-card__info p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* ── Prevent Horizontal Scrolling ── */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.services-container,
+.services-main,
+.services-sidebar,
+.services-grid,
+.internship-grid,
+.quick-actions {
+  overflow-x: hidden;
+}
+
+/* ── Fix Badge Positioning ── */
+.service-card__badge,
+.internship-card__free-badge,
+.quick-action__badge {
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ── Fix Modal on Mobile ── */
+@media (max-width: 768px) {
+  .internship-modal__content {
+    width: 95%;
+    margin: var(--space-2);
+    max-height: 90vh;
+    border-radius: var(--r-xl);
+  }
+  
+  .internship-modal__header,
+  .internship-modal__body {
+    padding: var(--space-4);
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

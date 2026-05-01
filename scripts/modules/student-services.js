@@ -918,41 +918,134 @@ function debounce(fn, ms) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FIREBASE AUTH
+   ENHANCED FIREBASE AUTH
 ═══════════════════════════════════════════════════════════════ */
 function initFirebaseAuth() {
-  if (typeof firebase === 'undefined' || !firebase.auth) {
-    // Dev fallback
-    loadRoleUI('طالب', { displayName:'طالب تجريبي', photoURL:null });
-    return;
-  }
-  firebase.auth().onAuthStateChanged(async user => {
-    if (!user) { window.location.href = 'login.html'; return; }
-    let role = 'طالب';
-    try {
-      const db = firebase.firestore();
-      const snap = await db.collection('users').doc(user.uid).get();
-      if (snap.exists) role = snap.data().role || 'طالب';
-    } catch(e) { console.warn('Firestore read failed, using default role'); }
-    loadRoleUI(role, user);
+  // Wait for Firebase to be ready
+  waitForFirebase(() => {
+    if (typeof firebase === 'undefined' || !firebase.auth) {
+      console.error('Firebase not available');
+      showAuthError('خدمة المصادقة غير متاحة');
+      return;
+    }
+    
+    firebase.auth().onAuthStateChanged(async user => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        // Show loading state
+        showProfileLoading();
+        
+        // Get user data from Firestore
+        const userData = await getCurrentUserData(user.uid);
+        
+        let userRole = 'طالب';
+        
+        if (userData) {
+          // Use Firestore data
+          userRole = userData.role || 'طالب';
+        } else {
+          // Fallback: detect role from email domain
+          const email = user.email;
+          if (email && (email.includes('@grad.') || email.includes('@alumni.') || email.includes('@graduate.'))) {
+            userRole = 'خريج';
+          } else if (email && (email.includes('@dr.') || email.includes('@prof.') || email.includes('@staff.'))) {
+            userRole = 'دكتور';
+          }
+        }
+        
+        loadRoleUI(userRole, {
+          displayName: userData?.name || user.displayName || 'المستخدم',
+          photoURL: userData?.imageUrl || user.photoURL || 'assets/images/user.png',
+          email: userData?.email || user.email,
+          uid: user.uid
+        });
+        
+        // Update online status
+        await updateOnlineStatus(true);
+        
+      } catch (error) {
+        console.error('Auth state change error:', error);
+        showAuthError('فشل تحميل بيانات المستخدم');
+      }
+    });
   });
+}
+
+function showProfileLoading() {
+  const nameElements = ['sidebarName', 'chipAvatar'];
+  nameElements.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (id === 'sidebarName') {
+        el.textContent = 'جاري التحميل...';
+      } else if (id === 'chipAvatar') {
+        el.src = 'assets/images/loading-avatar.gif';
+      }
+    }
+  });
+}
+
+function showAuthError(message) {
+  const nameEl = document.getElementById('sidebarName');
+  if (nameEl) {
+    nameEl.textContent = message || 'خطأ في المصادقة';
+  }
+  showToast(message || 'خطأ في المصادقة', 'error');
 }
 
 function loadRoleUI(role, user) {
   STATE.role = role;
   document.body.setAttribute('data-role', role);
 
-  // Sidebar user
-  const name = user?.displayName || 'المستخدم';
+  // Enhanced sidebar user info
+  const displayName = user?.displayName || 'المستخدم';
+  const email = user?.email || '';
   const avatar = user?.photoURL || 'assets/images/user.png';
-  setEl('sidebarName', name);
+  
+  // Update sidebar elements
+  setEl('sidebarName', displayName);
   setEl('sidebarRole', role);
+  
+  // Update email if element exists
+  const emailEl = document.getElementById('sidebarEmail');
+  if (emailEl) {
+    emailEl.textContent = email;
+  }
+  
+  // Update avatars
   const avatarEls = [document.getElementById('sidebarAvatar'), document.getElementById('chipAvatar')];
-  avatarEls.forEach(el => { if(el) el.src = avatar; });
+  avatarEls.forEach(el => { 
+    if (el) {
+      el.src = avatar;
+      el.onerror = function() {
+        this.src = 'assets/images/user.png';
+      };
+    }
+  });
 
-  // Role badge
+  // Enhanced role badge with gradient
   const badge = document.getElementById('roleBadge');
-  if (badge) badge.innerHTML = `<span class="rb-dot"></span>${role}`;
+  if (badge) {
+    const roleColors = {
+      'طالب': 'blue',
+      'خريج': 'green', 
+      'دكتور': 'purple'
+    };
+    const color = roleColors[role] || 'blue';
+    badge.innerHTML = `<span class="rb-dot rb-dot--${color}"></span>${role}`;
+    badge.className = `role-badge role-badge--${color}`;
+  }
+
+  // Add user status indicator
+  const statusEl = document.getElementById('userStatus');
+  if (statusEl) {
+    statusEl.className = 'user-status online';
+    statusEl.title = 'متصل الآن';
+  }
 
   // Load all role-specific UI
   applyRoleContent();
@@ -961,13 +1054,26 @@ function loadRoleUI(role, user) {
   STATE.catsData = data.cats;
   STATE.filteredServices = [...data.services];
 
-  renderQuickWidgets();
-  renderCategories();
-  renderMiniProgress();
-  renderServices();
-  renderFAQ();
-  renderFutureFeatures();
-  loadFavorites();
+  // Enhanced initialization with animations
+  setTimeout(() => {
+    renderQuickWidgets();
+    renderCategories();
+    renderMiniProgress();
+    renderServices();
+    renderFAQ();
+    renderFutureFeatures();
+    loadFavorites();
+    
+    // Hide loading states
+    hideProfileLoading();
+  }, 500);
+}
+
+function hideProfileLoading() {
+  const loadingElements = document.querySelectorAll('.loading-skeleton');
+  loadingElements.forEach(el => {
+    el.classList.remove('loading-skeleton');
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════

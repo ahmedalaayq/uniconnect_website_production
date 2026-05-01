@@ -10,14 +10,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="styles/student-services.css"/>
   <link rel="stylesheet" href="styles/enhanced-services.css"/>
-  <link rel="stylesheet" href="styles/internship-enhanced.css"/>
-  <link rel="stylesheet" href="styles/ui-interactions.css"/>
-  <link rel="stylesheet" href="styles/mobile-fixes.css"/>
   <link rel="stylesheet" href="styles/components.css"/>
   <link rel="stylesheet" href="styles/animations.css"/>
 </head>
 
-<body data-role="خريج">
+<body data-role="طالب">
 
 <!-- ═══════════════════════════════════════════════════════════
      MOBILE OVERLAY (sidebar backdrop)
@@ -74,7 +71,7 @@
           </div>
           <div class="role-badge role-badge--blue" id="roleBadge">
             <span class="rb-dot"></span>
-            <span id="sidebarRole">خريج</span>
+            <span id="sidebarRole">طالب</span>
           </div>
         </div>
       </div>
@@ -300,10 +297,9 @@
               <i class="fa-solid fa-plus quick-action__icon"></i>
               <span>طلب جديد</span>
             </button>
-            <button class="quick-action" onclick="showMyApplications()">
-              <i class="fa-solid fa-file-lines quick-action__icon"></i>
-              <span>طلباتي</span>
-              <span class="quick-action__badge" id="applicationsCount">0</span>
+            <button class="quick-action">
+              <i class="fa-solid fa-clock-rotate-left quick-action__icon"></i>
+              <span>الطلبات السابقة</span>
             </button>
             <button class="quick-action">
               <i class="fa-solid fa-bookmark quick-action__icon"></i>
@@ -341,33 +337,6 @@
 
             <div class="services-grid" id="studentServicesGrid">
               <!-- Services will be rendered here by JavaScript -->
-            </div>
-          </section>
-
-          <!-- My Applications Section -->
-          <section class="my-applications-section" id="myApplicationsSection" aria-label="طلباتي" style="display: none;">
-            <div class="services-section__header">
-              <div class="services-section__title-group">
-                <div class="services-section__icon services-section__icon--student">
-                  <i class="fa-solid fa-file-lines"></i>
-                </div>
-                <div class="services-section__content">
-                  <h2 class="services-section__title">طلباتي</h2>
-                  <p class="services-section__subtitle">تتبع حالة طلباتك المقدمة على فرص التدريب</p>
-                </div>
-              </div>
-              <button class="btn btn--secondary" onclick="hideMyApplications()">
-                <i class="fa-solid fa-arrow-left"></i>
-                العودة للخدمات
-              </button>
-            </div>
-
-            <div class="applications-container" id="myApplications">
-              <!-- Applications will be rendered here by JavaScript -->
-              <div class="loading-applications">
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                <span>جاري تحميل طلباتك...</span>
-              </div>
             </div>
           </section>
 
@@ -467,8 +436,6 @@
 <script src="scripts/config/firebase-config.js"></script>
 <script src="scripts/modules/student-services.js"></script>
 <script src="scripts/enhanced-services.js"></script>
-<script src="scripts/internship-application-system.js"></script>
-<script src="scripts/ui-interactions.js"></script>
 <script src="scripts/student-services.js"></script>
 
 </body>
