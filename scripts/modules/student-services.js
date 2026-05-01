@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   SERVICES HUB — ROLE-AWARE MODULE v2
-   GradConnect | كلية التربية النوعية
-   Roles: طالب | خريج | دكتور
+   SERVICES HUB — ROLE-AWARE MODULE v3
+   GradConnect | كلية التربية النوعية — جامعة بنها
+   Real URLs: fsed.bu.edu.eg | mis.bu.edu.eg | bu.edu.eg
 ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
@@ -12,801 +12,1465 @@ const ROLE_CONFIG = {
   'طالب': {
     heroTitle:  'كل ما تحتاجه <span class="ht-grad">كطالب</span>',
     heroPill:   '✨ منصة خدمات الطلاب',
-    heroSub:    'خدمات أكاديمية، امتحانات، تدريب، نماذج وأكثر — مصممة لتسهيل رحلتك التعليمية في كلية التربية النوعية.',
-    heroSearch: 'ابحث عن خدمة: جداول، امتحانات، نماذج…',
-    stats:      [{ val:'+40', label:'خدمة متاحة' }, { val:'9', label:'تصنيف' }, { val:'24/7', label:'وصول مستمر' }],
-    dataKey:    'student'
+    heroSub:    'خدمات أكاديمية، امتحانات، تدريب، نماذج وأكثر — مصممة لتسهيل رحلتك التعليمية في كلية التربية النوعية بجامعة بنها.',
+    heroSearch: 'ابحث: جداول، امتحانات، نتائج، نماذج...',
+    stats:      [{ val:'+45', label:'خدمة متاحة' }, { val:'10', label:'تصنيف' }, { val:'24/7', label:'وصول مستمر' }],
+    dataKey:    'student',
+    quickWidgets:[
+      { icon:'📋', label:'جدول الامتحانات', count:'الفصل الحالي', url:'https://fsed.bu.edu.eg/exam-schedules' },
+      { icon:'✅', label:'نتائج الامتحانات', count:'اطلع على درجاتك', url:'https://fsed.bu.edu.eg/exams-results' },
+      { icon:'📖', label:'الجداول الدراسية', count:'كل الأقسام', url:'https://fsed.bu.edu.eg/study-schedules' },
+      { icon:'👤', label:'صفحة الطالب', count:'بياناتك الكاملة', url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx' },
+    ]
   },
   'خريج': {
     heroTitle:  'خدمات <span class="ht-grad">الخريجين</span> المتكاملة',
     heroPill:   '🎓 بوابة الخريجين',
     heroSub:    'توثيق الشهادات، شبكة التواصل، فرص العمل، الزمالات والمزيد — كل ما تحتاجه بعد التخرج في مكان واحد.',
-    heroSearch: 'ابحث: توثيق شهادة، فرص عمل، زمالات…',
+    heroSearch: 'ابحث: توثيق شهادة، فرص عمل، زمالات...',
     stats:      [{ val:'+30', label:'خدمة للخريجين' }, { val:'7', label:'تصنيفات' }, { val:'مجاني', label:'للخريجين' }],
-    dataKey:    'graduate'
+    dataKey:    'graduate',
+    quickWidgets:[
+      { icon:'📜', label:'توثيق الشهادة', count:'ابدأ الإجراءات', url:'https://fsed.bu.edu.eg/graduate-follow-up-office' },
+      { icon:'💼', label:'فرص العمل', count:'وظائف حصرية', url:'https://bu.edu.eg/students/f10' },
+      { icon:'🌐', label:'مجتمع الخريجين', count:'تواصل معنا', url:'https://fsed.bu.edu.eg/students/graduate-follow-up-office' },
+      { icon:'🔬', label:'الدراسات العليا', count:'ماجستير ودكتوراه', url:'https://fsed.bu.edu.eg/graduate-studies' },
+    ]
   },
   'دكتور': {
     heroTitle:  'لوحة خدمات <span class="ht-grad">أعضاء هيئة التدريس</span>',
-    heroPill:   '👑 بوابة أعضاء هيئة التدريس',
+    heroPill:   '👑 بوابة هيئة التدريس',
     heroSub:    'إدارة المقررات، نشر الأبحاث، متابعة الطلاب، جداول المحاضرات وأدوات التدريس الإلكتروني.',
-    heroSearch: 'ابحث: إدارة مقرر، بحث، جدول…',
+    heroSearch: 'ابحث: إدارة مقرر، بحث، جدول...',
     stats:      [{ val:'+35', label:'خدمة أكاديمية' }, { val:'8', label:'أقسام' }, { val:'كلية', label:'التربية النوعية' }],
-    dataKey:    'doctor'
+    dataKey:    'doctor',
+    quickWidgets:[
+      { icon:'📖', label:'إدارة المقررات', count:'رفع المحتوى', url:'https://fsed.bu.edu.eg/students/learning' },
+      { icon:'👥', label:'سجلات الطلاب', count:'متابعة شاملة', url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx' },
+      { icon:'🔬', label:'نشر الأبحاث', count:'المجلة العلمية', url:'https://sjse.journals.ekb.eg/' },
+      { icon:'📅', label:'الجداول', count:'جداول المحاضرات', url:'https://fsed.bu.edu.eg/study-schedules' },
+    ]
   }
 };
 
 /* ═══════════════════════════════════════════════════════════════
    SERVICES DATA — STUDENT (طالب)
+   روابط حقيقية من fsed.bu.edu.eg
 ═══════════════════════════════════════════════════════════════ */
 const STUDENT_CATS = [
-  { id:'all',          label:'جميع الخدمات',      icon:'⊞' },
-  { id:'academic',     label:'الخدمات الأكاديمية', icon:'📖' },
-  { id:'exam',         label:'خدمات الامتحانات',   icon:'📋' },
-  { id:'affairs',      label:'شؤون الطلاب',        icon:'👥' },
-  { id:'training',     label:'التدريب والورش',      icon:'🏆' },
-  { id:'elearning',    label:'التعلم الإلكتروني',  icon:'🖥️' },
-  { id:'forms',        label:'النماذج والتحميلات', icon:'⬇️' },
-  { id:'announcements',label:'الإعلانات',           icon:'📢' },
-  { id:'links',        label:'الروابط المهمة',      icon:'🔗' },
+  { id:'all',          label:'جميع الخدمات',       icon:'⊞' },
+  { id:'electronic',   label:'الخدمات الإلكترونية', icon:'💻' },
+  { id:'academic',     label:'الشؤون الأكاديمية',   icon:'📖' },
+  { id:'exam',         label:'خدمات الامتحانات',    icon:'📋' },
+  { id:'affairs',      label:'شؤون الطلاب',         icon:'👥' },
+  { id:'library',      label:'المكتبة والمعرفة',    icon:'📚' },
+  { id:'forms',        label:'النماذج والتحميلات',  icon:'⬇️' },
+  { id:'announcements',label:'الإعلانات والأخبار',  icon:'📢' },
+  { id:'links',        label:'الروابط المهمة',       icon:'🔗' },
+  { id:'fees',         label:'المصروفات والرسوم',   icon:'💳' },
 ];
 
 const STUDENT_SERVICES = [
-  // Academic
-  { id:'s-ac1', cat:'academic', icon:'📖', ib:'ib-student', title:'الجدول الدراسي', desc:'اطلع على الجدول الدراسي الأسبوعي لجميع الأقسام والفرق الدراسية.', tags:['أكاديمي','جداول'], btn:'عرض الجدول' },
-  { id:'s-ac2', cat:'academic', icon:'📜', ib:'ib-student', title:'شهادات القيد والدراسة', desc:'طلب شهادة قيد رسمية أو ما يفيد بالدراسة معتمدة من الكلية.', tags:['أكاديمي','وثائق'], btn:'طلب شهادة' },
-  { id:'s-ac3', cat:'academic', icon:'🗂️', ib:'ib-student', title:'السجل الأكاديمي (الترانسكريبت)', desc:'استخراج نسخة رسمية من سجلك الأكاديمي بجميع درجاتك ومقرراتك.', tags:['أكاديمي','درجات'], btn:'طلب الترانسكريبت' },
-  { id:'s-ac4', cat:'academic', icon:'📚', ib:'ib-student', title:'المكتبة الإلكترونية', desc:'وصول مباشر لآلاف الكتب والمجلات والمراجع العلمية الرقمية.', tags:['أكاديمي','مكتبة'], btn:'الدخول للمكتبة', outline:true },
-  { id:'s-ac5', cat:'academic', icon:'🗺️', ib:'ib-student', title:'خطة الدراسة والمقررات', desc:'تصفح خطة الدراسة وتوزيع المقررات على الفصول الدراسية لكل قسم.', tags:['أكاديمي','مقررات'], btn:'استعراض الخطة', outline:true },
-  { id:'s-ac6', cat:'academic', icon:'🔬', ib:'ib-student', title:'حجز المعامل والمختبرات', desc:'حجز جلسات في مختبرات الحاسب والمعامل التخصصية للكلية.', tags:['أكاديمي','حجز'], btn:'حجز موعد' },
-  { id:'s-ac7', cat:'academic', icon:'📊', ib:'ib-student', title:'تقييم المقررات والأساتذة', desc:'شارك في استطلاعات تقييم جودة التدريس وتطوير العملية التعليمية.', tags:['أكاديمي','تقييم'], btn:'تقييم الآن', outline:true },
-  { id:'s-ac8', cat:'academic', icon:'🎓', ib:'ib-student', title:'شروط التخرج والمتطلبات', desc:'تحقق من متطلبات التخرج والساعات المعتمدة المطلوبة لحصولك على الدرجة.', tags:['أكاديمي','تخرج'], btn:'استعراض', outline:true },
-  // Exams
-  { id:'s-ex1', cat:'exam', icon:'📋', ib:'ib-exam', title:'جداول الامتحانات', desc:'الاطلاع على مواعيد امتحانات نهاية الفصل الدراسي وخرائط لجان الامتحانات.', tags:['امتحانات','جداول'], btn:'عرض الجدول' },
-  { id:'s-ex2', cat:'exam', icon:'📝', ib:'ib-exam', title:'تسجيل الامتحانات', desc:'سجّل في امتحانات الفصل الدراسي وتأكد من تأهلك واستيفاء متطلبات الحضور.', tags:['امتحانات','تسجيل'], btn:'تسجيل الآن' },
-  { id:'s-ex3', cat:'exam', icon:'✅', ib:'ib-exam', title:'نتائج الامتحانات', desc:'استعرض نتائجك ودرجاتك بعد الإعلان الرسمي عنها من إدارة الامتحانات.', tags:['امتحانات','نتائج'], btn:'عرض النتائج' },
-  { id:'s-ex4', cat:'exam', icon:'🔁', ib:'ib-exam', title:'طلب إعادة الفحص', desc:'تقدم بطلب رسمي لإعادة فحص ورقة إجابتك خلال المدة المحددة بعد الإعلان.', tags:['امتحانات','تظلمات'], btn:'تقديم طلب', outline:true },
-  { id:'s-ex5', cat:'exam', icon:'🪪', ib:'ib-exam', title:'كارنيه الامتحانات', desc:'استخراج وطباعة ورقة الجلوس والكارنيه الخاص بامتحانات هذا الفصل.', tags:['امتحانات','وثائق'], btn:'طباعة الكارنيه' },
-  { id:'s-ex6', cat:'exam', icon:'📅', ib:'ib-exam', title:'امتحانات التحسين', desc:'تعرف على شروط وإجراءات الالتحاق بامتحانات تحسين الدرجات للمواد السابقة.', tags:['امتحانات','تحسين'], btn:'التفاصيل', outline:true },
-  // Affairs
-  { id:'s-sa1', cat:'affairs', icon:'👥', ib:'ib-affairs', title:'الاتحاد الطلابي', desc:'تعرف على أعضاء الاتحاد الطلابي للكلية وأنشطته وكيفية التواصل معهم.', tags:['شؤون','اتحاد'], btn:'التواصل' },
-  { id:'s-sa2', cat:'affairs', icon:'🏅', ib:'ib-affairs', title:'الأنشطة الطلابية', desc:'سجّل في الأنشطة الثقافية والاجتماعية والرياضية التي تنظمها الكلية.', tags:['شؤون','أنشطة'], btn:'استعراض' },
-  { id:'s-sa3', cat:'affairs', icon:'💰', ib:'ib-affairs', title:'المنح والإعانات', desc:'تقدم للحصول على المنح الدراسية والإعانات المالية المتاحة لطلاب الكلية.', tags:['شؤون','منح'], btn:'التقديم' },
-  { id:'s-sa4', cat:'affairs', icon:'🏥', ib:'ib-affairs', title:'الخدمات الصحية', desc:'تعرف على الخدمات الطبية والتأمين الصحي الطلابي المتاح للطلاب المقيدين.', tags:['شؤون','صحة'], btn:'معرفة المزيد', outline:true },
-  { id:'s-sa5', cat:'affairs', icon:'📞', ib:'ib-affairs', title:'الإرشاد الأكاديمي', desc:'تواصل مع المرشد الأكاديمي لاستفساراتك الدراسية ووضع خطة مستقبلية.', tags:['شؤون','إرشاد'], btn:'حجز جلسة' },
-  // Training
-  { id:'s-tr1', cat:'training', icon:'🏆', ib:'ib-training', title:'التدريب الميداني', desc:'سجّل في برنامج التدريب الميداني الإلزامي وتعرف على متطلباته وشروطه.', tags:['تدريب','ميداني'], btn:'التسجيل' },
-  { id:'s-tr2', cat:'training', icon:'💼', ib:'ib-training', title:'فرص التدريب الصيفي', desc:'تصفح فرص التدريب الصيفي في المؤسسات والشركات الشريكة للكلية.', tags:['تدريب','صيفي'], btn:'استعراض الفرص' },
-  { id:'s-tr3', cat:'training', icon:'🎓', ib:'ib-training', title:'الدورات التدريبية', desc:'سجّل في ورش العمل والدورات التدريبية المعتمدة التي تنظمها الكلية.', tags:['تدريب','دورات'], btn:'عرض الدورات' },
-  { id:'s-tr4', cat:'training', icon:'📜', ib:'ib-training', title:'شهادات ICDL', desc:'التقدم لامتحانات ICDL لاعتماد كفاءتك في مجال تكنولوجيا المعلومات.', tags:['تدريب','ICDL'], btn:'التقديم' },
-  { id:'s-tr5', cat:'training', icon:'🌐', ib:'ib-training', title:'برامج التبادل الدولي', desc:'تعرف على برامج التبادل الدولي والزمالات الأكاديمية المتاحة للطلاب.', tags:['تدريب','دولي'], btn:'التفاصيل', outline:true },
-  // E-Learning
-  { id:'s-el1', cat:'elearning', icon:'🖥️', ib:'ib-elearn', title:'منصة Moodle', desc:'الوصول إلى محتوى المقررات والواجبات والمحاضرات المسجلة عبر المنصة التعليمية.', tags:['إلكتروني','Moodle'], btn:'الدخول للمنصة' },
-  { id:'s-el2', cat:'elearning', icon:'🎥', ib:'ib-elearn', title:'المحاضرات المسجلة', desc:'مكتبة شاملة من المحاضرات والفيديوهات التعليمية لجميع المقررات.', tags:['إلكتروني','فيديو'], btn:'مشاهدة' },
-  { id:'s-el3', cat:'elearning', icon:'💻', ib:'ib-elearn', title:'الاختبارات الإلكترونية', desc:'تأدية الاختبارات والكويزات الإلكترونية لمتابعة مستواك الدراسي.', tags:['إلكتروني','اختبارات'], btn:'الدخول' },
-  { id:'s-el4', cat:'elearning', icon:'📱', ib:'ib-elearn', title:'تطبيق الكلية', desc:'حمّل التطبيق الرسمي للكلية للوصول الفوري للخدمات من هاتفك.', tags:['إلكتروني','تطبيق'], btn:'التحميل' },
-  { id:'s-el5', cat:'elearning', icon:'🔐', ib:'ib-elearn', title:'البريد الجامعي', desc:'استخراج بيانات وتفعيل بريدك الإلكتروني الجامعي الرسمي.', tags:['إلكتروني','بريد'], btn:'تفعيل الحساب', outline:true },
-  // Forms
-  { id:'s-fo1', cat:'forms', icon:'📄', ib:'ib-forms', title:'استمارة التقديم', desc:'تحميل استمارة التقديم الرسمية للخدمات المختلفة من إدارة الكلية.', tags:['نماذج','تحميل'], btn:'تحميل' },
-  { id:'s-fo2', cat:'forms', icon:'📋', ib:'ib-forms', title:'نموذج تغيير بيانات', desc:'طلب تعديل أو تحديث بياناتك الشخصية في سجلات الكلية الرسمية.', tags:['نماذج','تعديل'], btn:'تحميل' },
-  { id:'s-fo3', cat:'forms', icon:'🔄', ib:'ib-forms', title:'نموذج التحويل بين الأقسام', desc:'استمارة طلب التحويل من قسم دراسي لآخر وفق شروط القبول المحددة.', tags:['نماذج','تحويل'], btn:'تحميل' },
-  { id:'s-fo4', cat:'forms', icon:'🚫', ib:'ib-forms', title:'نموذج الانسحاب والإجازة', desc:'نموذج طلب الانسحاب المؤقت أو الإجازة الدراسية بالأسباب المقبولة.', tags:['نماذج','إجراءات'], btn:'تحميل', outline:true },
-  { id:'s-fo5', cat:'forms', icon:'📥', ib:'ib-forms', title:'لوائح وقوانين الكلية', desc:'تحميل اللائحة الداخلية للكلية ونظام الساعات المعتمدة وقوانين الغياب.', tags:['نماذج','لوائح'], btn:'تحميل' },
-  { id:'s-fo6', cat:'forms', icon:'📬', ib:'ib-forms', title:'نموذج تقديم شكوى', desc:'تقديم شكوى رسمية للإدارة بطريقة منظمة وضمان متابعتها حتى الحل.', tags:['نماذج','شكاوى'], btn:'تقديم', outline:true },
-  { id:'s-fo7', cat:'forms', icon:'🖨️', ib:'ib-forms', title:'طباعة وثائق الكلية', desc:'طلب طباعة أي وثيقة رسمية أو ختمها بالختم الرسمي للكلية.', tags:['نماذج','طباعة'], btn:'طلب طباعة' },
-  // Announcements
-  { id:'s-an1', cat:'announcements', icon:'📢', ib:'ib-announce', title:'لوحة الإعلانات', desc:'جميع إعلانات وإشعارات الكلية الرسمية في مكان واحد محدّث باستمرار.', tags:['إعلانات','أخبار'], btn:'عرض الكل' },
-  { id:'s-an2', cat:'announcements', icon:'📰', ib:'ib-announce', title:'النشرة الإخبارية', desc:'اشترك في النشرة الدورية لاستقبال آخر الأخبار والفعاليات والمستجدات.', tags:['إعلانات','نشرة'], btn:'اشتراك', outline:true },
-  // Links
-  { id:'s-li1', cat:'links', icon:'🔗', ib:'ib-links', title:'بوابة الجامعة الإلكترونية', desc:'الدخول لبوابة جامعة بنها الرسمية والوصول لجميع خدمات الجامعة المركزية.', tags:['روابط','جامعة'], btn:'الانتقال' },
-  { id:'s-li2', cat:'links', icon:'🌐', ib:'ib-links', title:'الروابط الخارجية المهمة', desc:'روابط حيوية: وزارة التعليم، هيئة الاعتماد، المنح والفرص الخارجية.', tags:['روابط','خارجية'], btn:'استعراض', outline:true },
+  /* ── ELECTRONIC ── */
+  {
+    id:'s-e1', cat:'electronic', icon:'👤', ib:'ib-student',
+    title:'صفحة الطالب الإلكترونية',
+    desc:'الدخول لبوابة الطالب لعرض جميع بياناتك الأكاديمية، السجل الدراسي، والخدمات الجامعية.',
+    tags:['إلكتروني','بوابة','بيانات'],
+    btn:'الدخول للبوابة',
+    url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+    hot:true,
+  },
+  {
+    id:'s-e2', cat:'electronic', icon:'📧', ib:'ib-elearn',
+    title:'معرفة البريد التعليمي',
+    desc:'استخراج وتفعيل بريدك الإلكتروني الجامعي الرسمي من بوابة جامعة بنها.',
+    tags:['إلكتروني','بريد','جامعي'],
+    btn:'استخراج الإيميل',
+    url:'https://bu.edu.eg/portal/index.php?act=139',
+  },
+  {
+    id:'s-e3', cat:'electronic', icon:'🛡️', ib:'ib-student',
+    title:'الميثاق الأخلاقي للطالب',
+    desc:'اطلع على ميثاق أخلاقيات الطالب الجامعي الصادر عن جامعة بنها.',
+    tags:['إلكتروني','أخلاق','لوائح'],
+    btn:'عرض الميثاق',
+    url:'https://bu.edu.eg/e-services/University_Student_Ethical_Charter.php',
+  },
+  {
+    id:'s-e4', cat:'electronic', icon:'📊', ib:'ib-student',
+    title:'تقييم المقررات الدراسية',
+    desc:'شارك في استطلاع تقييم المقررات وأعضاء هيئة التدريس بشكل إلكتروني.',
+    tags:['إلكتروني','تقييم','استطلاع'],
+    btn:'تقييم الآن',
+    url:'https://bu.edu.eg/student/logCode.php',
+  },
+  {
+    id:'s-e5', cat:'electronic', icon:'📖', ib:'ib-elearn',
+    title:'المحاضرات والمقررات الإلكترونية',
+    desc:'الوصول لجميع المحاضرات المسجلة والمواد التعليمية الإلكترونية للمقررات.',
+    tags:['إلكتروني','محاضرات','مقررات'],
+    btn:'الدخول للمحاضرات',
+    url:'https://fsed.bu.edu.eg/students/learning',
+  },
+  {
+    id:'s-e6', cat:'electronic', icon:'📄', ib:'ib-student',
+    title:'دليل الطالب 2025',
+    desc:'تحميل دليل الطالب المحدث لعام 2025 المشتمل على كافة اللوائح والإجراءات.',
+    tags:['إلكتروني','دليل','تحميل'],
+    btn:'تحميل الدليل',
+    url:'https://drive.google.com/file/d/12pstEld4I1q21sVBUbbdlISP16YgFJfi/view',
+    isNew:true,
+  },
+  /* ── ACADEMIC ── */
+  {
+    id:'s-ac1', cat:'academic', icon:'🗺️', ib:'ib-student',
+    title:'البرامج والمقررات الدراسية',
+    desc:'تصفح خطط الدراسة وتوزيع المقررات على الفصول لكل قسم دراسي بالكلية.',
+    tags:['أكاديمي','مقررات','خطة'],
+    btn:'استعراض البرامج',
+    url:'https://fsed.bu.edu.eg/students/students-programs-and-courses',
+  },
+  {
+    id:'s-ac2', cat:'academic', icon:'📋', ib:'ib-student',
+    title:'لائحة طلاب البكالوريوس',
+    desc:'الاطلاع على اللائحة الرسمية المنظِّمة للدراسة في مرحلة البكالوريوس.',
+    tags:['أكاديمي','لائحة','بكالوريوس'],
+    btn:'عرض اللائحة',
+    url:'https://fsed.bu.edu.eg/students/a-list-of-undergraduate-students',
+  },
+  {
+    id:'s-ac3', cat:'academic', icon:'📅', ib:'ib-student',
+    title:'الجداول الدراسية الأسبوعية',
+    desc:'الاطلاع على الجدول الدراسي الأسبوعي لجميع الأقسام والفرق الدراسية.',
+    tags:['أكاديمي','جداول','أسبوعي'],
+    btn:'عرض الجدول',
+    url:'https://fsed.bu.edu.eg/students/study-schedules',
+    hot:true,
+  },
+  {
+    id:'s-ac4', cat:'academic', icon:'⚖️', ib:'ib-student',
+    title:'شروط القبول ونظام الدراسة',
+    desc:'تعرف على شروط القبول ونظام الساعات المعتمدة ومتطلبات التخرج.',
+    tags:['أكاديمي','قبول','شروط'],
+    btn:'استعراض',
+    url:'https://fsed.bu.edu.eg/students/conditions-of-admission-and-study-system',
+    outline:true,
+  },
+  {
+    id:'s-ac5', cat:'academic', icon:'📊', ib:'ib-student',
+    title:'استطلاع رأي الطالب في المقرر',
+    desc:'شارك في استطلاعات جودة التدريس للمساهمة في تطوير العملية التعليمية.',
+    tags:['أكاديمي','استطلاع','جودة'],
+    btn:'المشاركة',
+    url:'https://fsed.bu.edu.eg/students/polling-the-student-opinion-on-the-course',
+    outline:true,
+  },
+  {
+    id:'s-ac6', cat:'academic', icon:'🔬', ib:'ib-student',
+    title:'الأبحاث العلمية للطلاب',
+    desc:'الاطلاع على الأبحاث العلمية المتاحة ونتائج الأبحاث المقدمة من الطلاب.',
+    tags:['أكاديمي','أبحاث','علمي'],
+    btn:'استعراض الأبحاث',
+    url:'https://fsed.bu.edu.eg/students/research',
+    outline:true,
+  },
+  {
+    id:'s-ac7', cat:'academic', icon:'🏆', ib:'ib-student',
+    title:'نتائج الأبحاث',
+    desc:'مشاهدة نتائج الأبحاث والمشاريع العلمية المقدمة لمتطلبات المقررات.',
+    tags:['أكاديمي','نتائج','أبحاث'],
+    btn:'عرض النتائج',
+    url:'https://fsed.bu.edu.eg/students/research-results',
+    outline:true,
+  },
+  /* ── EXAMS ── */
+  {
+    id:'s-ex1', cat:'exam', icon:'📋', ib:'ib-exam',
+    title:'جداول الامتحانات',
+    desc:'الاطلاع على مواعيد امتحانات نهاية الفصل الدراسي وخرائط لجان الامتحانات الرسمية.',
+    tags:['امتحانات','جداول','مواعيد'],
+    btn:'عرض جدول الامتحانات',
+    url:'https://fsed.bu.edu.eg/students/exam-schedules',
+    hot:true,
+  },
+  {
+    id:'s-ex2', cat:'exam', icon:'🔢', ib:'ib-exam',
+    title:'أرقام الجلوس',
+    desc:'الاستعلام عن رقم جلوسك في امتحانات الفصل الدراسي.',
+    tags:['امتحانات','رقم جلوس','كارنيه'],
+    btn:'استعراض أرقام الجلوس',
+    url:'https://fsed.bu.edu.eg/students/seating-numbers',
+  },
+  {
+    id:'s-ex3', cat:'exam', icon:'🗺️', ib:'ib-exam',
+    title:'أماكن لجان الامتحانات',
+    desc:'معرفة أماكن وقاعات لجان الامتحانات المخصصة لكل قسم وفرقة.',
+    tags:['امتحانات','لجان','قاعات'],
+    btn:'عرض الأماكن',
+    url:'https://fsed.bu.edu.eg/students/places-of-committees',
+  },
+  {
+    id:'s-ex4', cat:'exam', icon:'✅', ib:'ib-exam',
+    title:'نتائج الامتحانات',
+    desc:'استعرض درجاتك ونتائجك بعد الإعلان الرسمي عنها من إدارة الامتحانات.',
+    tags:['امتحانات','نتائج','درجات'],
+    btn:'عرض النتائج',
+    url:'https://fsed.bu.edu.eg/students/exams-results',
+    hot:true,
+  },
+  {
+    id:'s-ex5', cat:'exam', icon:'📝', ib:'ib-exam',
+    title:'نماذج الإجابات النموذجية',
+    desc:'الاطلاع على نماذج الأسئلة والإجابات النموذجية لمقررات الكلية.',
+    tags:['امتحانات','نماذج','إجابات'],
+    btn:'عرض النماذج',
+    url:'https://fsed.bu.edu.eg/students/models-answers',
+    outline:true,
+  },
+  {
+    id:'s-ex6', cat:'exam', icon:'📄', ib:'ib-exam',
+    title:'قوائم الطلاب',
+    desc:'الاطلاع على قوائم الطلاب المقيدين في كل قسم وفرقة دراسية.',
+    tags:['امتحانات','قوائم','طلاب'],
+    btn:'عرض القوائم',
+    url:'https://fsed.bu.edu.eg/students/students-lists',
+    outline:true,
+  },
+  /* ── AFFAIRS ── */
+  {
+    id:'s-sa1', cat:'affairs', icon:'👥', ib:'ib-affairs',
+    title:'اتحاد الطلاب',
+    desc:'تعرف على اتحاد طلاب الكلية، أنشطته وفعالياته وكيفية التواصل مع قيادته.',
+    tags:['شؤون','اتحاد','أنشطة'],
+    btn:'التواصل مع الاتحاد',
+    url:'https://fsed.bu.edu.eg/students/students-union',
+  },
+  {
+    id:'s-sa2', cat:'affairs', icon:'🏅', ib:'ib-youth',
+    title:'رعاية الشباب',
+    desc:'الأنشطة الثقافية والاجتماعية والرياضية التي ترعاها إدارة رعاية شباب الكلية.',
+    tags:['شؤون','رعاية','رياضة'],
+    btn:'استعراض الأنشطة',
+    url:'https://fsed.bu.edu.eg/students/youth-care',
+  },
+  {
+    id:'s-sa3', cat:'affairs', icon:'💬', ib:'ib-affairs',
+    title:'منتديات الطلاب',
+    desc:'المشاركة في منتديات النقاش الطلابية والتواصل مع زملائك بشأن الشأن الأكاديمي.',
+    tags:['شؤون','منتديات','نقاش'],
+    btn:'الانضمام للمنتديات',
+    url:'https://fsed.bu.edu.eg/students/student-forums',
+    outline:true,
+  },
+  {
+    id:'s-sa4', cat:'affairs', icon:'⚠️', ib:'ib-affairs',
+    title:'آلية تلقي الشكاوى والمقترحات',
+    desc:'تقديم الشكاوى والمقترحات بطريقة رسمية وضمان متابعتها حتى الحل.',
+    tags:['شؤون','شكاوى','مقترحات'],
+    btn:'تقديم شكوى',
+    url:'https://fsed.bu.edu.eg/students/complaints-receiving-mechanism',
+    outline:true,
+  },
+  {
+    id:'s-sa5', cat:'affairs', icon:'🌍', ib:'ib-affairs',
+    title:'الطلاب الوافدون',
+    desc:'خدمات ومعلومات مخصصة للطلاب الوافدين الملتحقين بكلية التربية النوعية.',
+    tags:['شؤون','وافدون','دولي'],
+    btn:'خدمات الوافدين',
+    url:'https://foreigners.bu.edu.eg/',
+    outline:true,
+  },
+  {
+    id:'s-sa6', cat:'affairs', icon:'🎓', ib:'ib-grad',
+    title:'مكتب متابعة الخريجين',
+    desc:'التواصل مع مكتب شؤون الخريجين لمتابعة مساراتهم المهنية وتقديم الدعم.',
+    tags:['شؤون','خريجون','متابعة'],
+    btn:'التواصل',
+    url:'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
+    outline:true,
+  },
+  /* ── LIBRARY ── */
+  {
+    id:'s-lb1', cat:'library', icon:'📚', ib:'ib-library',
+    title:'بنك المعرفة المصري',
+    desc:'الدخول المجاني لبنك المعرفة المصري والاطلاع على آلاف الكتب والمجلات العلمية.',
+    tags:['مكتبة','معرفة','كتب'],
+    btn:'الدخول لبنك المعرفة',
+    url:'https://www.ekb.eg/ar/home',
+    hot:true,
+  },
+  {
+    id:'s-lb2', cat:'library', icon:'🏛️', ib:'ib-library',
+    title:'خدمات مكتبة الكلية',
+    desc:'تعرف على خدمات مكتبة الكلية من إعارة وبحث ومراجع ومصادر إلكترونية.',
+    tags:['مكتبة','خدمات','إعارة'],
+    btn:'خدمات المكتبة',
+    url:'https://fsed.bu.edu.eg/library/library-services',
+  },
+  {
+    id:'s-lb3', cat:'library', icon:'🕐', ib:'ib-library',
+    title:'مواعيد عمل المكتبة',
+    desc:'الاطلاع على مواعيد فتح مكتبة الكلية وسياسة الدخول وقواعد الاستخدام.',
+    tags:['مكتبة','مواعيد','سياسة'],
+    btn:'عرض المواعيد',
+    url:'https://fsed.bu.edu.eg/library/working-hours',
+    outline:true,
+  },
+  {
+    id:'s-lb4', cat:'library', icon:'📖', ib:'ib-library',
+    title:'إمكانات المكتبة',
+    desc:'تعرف على مقتنيات المكتبة من كتب ومجلات ومصادر رقمية ومكتبات متخصصة.',
+    tags:['مكتبة','مقتنيات','مصادر'],
+    btn:'استعراض',
+    url:'https://fsed.bu.edu.eg/library/library-capabilities',
+    outline:true,
+  },
+  /* ── FORMS ── */
+  {
+    id:'s-fo1', cat:'forms', icon:'📄', ib:'ib-forms',
+    title:'نماذج الأسئلة والإجابات',
+    desc:'تحميل نماذج الأسئلة والإجابات النموذجية للمقررات لمساعدتك في الاستذكار.',
+    tags:['نماذج','تحميل','أسئلة'],
+    btn:'تحميل النماذج',
+    url:'https://fsed.bu.edu.eg/index.php/models-answers',
+  },
+  {
+    id:'s-fo2', cat:'forms', icon:'📋', ib:'ib-forms',
+    title:'دليل الطالب المحدث',
+    desc:'تحميل أحدث إصدار من دليل الطالب المشتمل على اللوائح والإجراءات الرسمية.',
+    tags:['نماذج','دليل','لوائح'],
+    btn:'تحميل الدليل',
+    url:'https://drive.google.com/file/d/12pstEld4I1q21sVBUbbdlISP16YgFJfi/view',
+    isNew:true,
+  },
+  {
+    id:'s-fo3', cat:'forms', icon:'📝', ib:'ib-forms',
+    title:'نموذج طلب تسجيل مقرر',
+    desc:'نموذج رسمي لطلب تسجيل مقرر إضافي أو الاعتراض على التسجيل الحالي.',
+    tags:['نماذج','تسجيل','مقرر'],
+    btn:'تحميل النموذج',
+    url:'https://fsed.bu.edu.eg/graduate-studies/course-registration-application',
+    outline:true,
+  },
+  /* ── ANNOUNCEMENTS ── */
+  {
+    id:'s-an1', cat:'announcements', icon:'📢', ib:'ib-announce',
+    title:'الأخبار الهامة',
+    desc:'جميع الأخبار والبيانات والإعلانات الرسمية الصادرة عن الكلية.',
+    tags:['إعلانات','أخبار','رسمي'],
+    btn:'عرض الأخبار',
+    url:'https://fsed.bu.edu.eg/home/important-news',
+  },
+  {
+    id:'s-an2', cat:'announcements', icon:'📅', ib:'ib-announce',
+    title:'الأنشطة المجتمعية',
+    desc:'تصفح الأنشطة والفعاليات المجتمعية التي تنظمها الكلية خلال العام الدراسي.',
+    tags:['إعلانات','أنشطة','فعاليات'],
+    btn:'استعراض',
+    url:'https://fsed.bu.edu.eg/community-service/community-activities',
+    outline:true,
+  },
+  /* ── LINKS ── */
+  {
+    id:'s-li1', cat:'links', icon:'🌐', ib:'ib-links',
+    title:'بوابة جامعة بنها الرسمية',
+    desc:'الدخول لموقع جامعة بنها الرسمي للاطلاع على خدمات الجامعة المركزية.',
+    tags:['روابط','جامعة','بوابة'],
+    btn:'الانتقال للبوابة',
+    url:'https://bu.edu.eg',
+  },
+  {
+    id:'s-li2', cat:'links', icon:'🔗', ib:'ib-links',
+    title:'موقع الكلية الرسمي',
+    desc:'الموقع الرسمي لكلية التربية النوعية جامعة بنها بكافة تفاصيله ومحتوياته.',
+    tags:['روابط','كلية','موقع'],
+    btn:'زيارة الموقع',
+    url:'https://fsed.bu.edu.eg',
+  },
+  {
+    id:'s-li3', cat:'links', icon:'🎓', ib:'ib-links',
+    title:'بوابة الطلاب — جامعة بنها',
+    desc:'البوابة الإلكترونية المركزية لخدمات طلاب جامعة بنها.',
+    tags:['روابط','طلاب','خدمات'],
+    btn:'الانتقال',
+    url:'https://bu.edu.eg/students/f10',
+    outline:true,
+  },
+  {
+    id:'s-li4', cat:'links', icon:'📡', ib:'ib-links',
+    title:'مكتب العلاقات الدولية',
+    desc:'تواصل مع مكتب العلاقات الدولية للاستفسار عن برامج التبادل والزمالات.',
+    tags:['روابط','دولي','علاقات'],
+    btn:'زيارة',
+    url:'https://iro.bu.edu.eg/',
+    outline:true,
+  },
+  /* ── FEES ── */
+  {
+    id:'s-fe1', cat:'fees', icon:'💳', ib:'ib-payment',
+    title:'المصروفات الدراسية',
+    desc:'الاطلاع على جداول الرسوم والمصروفات الدراسية المقررة للعام الجامعي الحالي.',
+    tags:['مصروفات','رسوم','دراسي'],
+    btn:'عرض المصروفات',
+    url:'https://fsed.bu.edu.eg/students/educational-expenses',
+  },
+  {
+    id:'s-fe2', cat:'fees', icon:'💰', ib:'ib-payment',
+    title:'مصروفات الدراسات العليا',
+    desc:'الاطلاع على رسوم الالتحاق ببرامج الدراسات العليا والماجستير والدكتوراه.',
+    tags:['مصروفات','رسوم','دراسات عليا'],
+    btn:'عرض الرسوم',
+    url:'https://fsed.bu.edu.eg/graduate-studies/educational-expenses-postgraduate',
+    outline:true,
+  },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
    SERVICES DATA — GRADUATE (خريج)
 ═══════════════════════════════════════════════════════════════ */
 const GRADUATE_CATS = [
-  { id:'all',         label:'جميع الخدمات',        icon:'⊞' },
-  { id:'docs',        label:'توثيق الشهادات',       icon:'📜' },
-  { id:'jobs',        label:'فرص العمل والتوظيف',   icon:'💼' },
-  { id:'network',     label:'شبكة الخريجين',        icon:'🌐' },
-  { id:'research',    label:'الأبحاث والنشر',        icon:'🔬' },
-  { id:'fellowship',  label:'الزمالات والمنح',       icon:'🏆' },
-  { id:'support',     label:'الدعم والإرشاد',        icon:'📞' },
-  { id:'links',       label:'الروابط المهمة',        icon:'🔗' },
+  { id:'all',        label:'جميع الخدمات',       icon:'⊞' },
+  { id:'docs',       label:'توثيق الشهادات',      icon:'📜' },
+  { id:'jobs',       label:'فرص العمل والتوظيف',  icon:'💼' },
+  { id:'postgrad',   label:'الدراسات العليا',      icon:'🎓' },
+  { id:'research',   label:'الأبحاث والنشر',       icon:'🔬' },
+  { id:'network',    label:'شبكة الخريجين',        icon:'🌐' },
+  { id:'links',      label:'الروابط المهمة',       icon:'🔗' },
 ];
 
 const GRADUATE_SERVICES = [
-  // Docs
-  { id:'g-do1', cat:'docs', icon:'📜', ib:'ib-grad', title:'توثيق شهادة التخرج', desc:'استخراج وتوثيق شهادة التخرج الرسمية من الكلية ومعادلتها عند الحاجة.', tags:['توثيق','شهادة'], btn:'طلب التوثيق' },
-  { id:'g-do2', cat:'docs', icon:'🗂️', ib:'ib-grad', title:'السجل الأكاديمي للخريج', desc:'استخراج نسخة رسمية من سجلك الأكاديمي الكامل بعد التخرج.', tags:['توثيق','ترانسكريبت'], btn:'طلب النسخة' },
-  { id:'g-do3', cat:'docs', icon:'🪪', ib:'ib-grad', title:'بطاقة الخريج', desc:'استخراج بطاقة هوية الخريج الرسمية للاستفادة من خدمات ومزايا الخريجين.', tags:['توثيق','بطاقة'], btn:'استخراج' },
-  { id:'g-do4', cat:'docs', icon:'📋', ib:'ib-grad', title:'شهادة الخبرة الأكاديمية', desc:'الحصول على شهادة تفيد بخبرتك الأكاديمية وسنوات الدراسة في الكلية.', tags:['توثيق','خبرة'], btn:'طلب الشهادة', outline:true },
-  // Jobs
-  { id:'g-jo1', cat:'jobs', icon:'💼', ib:'ib-grad', title:'فرص العمل الحصرية', desc:'تصفح فرص العمل المتاحة حصراً لخريجي كلية التربية النوعية من الشركات الشريكة.', tags:['توظيف','فرص'], btn:'استعراض الفرص' },
-  { id:'g-jo2', cat:'jobs', icon:'📄', ib:'ib-grad', title:'إنشاء وتحديث السيرة الذاتية', desc:'أدوات ذكية لإنشاء سيرة ذاتية احترافية تناسب سوق العمل في مجالك.', tags:['توظيف','CV'], btn:'إنشاء CV' },
-  { id:'g-jo3', cat:'jobs', icon:'🏢', ib:'ib-grad', title:'التواصل مع أصحاب العمل', desc:'تواصل مباشر مع المؤسسات والشركات الشريكة للكلية لعرض ملفك المهني.', tags:['توظيف','تواصل'], btn:'تواصل' },
-  { id:'g-jo4', cat:'jobs', icon:'📊', ib:'ib-grad', title:'إحصائيات سوق العمل', desc:'تقارير وتحليلات لسوق العمل في مجال التربية والتعليم والتخصصات المرتبطة.', tags:['توظيف','تحليلات'], btn:'عرض التقارير', outline:true },
-  // Network
-  { id:'g-ne1', cat:'network', icon:'🌐', ib:'ib-grad', title:'مجتمع الخريجين Alumni', desc:'انضم لشبكة خريجي الكلية للتواصل المهني وتبادل الخبرات والفرص.', tags:['مجتمع','تواصل'], btn:'الانضمام' },
-  { id:'g-ne2', cat:'network', icon:'👥', ib:'ib-grad', title:'اللقاءات السنوية للخريجين', desc:'احضر الملتقيات والفعاليات السنوية لخريجي الكلية والتواصل مع الزملاء.', tags:['مجتمع','فعاليات'], btn:'التسجيل' },
-  { id:'g-ne3', cat:'network', icon:'🤝', ib:'ib-grad', title:'برنامج إرشاد الطلاب', desc:'شارك كمرشد متطوع لمساعدة الطلاب الحاليين بخبرتك المهنية.', tags:['مجتمع','إرشاد'], btn:'التطوع', outline:true },
-  { id:'g-ne4', cat:'network', icon:'🎨', ib:'ib-grad', title:'معرض أعمال الخريجين', desc:'اعرض أعمالك ومشاريعك الإبداعية ضمن معرض خريجي الكلية الإلكتروني.', tags:['مجتمع','portfolio'], btn:'عرض أعمالي' },
-  // Research
-  { id:'g-re1', cat:'research', icon:'🔬', ib:'ib-grad', title:'نشر الأبحاث العلمية', desc:'الإرشاد حول نشر أبحاثك في المجلات العلمية المحكمة وقواعد البيانات.', tags:['بحث','نشر'], btn:'معرفة المزيد' },
-  { id:'g-re2', cat:'research', icon:'📚', ib:'ib-grad', title:'الوصول للمكتبة الأكاديمية', desc:'يحتفظ الخريجون بصلاحية الوصول للمكتبة الإلكترونية والمراجع الأكاديمية.', tags:['بحث','مكتبة'], btn:'الدخول', outline:true },
-  { id:'g-re3', cat:'research', icon:'🎓', ib:'ib-grad', title:'الدراسات العليا والماجستير', desc:'معلومات شاملة للتقديم لبرامج الماجستير والدكتوراه في الكلية والجامعات المرتبطة.', tags:['بحث','دراسات عليا'], btn:'استكشاف البرامج' },
-  // Fellowship
-  { id:'g-fe1', cat:'fellowship', icon:'🏆', ib:'ib-grad', title:'الزمالات الأكاديمية', desc:'تصفح فرص الزمالات الأكاديمية الداخلية والخارجية المتاحة لخريجي الكلية.', tags:['زمالات','فرص'], btn:'استعراض' },
-  { id:'g-fe2', cat:'fellowship', icon:'💰', ib:'ib-grad', title:'المنح الدراسية للخريجين', desc:'تعرف على المنح الدراسية المتاحة لاستكمال الدراسات العليا محلياً ودولياً.', tags:['منح','دراسات'], btn:'التقديم' },
-  { id:'g-fe3', cat:'fellowship', icon:'🌍', ib:'ib-grad', title:'برامج التبادل الدولي', desc:'فرص للانضمام لبرامج تبادل دولية وزيارات أكاديمية للجامعات الشريكة.', tags:['زمالات','دولي'], btn:'التفاصيل', outline:true },
-  // Support
-  { id:'g-su1', cat:'support', icon:'📞', ib:'ib-grad', title:'مكتب خدمات الخريجين', desc:'تواصل مباشر مع مكتب شؤون الخريجين لأي استفسار أو مساعدة تحتاجها.', tags:['دعم','تواصل'], btn:'تواصل' },
-  { id:'g-su2', cat:'support', icon:'📋', ib:'ib-grad', title:'استطلاع خريجي الكلية', desc:'شارك في الاستطلاع السنوي لرصد مسارات الخريجين وتطوير البرامج الأكاديمية.', tags:['دعم','استطلاع'], btn:'المشاركة', outline:true },
-  // Links
-  { id:'g-li1', cat:'links', icon:'🔗', ib:'ib-links', title:'بوابة الخريجين الرسمية', desc:'الوصول لبوابة جامعة بنها الرسمية المخصصة لخريجيها وخدماتها.', tags:['روابط','جامعة'], btn:'الانتقال' },
-  { id:'g-li2', cat:'links', icon:'🌐', ib:'ib-links', title:'فرص ومنظمات دولية', desc:'روابط لمنظمات دولية تقدم فرص عمل وزمالات في مجالات التربية والتعليم.', tags:['روابط','دولي'], btn:'استعراض', outline:true },
+  {
+    id:'g-do1', cat:'docs', icon:'📜', ib:'ib-grad',
+    title:'مكتب متابعة الخريجين',
+    desc:'التواصل المباشر مع مكتب شؤون الخريجين للحصول على وثائق التخرج والمتابعة.',
+    tags:['توثيق','خريجون','مكتب'],
+    btn:'التواصل مع المكتب',
+    url:'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
+    hot:true,
+  },
+  {
+    id:'g-do2', cat:'docs', icon:'🗂️', ib:'ib-grad',
+    title:'السجل الأكاديمي (الترانسكريبت)',
+    desc:'طلب استخراج نسخة رسمية من السجل الأكاديمي الكامل بعد التخرج.',
+    tags:['توثيق','ترانسكريبت','رسمي'],
+    btn:'طلب النسخة',
+    url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+  },
+  {
+    id:'g-do3', cat:'docs', icon:'🛡️', ib:'ib-grad',
+    title:'الميثاق الأخلاقي للطالب',
+    desc:'الاطلاع على ميثاق الأخلاقيات الجامعية الصادر عن جامعة بنها.',
+    tags:['توثيق','ميثاق','أخلاق'],
+    btn:'عرض الميثاق',
+    url:'https://bu.edu.eg/e-services/University_Student_Ethical_Charter.php',
+    outline:true,
+  },
+  {
+    id:'g-jo1', cat:'jobs', icon:'💼', ib:'ib-grad',
+    title:'مواقع الطلاب والخريجين',
+    desc:'تصفح المنصات الإلكترونية والمواقع المتاحة لطلاب وخريجي جامعة بنها.',
+    tags:['توظيف','مواقع','خريجون'],
+    btn:'استعراض المواقع',
+    url:'https://bu.edu.eg/students/f10',
+  },
+  {
+    id:'g-po1', cat:'postgrad', icon:'🎓', ib:'ib-grad',
+    title:'لائحة الدراسات العليا',
+    desc:'الاطلاع على اللائحة المنظمة لبرامج الماجستير والدكتوراه بالكلية.',
+    tags:['دراسات عليا','لائحة','ماجستير'],
+    btn:'عرض اللائحة',
+    url:'https://fsed.bu.edu.eg/graduate-studies/list-of-graduate-studies',
+    hot:true,
+  },
+  {
+    id:'g-po2', cat:'postgrad', icon:'📋', ib:'ib-grad',
+    title:'آليات التسجيل في الدراسات العليا',
+    desc:'خطوات وإجراءات التسجيل في برامج الدراسات العليا بكلية التربية النوعية.',
+    tags:['دراسات عليا','تسجيل','إجراءات'],
+    btn:'معرفة الخطوات',
+    url:'https://fsed.bu.edu.eg/graduate-studies/registration-mechanisms',
+  },
+  {
+    id:'g-po3', cat:'postgrad', icon:'📚', ib:'ib-grad',
+    title:'برامج الدراسات العليا ومقرراتها',
+    desc:'تصفح البرامج الأكاديمية والمقررات المتاحة لطلاب الدراسات العليا.',
+    tags:['دراسات عليا','برامج','مقررات'],
+    btn:'استعراض البرامج',
+    url:'https://fsed.bu.edu.eg/graduate-studies/graduate-studies-programs-and-courses',
+  },
+  {
+    id:'g-po4', cat:'postgrad', icon:'📅', ib:'ib-grad',
+    title:'الجداول الدراسية — الدراسات العليا',
+    desc:'الاطلاع على الجداول الدراسية لمحاضرات الماجستير والدكتوراه.',
+    tags:['دراسات عليا','جداول','محاضرات'],
+    btn:'عرض الجداول',
+    url:'https://fsed.bu.edu.eg/graduate-studies/academic-schedules',
+    outline:true,
+  },
+  {
+    id:'g-po5', cat:'postgrad', icon:'📋', ib:'ib-grad',
+    title:'الأوراق المطلوبة للالتحاق',
+    desc:'قائمة الوثائق والأوراق الرسمية المطلوبة للتسجيل في الدراسات العليا.',
+    tags:['دراسات عليا','وثائق','أوراق'],
+    btn:'عرض المتطلبات',
+    url:'https://fsed.bu.edu.eg/graduate-studies/papers-required-postgraduate-studies',
+    outline:true,
+  },
+  {
+    id:'g-po6', cat:'postgrad', icon:'✏️', ib:'ib-grad',
+    title:'معايير كتابة الرسالة العلمية',
+    desc:'الدليل الرسمي لمعايير وقواعد كتابة رسائل الماجستير والدكتوراه.',
+    tags:['دراسات عليا','رسالة','معايير'],
+    btn:'عرض المعايير',
+    url:'https://fsed.bu.edu.eg/graduate-studies/criteria-for-writing-a-dissertation',
+    outline:true,
+  },
+  {
+    id:'g-po7', cat:'postgrad', icon:'📊', ib:'ib-grad',
+    title:'نتائج امتحانات الدراسات العليا',
+    desc:'الاطلاع على نتائج امتحانات برامج الماجستير والدكتوراه بعد الإعلان الرسمي.',
+    tags:['دراسات عليا','نتائج','امتحانات'],
+    btn:'عرض النتائج',
+    url:'https://fsed.bu.edu.eg/graduate-studies/results-graduate-studies',
+  },
+  {
+    id:'g-po8', cat:'postgrad', icon:'💳', ib:'ib-payment',
+    title:'مصروفات الدراسات العليا',
+    desc:'الاطلاع على جداول الرسوم الدراسية لبرامج الدراسات العليا والإجراءات المالية.',
+    tags:['دراسات عليا','مصروفات','رسوم'],
+    btn:'عرض المصروفات',
+    url:'https://fsed.bu.edu.eg/graduate-studies/educational-expenses-postgraduate',
+    outline:true,
+  },
+  {
+    id:'g-re1', cat:'research', icon:'🔬', ib:'ib-grad',
+    title:'المجلة العلمية للكلية',
+    desc:'النشر في المجلة العلمية المحكمة لكلية التربية النوعية — شروط وإجراءات النشر.',
+    tags:['بحث','مجلة','نشر'],
+    btn:'الدخول للمجلة',
+    url:'https://sjse.journals.ekb.eg/',
+    hot:true,
+  },
+  {
+    id:'g-re2', cat:'research', icon:'⚖️', ib:'ib-grad',
+    title:'ميثاق أخلاقيات البحث العلمي',
+    desc:'الاطلاع على قواعد وأخلاقيات البحث العلمي المعتمدة في الكلية.',
+    tags:['بحث','أخلاق','ميثاق'],
+    btn:'عرض الميثاق',
+    url:'https://fsed.bu.edu.eg/graduate-studies/scientific-research-ethics-charter',
+    outline:true,
+  },
+  {
+    id:'g-re3', cat:'research', icon:'📚', ib:'ib-library',
+    title:'بنك المعرفة المصري',
+    desc:'الوصول لآلاف الكتب والمجلات والأبحاث العلمية الرقمية مجاناً.',
+    tags:['بحث','مكتبة','رقمي'],
+    btn:'الدخول',
+    url:'https://www.ekb.eg/ar/home',
+  },
+  {
+    id:'g-re4', cat:'research', icon:'🏛️', ib:'ib-grad',
+    title:'اللجان العلمية',
+    desc:'التعرف على اللجان العلمية المختصة في الكلية وأدوارها في الإشراف البحثي.',
+    tags:['بحث','لجان','إشراف'],
+    btn:'عرض اللجان',
+    url:'https://fsed.bu.edu.eg/graduate-studies/scientific-committees',
+    outline:true,
+  },
+  {
+    id:'g-ne1', cat:'network', icon:'🌐', ib:'ib-grad',
+    title:'بوابة جامعة بنها',
+    desc:'الدخول للبوابة الرسمية لجامعة بنها والوصول لجميع خدمات الخريجين.',
+    tags:['شبكة','جامعة','بوابة'],
+    btn:'الانتقال للبوابة',
+    url:'https://bu.edu.eg',
+  },
+  {
+    id:'g-ne2', cat:'network', icon:'📡', ib:'ib-grad',
+    title:'مكتب العلاقات الدولية',
+    desc:'التواصل مع مكتب العلاقات الدولية لبرامج التبادل والزمالات والفرص الخارجية.',
+    tags:['شبكة','دولي','زمالات'],
+    btn:'زيارة المكتب',
+    url:'https://iro.bu.edu.eg/',
+    outline:true,
+  },
+  {
+    id:'g-li1', cat:'links', icon:'🔗', ib:'ib-links',
+    title:'موقع الكلية الرسمي',
+    desc:'الموقع الرسمي لكلية التربية النوعية جامعة بنها.',
+    tags:['روابط','كلية','رسمي'],
+    btn:'زيارة الموقع',
+    url:'https://fsed.bu.edu.eg',
+  },
+  {
+    id:'g-li2', cat:'links', icon:'🎓', ib:'ib-links',
+    title:'صفحة الطالب — بوابة الجامعة',
+    desc:'الدخول لبوابة الطالب الإلكترونية لعرض بياناتك وسجلاتك الكاملة.',
+    tags:['روابط','بوابة','طالب'],
+    btn:'الدخول',
+    url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+    outline:true,
+  },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
    SERVICES DATA — DOCTOR (دكتور)
 ═══════════════════════════════════════════════════════════════ */
 const DOCTOR_CATS = [
-  { id:'all',        label:'جميع الخدمات',        icon:'⊞' },
-  { id:'courses',    label:'إدارة المقررات',        icon:'📖' },
-  { id:'research',   label:'البحث العلمي',          icon:'🔬' },
-  { id:'students',   label:'متابعة الطلاب',         icon:'👥' },
-  { id:'schedule',   label:'الجداول والمحاضرات',    icon:'📅' },
-  { id:'etools',     label:'أدوات التدريس الإلكتروني', icon:'🖥️' },
-  { id:'admin',      label:'الإدارة الأكاديمية',    icon:'📋' },
-  { id:'links',      label:'الروابط المهمة',         icon:'🔗' },
+  { id:'all',        label:'جميع الخدمات',           icon:'⊞' },
+  { id:'courses',    label:'إدارة المقررات',           icon:'📖' },
+  { id:'research',   label:'البحث العلمي والنشر',      icon:'🔬' },
+  { id:'students',   label:'متابعة الطلاب',            icon:'👥' },
+  { id:'postgrad',   label:'الدراسات العليا',          icon:'🎓' },
+  { id:'quality',    label:'ضمان الجودة',              icon:'🏆' },
+  { id:'links',      label:'الروابط المهمة',            icon:'🔗' },
 ];
 
 const DOCTOR_SERVICES = [
-  // Courses
-  { id:'d-co1', cat:'courses', icon:'📖', ib:'ib-doctor', title:'إدارة محتوى المقررات', desc:'رفع وتنظيم محتوى المقررات الدراسية على منصة التعلم الإلكترونية للكلية.', tags:['مقررات','محتوى'], btn:'إدارة المقررات' },
-  { id:'d-co2', cat:'courses', icon:'📊', ib:'ib-doctor', title:'رصد الدرجات والغيابات', desc:'تسجيل درجات الطلاب وتحديث سجلات الحضور والغياب بشكل دوري ومنظم.', tags:['مقررات','درجات'], btn:'رصد الدرجات' },
-  { id:'d-co3', cat:'courses', icon:'📋', ib:'ib-doctor', title:'إعداد الاختبارات والتكليفات', desc:'إنشاء الاختبارات والواجبات وتكليفات البحث للطلاب وإدارة مواعيد تسليمها.', tags:['مقررات','اختبارات'], btn:'إنشاء اختبار' },
-  { id:'d-co4', cat:'courses', icon:'📝', ib:'ib-doctor', title:'توصيف المقرر الدراسي', desc:'إعداد وتحديث توصيف المقرر الدراسي وفق المعايير الأكاديمية المعتمدة.', tags:['مقررات','توصيف'], btn:'عرض التوصيف', outline:true },
-  { id:'d-co5', cat:'courses', icon:'📚', ib:'ib-doctor', title:'قائمة المراجع والكتب', desc:'تحديث وإدارة قائمة الكتب والمراجع المقررة على الطلاب في كل مقرر.', tags:['مقررات','مراجع'], btn:'تحديث القائمة', outline:true },
-  // Research
-  { id:'d-re1', cat:'research', icon:'🔬', ib:'ib-doctor', title:'نشر الأبحاث والدراسات', desc:'إرشادات وخطوات نشر أبحاثك في المجلات العلمية المحكمة والمؤتمرات الدولية.', tags:['بحث','نشر'], btn:'إرشادات النشر' },
-  { id:'d-re2', cat:'research', icon:'💰', ib:'ib-doctor', title:'تمويل الأبحاث والمشاريع', desc:'تقديم طلبات التمويل للأبحاث العلمية من الجامعة والجهات الممولة الخارجية.', tags:['بحث','تمويل'], btn:'تقديم طلب' },
-  { id:'d-re3', cat:'research', icon:'🏛️', ib:'ib-doctor', title:'المؤتمرات الأكاديمية', desc:'معلومات عن المؤتمرات العلمية المحلية والدولية في مجالات التربية والتعليم.', tags:['بحث','مؤتمرات'], btn:'استعراض', outline:true },
-  { id:'d-re4', cat:'research', icon:'📰', ib:'ib-doctor', title:'المجلة العلمية للكلية', desc:'إرشادات وشروط النشر في المجلة العلمية المحكمة لكلية التربية النوعية.', tags:['بحث','مجلة'], btn:'شروط النشر', outline:true },
-  // Students
-  { id:'d-st1', cat:'students', icon:'👥', ib:'ib-doctor', title:'سجلات الطلاب', desc:'الاطلاع على البيانات الأكاديمية لطلاب مقرراتك ومتابعة مستوياتهم الدراسية.', tags:['طلاب','سجلات'], btn:'عرض السجلات' },
-  { id:'d-st2', cat:'students', icon:'📞', ib:'ib-doctor', title:'التواصل مع الطلاب', desc:'أرسل إشعارات وتنبيهات مباشرة لطلابك عبر المنصة بشكل منظم وفعّال.', tags:['طلاب','تواصل'], btn:'إرسال رسالة' },
-  { id:'d-st3', cat:'students', icon:'🎓', ib:'ib-doctor', title:'الإشراف على رسائل التخرج', desc:'إدارة ملفات الطلاب تحت إشرافك ومتابعة مراحل إعداد رسائل التخرج.', tags:['طلاب','إشراف'], btn:'عرض الملفات' },
-  { id:'d-st4', cat:'students', icon:'⚠️', ib:'ib-doctor', title:'تنبيهات الطلاب في خطر', desc:'قائمة بالطلاب الذين يحتاجون إلى متابعة أكاديمية مكثفة بسبب تدني الأداء.', tags:['طلاب','متابعة'], btn:'عرض القائمة', outline:true },
-  // Schedule
-  { id:'d-sc1', cat:'schedule', icon:'📅', ib:'ib-doctor', title:'جدول المحاضرات', desc:'اطلع على جدولك الدراسي الأسبوعي وقاعات المحاضرات المخصصة لمقرراتك.', tags:['جدول','محاضرات'], btn:'عرض الجدول' },
-  { id:'d-sc2', cat:'schedule', icon:'📝', ib:'ib-doctor', title:'جدول إشراف الامتحانات', desc:'مواعيد لجان الامتحانات التي كُلِّفت بالإشراف عليها خلال الفصل الدراسي.', tags:['جدول','امتحانات'], btn:'عرض الجدول' },
-  { id:'d-sc3', cat:'schedule', icon:'🏢', ib:'ib-doctor', title:'حجز قاعات ومعامل', desc:'حجز القاعات الدراسية والمعامل التخصصية لمحاضراتك وأنشطتك الأكاديمية.', tags:['جدول','حجز'], btn:'حجز قاعة', outline:true },
-  // E-Tools
-  { id:'d-et1', cat:'etools', icon:'🖥️', ib:'ib-doctor', title:'منصة Moodle للمدرسين', desc:'إدارة المقررات الإلكترونية ورفع المواد ومتابعة نشاط الطلاب على المنصة.', tags:['إلكتروني','Moodle'], btn:'الدخول للمنصة' },
-  { id:'d-et2', cat:'etools', icon:'🎥', ib:'ib-doctor', title:'تسجيل المحاضرات المرئية', desc:'إرشادات تقنية لتسجيل المحاضرات ورفعها على منصة التعلم الإلكتروني للكلية.', tags:['إلكتروني','تسجيل'], btn:'إرشادات', outline:true },
-  { id:'d-et3', cat:'etools', icon:'📊', ib:'ib-doctor', title:'تحليلات أداء الطلاب', desc:'تقارير ورسوم بيانية تفصيلية لأداء الطلاب ومعدلات النجاح في مقرراتك.', tags:['إلكتروني','تحليلات'], btn:'عرض التقارير' },
-  // Admin
-  { id:'d-ad1', cat:'admin', icon:'📋', ib:'ib-doctor', title:'طلبات الإجازات والأذونات', desc:'تقديم طلبات الإجازة الرسمية ومتابعة حالة الطلبات المقدمة لإدارة الكلية.', tags:['إدارة','إجازات'], btn:'تقديم طلب' },
-  { id:'d-ad2', cat:'admin', icon:'🏛️', ib:'ib-doctor', title:'اجتماعات مجلس الكلية', desc:'مواعيد واجندات اجتماعات مجلس الكلية والأقسام والمحاضر الرسمية.', tags:['إدارة','اجتماعات'], btn:'الاطلاع', outline:true },
-  { id:'d-ad3', cat:'admin', icon:'📜', ib:'ib-doctor', title:'اللوائح والتعليمات الأكاديمية', desc:'نسخ محدّثة من اللوائح الأكاديمية وتعليمات الاعتماد المؤسسي للكلية.', tags:['إدارة','لوائح'], btn:'تحميل', outline:true },
-  // Links
-  { id:'d-li1', cat:'links', icon:'🔗', ib:'ib-links', title:'البوابة الأكاديمية للجامعة', desc:'الوصول لبوابة جامعة بنها الإلكترونية وخدماتها لأعضاء هيئة التدريس.', tags:['روابط','جامعة'], btn:'الانتقال' },
-  { id:'d-li2', cat:'links', icon:'🌐', ib:'ib-links', title:'قواعد البيانات الأكاديمية', desc:'روابط لقواعد البيانات والمجلات العلمية العالمية المتاحة عبر الجامعة.', tags:['روابط','أبحاث'], btn:'استعراض', outline:true },
+  {
+    id:'d-co1', cat:'courses', icon:'📖', ib:'ib-doctor',
+    title:'إدارة المحاضرات والمقررات',
+    desc:'رفع وإدارة محتوى المقررات الدراسية والمحاضرات على المنصة الإلكترونية للكلية.',
+    tags:['مقررات','محتوى','محاضرات'],
+    btn:'إدارة المحتوى',
+    url:'https://fsed.bu.edu.eg/students/learning',
+    hot:true,
+  },
+  {
+    id:'d-co2', cat:'courses', icon:'📅', ib:'ib-doctor',
+    title:'الجداول الدراسية',
+    desc:'الاطلاع على جداول المحاضرات وتوزيع الأعباء التدريسية لأعضاء هيئة التدريس.',
+    tags:['مقررات','جداول','محاضرات'],
+    btn:'عرض الجداول',
+    url:'https://fsed.bu.edu.eg/study-schedules',
+  },
+  {
+    id:'d-co3', cat:'courses', icon:'📚', ib:'ib-doctor',
+    title:'البرامج والمقررات الدراسية',
+    desc:'استعراض خطط الدراسة والمقررات المقررة لكل برنامج وقسم دراسي.',
+    tags:['مقررات','برامج','خطط'],
+    btn:'استعراض',
+    url:'https://fsed.bu.edu.eg/students/students-programs-and-courses',
+    outline:true,
+  },
+  {
+    id:'d-co4', cat:'courses', icon:'📊', ib:'ib-doctor',
+    title:'استطلاعات تقييم المقررات',
+    desc:'الاطلاع على نتائج تقييم الطلاب للمقررات الدراسية وأداء هيئة التدريس.',
+    tags:['مقررات','تقييم','جودة'],
+    btn:'عرض التقييمات',
+    url:'https://fsed.bu.edu.eg/students/polling-the-student-opinion-on-the-course',
+    outline:true,
+  },
+  {
+    id:'d-re1', cat:'research', icon:'🔬', ib:'ib-doctor',
+    title:'المجلة العلمية للكلية',
+    desc:'النشر في المجلة العلمية المحكمة لكلية التربية النوعية — شروط وإجراءات تفصيلية.',
+    tags:['بحث','مجلة','نشر'],
+    btn:'الدخول للمجلة',
+    url:'https://sjse.journals.ekb.eg/',
+    hot:true,
+  },
+  {
+    id:'d-re2', cat:'research', icon:'⚖️', ib:'ib-doctor',
+    title:'ميثاق أخلاقيات البحث العلمي',
+    desc:'الاطلاع على معايير وأخلاقيات البحث العلمي الجامعي المعتمدة رسمياً.',
+    tags:['بحث','أخلاق','معايير'],
+    btn:'عرض الميثاق',
+    url:'https://fsed.bu.edu.eg/graduate-studies/scientific-research-ethics-charter',
+  },
+  {
+    id:'d-re3', cat:'research', icon:'✏️', ib:'ib-doctor',
+    title:'معايير الرسالة العلمية',
+    desc:'المعايير والقواعد الرسمية لكتابة وتقييم رسائل الماجستير والدكتوراه.',
+    tags:['بحث','رسالة','معايير'],
+    btn:'عرض المعايير',
+    url:'https://fsed.bu.edu.eg/graduate-studies/criteria-for-writing-a-dissertation',
+    outline:true,
+  },
+  {
+    id:'d-re4', cat:'research', icon:'📚', ib:'ib-library',
+    title:'بنك المعرفة المصري',
+    desc:'الوصول الفوري لآلاف الكتب والمجلات والمراجع الأكاديمية الدولية.',
+    tags:['بحث','مكتبة','مراجع'],
+    btn:'الدخول',
+    url:'https://www.ekb.eg/ar/home',
+  },
+  {
+    id:'d-re5', cat:'research', icon:'📡', ib:'ib-doctor',
+    title:'المجالات البحثية بالجامعة',
+    desc:'الاطلاع على المجالات البحثية المعتمدة في الجامعة والكليات المشاركة.',
+    tags:['بحث','مجالات','جامعة'],
+    btn:'استعراض',
+    url:'https://bu.edu.eg/researchfields/10',
+    outline:true,
+  },
+  {
+    id:'d-st1', cat:'students', icon:'👥', ib:'ib-doctor',
+    title:'بوابة الطالب وبياناته',
+    desc:'الدخول لمنظومة بيانات الطلاب لعرض السجلات الأكاديمية ومتابعة المستوى.',
+    tags:['طلاب','سجلات','بيانات'],
+    btn:'دخول البوابة',
+    url:'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+    hot:true,
+  },
+  {
+    id:'d-st2', cat:'students', icon:'📋', ib:'ib-doctor',
+    title:'قوائم الطلاب',
+    desc:'الاطلاع على قوائم الطلاب المقيدين في المقررات وكشوف الحضور الرسمية.',
+    tags:['طلاب','قوائم','حضور'],
+    btn:'عرض القوائم',
+    url:'https://fsed.bu.edu.eg/students/students-lists',
+  },
+  {
+    id:'d-st3', cat:'students', icon:'💬', ib:'ib-doctor',
+    title:'آلية تلقي الشكاوى',
+    desc:'الاطلاع على آلية تلقي الشكاوى ومتابعة المقترحات المقدمة من الطلاب.',
+    tags:['طلاب','شكاوى','متابعة'],
+    btn:'عرض الآلية',
+    url:'https://fsed.bu.edu.eg/students/complaints-receiving-mechanism',
+    outline:true,
+  },
+  {
+    id:'d-po1', cat:'postgrad', icon:'🎓', ib:'ib-grad',
+    title:'لوائح وبرامج الدراسات العليا',
+    desc:'الاطلاع على اللوائح الرسمية المنظمة لبرامج الماجستير والدكتوراه.',
+    tags:['دراسات عليا','لوائح','برامج'],
+    btn:'عرض البرامج',
+    url:'https://fsed.bu.edu.eg/graduate-studies',
+    hot:true,
+  },
+  {
+    id:'d-po2', cat:'postgrad', icon:'📅', ib:'ib-doctor',
+    title:'جداول امتحانات الدراسات العليا',
+    desc:'الاطلاع على مواعيد امتحانات الماجستير والدكتوراه وترتيبات اللجان.',
+    tags:['دراسات عليا','امتحانات','جداول'],
+    btn:'عرض الجداول',
+    url:'https://fsed.bu.edu.eg/graduate-studies/schedules-graduate-exams',
+  },
+  {
+    id:'d-po3', cat:'postgrad', icon:'🏛️', ib:'ib-doctor',
+    title:'اللجان العلمية',
+    desc:'إدارة الإشراف على رسائل الماجستير والدكتوراه ومتابعة مراحل التقديم.',
+    tags:['دراسات عليا','لجان','إشراف'],
+    btn:'عرض اللجان',
+    url:'https://fsed.bu.edu.eg/graduate-studies/scientific-committees',
+    outline:true,
+  },
+  {
+    id:'d-qu1', cat:'quality', icon:'🏆', ib:'ib-quality',
+    title:'وحدة ضمان الجودة',
+    desc:'التعاون مع وحدة ضمان الجودة في مراجعة البرامج الأكاديمية واعتمادها.',
+    tags:['جودة','اعتماد','وحدة'],
+    btn:'التواصل',
+    url:'https://fsed.bu.edu.eg/units-and-centers/quality-assurance-unit',
+  },
+  {
+    id:'d-qu2', cat:'quality', icon:'📊', ib:'ib-quality',
+    title:'وحدة القياس والتقويم',
+    desc:'أدوات ومعايير قياس وتقويم الأداء الأكاديمي والمؤسسي في الكلية.',
+    tags:['جودة','قياس','تقويم'],
+    btn:'استعراض',
+    url:'https://fsed.bu.edu.eg/units-and-centers/measurement-evaluation-unit',
+    outline:true,
+  },
+  {
+    id:'d-qu3', cat:'quality', icon:'🌐', ib:'ib-quality',
+    title:'وحدة تكنولوجيا المعلومات',
+    desc:'التواصل مع وحدة IT للدعم التقني ومنظومات التعليم الإلكتروني.',
+    tags:['جودة','تقنية','دعم'],
+    btn:'التواصل',
+    url:'https://fsed.bu.edu.eg/units-and-centers/information-technology-unit',
+    outline:true,
+  },
+  {
+    id:'d-li1', cat:'links', icon:'🔗', ib:'ib-links',
+    title:'موقع الكلية الرسمي',
+    desc:'الموقع الرسمي لكلية التربية النوعية جامعة بنها.',
+    tags:['روابط','كلية','رسمي'],
+    btn:'زيارة الموقع',
+    url:'https://fsed.bu.edu.eg',
+  },
+  {
+    id:'d-li2', cat:'links', icon:'🌐', ib:'ib-links',
+    title:'بوابة أعضاء هيئة التدريس',
+    desc:'بوابة جامعة بنها الخاصة بأعضاء هيئة التدريس ومساعديهم.',
+    tags:['روابط','هيئة تدريس','بوابة'],
+    btn:'الانتقال',
+    url:'https://bu.edu.eg/portal/index.php?act=104&fid=10',
+    outline:true,
+  },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
-   FAQ — PER ROLE
+   FAQ DATA
 ═══════════════════════════════════════════════════════════════ */
-const FAQS = {
-  'طالب': [
-    { q:'كيف أحصل على شهادة قيد رسمية؟', a:'تقدم بطلب عبر قسم شؤون الطلاب أو من خلال الخدمات الأكاديمية في المنصة. تستغرق العملية عادةً 3-5 أيام عمل.' },
-    { q:'متى يفتح باب تسجيل الامتحانات؟', a:'يفتح قبل أسبوعين من الامتحانات. ستصلك إشعارات تلقائية على المنصة عند فتح التسجيل.' },
-    { q:'كيف أتقدم للمنحة الدراسية؟', a:'استوفِ النماذج المطلوبة في قسم شؤون الطلاب مع المستندات المطلوبة. الموعد النهائي عادةً أول أسبوعين من الفصل.' },
-    { q:'هل يمكنني تغيير قسمي الدراسي؟', a:'نعم، بشروط: اجتياز سنة كاملة، الحصول على الحد الأدنى للمجموع، وتوافر أماكن في القسم الجديد.' },
-    { q:'كيف أحصل على بريدي الجامعي؟', a:'توجه لمعمل الحاسب بصورة بطاقتك وكارنيه الكلية. يتم التفعيل فوراً.' },
-    { q:'ما ساعات الإرشاد الأكاديمي؟', a:'الأحد والثلاثاء والخميس من 10 ص حتى 2 ظهراً. يمكنك حجز موعد إلكتروني عبر المنصة.' },
+const FAQ_DATA = {
+  student: [
+    { q:'كيف أجد جدول الامتحانات؟', icon:'📋', a:'انتقل لقسم "خدمات الامتحانات" واختر "جداول الامتحانات"، أو اضغط على الرابط المباشر لموقع الكلية.' },
+    { q:'من أين أعرف نتيجتي؟', icon:'✅', a:'من قسم "خدمات الامتحانات" اختر "نتائج الامتحانات" للوصول المباشر لنتائجك من موقع الكلية الرسمي.' },
+    { q:'كيف أحصل على دليل الطالب؟', icon:'📄', a:'يمكنك تحميل دليل الطالب المحدث 2025 من قسم "النماذج والتحميلات" مباشرةً.' },
+    { q:'كيف أعرف بريدي التعليمي؟', icon:'📧', a:'من قسم "الخدمات الإلكترونية" اختر "معرفة البريد التعليمي" للوصول لبوابة استخراج الإيميل.' },
+    { q:'أين أجد رقم جلوسي؟', icon:'🔢', a:'من قسم "خدمات الامتحانات" اختر "أرقام الجلوس" لعرض رقمك في كل مادة.' },
+    { q:'كيف أقدم شكوى؟', icon:'⚠️', a:'من قسم "شؤون الطلاب" اختر "آلية تلقي الشكاوى" لتقديم شكواك بشكل رسمي ومتابعتها.' },
   ],
-  'خريج': [
-    { q:'كيف أوثق شهادتي بعد التخرج؟', a:'تقدم بطلب عبر مكتب شؤون الخريجين بصورة من الشهادة وبطاقة الهوية، وسيتم التوثيق خلال أسبوع عمل.' },
-    { q:'هل يمكنني الوصول للمكتبة الإلكترونية بعد التخرج؟', a:'نعم، يحتفظ الخريجون بصلاحية الوصول للمكتبة الإلكترونية لمدة سنة بعد التخرج، وقابلة للتجديد.' },
-    { q:'كيف أنضم لشبكة خريجي الكلية؟', a:'سجّل بياناتك عبر بوابة الخريجين أو تواصل مع مكتب الخريجين مباشرة للحصول على بيانات الوصول.' },
-    { q:'هل توجد فرص وظيفية حصرية للخريجين؟', a:'نعم، تتعاون الكلية مع شركات ومؤسسات شريكة لتوفير فرص حصرية لخريجيها. تصفح قسم فرص العمل للتفاصيل.' },
-    { q:'كيف أتقدم لبرامج الدراسات العليا؟', a:'يمكنك التقديم للماجستير بعد التخرج مباشرة. تواصل مع قسم الدراسات العليا بالكلية للحصول على شروط القبول.' },
+  graduate: [
+    { q:'كيف أوثق شهادتي؟', icon:'📜', a:'تواصل مع مكتب متابعة الخريجين عبر رابط مكتب الخريجين لمعرفة إجراءات التوثيق الكاملة.' },
+    { q:'كيف أسجل في الماجستير؟', icon:'🎓', a:'من قسم "الدراسات العليا" تعرف على شروط القبول، الأوراق المطلوبة، وآليات التسجيل.' },
+    { q:'كيف أنشر بحثي في مجلة الكلية؟', icon:'🔬', a:'من قسم "الأبحاث والنشر" ادخل على المجلة العلمية للكلية لمعرفة شروط وإجراءات النشر.' },
+    { q:'هل بنك المعرفة متاح للخريجين؟', icon:'📚', a:'نعم، يمكن للخريجين الوصول لبنك المعرفة المصري عبر الرابط المتاح في قسم الأبحاث.' },
   ],
-  'دكتور': [
-    { q:'كيف أضيف محتوى لمقرري على Moodle؟', a:'ادخل لمنصة Moodle بحسابك الأكاديمي، اختر المقرر ثم "إضافة نشاط أو مورد". فريق الدعم التقني متاح للمساعدة.' },
-    { q:'كيف أقدم بحثي للنشر في المجلة العلمية للكلية؟', a:'أرسل بحثك وفق شروط النشر المتاحة في قسم المجلة العلمية. يتم المراجعة خلال 4-6 أسابيع.' },
-    { q:'ما إجراءات طلب الإجازة الرسمية؟', a:'قدّم طلبك إلكترونياً عبر قسم الإدارة الأكاديمية قبل 30 يوماً من الإجازة مع المستندات المطلوبة.' },
-    { q:'كيف أحجز قاعة لمحاضرة إضافية؟', a:'استخدم نظام حجز القاعات المتاح في قسم الجداول والمحاضرات وحدد الموعد والمتطلبات التقنية.' },
-    { q:'هل يمكنني الاطلاع على سجلات جميع طلابي؟', a:'نعم، يمكنك الاطلاع على السجلات الأكاديمية لطلاب مقرراتك فقط عبر قسم متابعة الطلاب.' },
+  doctor: [
+    { q:'كيف أرفع محتوى مقرري؟', icon:'📖', a:'من قسم "إدارة المقررات" ادخل على منصة المحاضرات الإلكترونية لرفع محتوى مقرراتك.' },
+    { q:'كيف أنشر في مجلة الكلية؟', icon:'🔬', a:'من قسم "البحث العلمي" ادخل على المجلة العلمية للكلية للاطلاع على شروط النشر.' },
+    { q:'كيف أتابع طلابي في الدراسات العليا؟', icon:'🎓', a:'من قسم "الدراسات العليا" تجد اللجان العلمية وبيانات الطلاب المسجلين تحت إشرافك.' },
+    { q:'كيف أتواصل مع وحدة ضمان الجودة؟', icon:'🏆', a:'من قسم "ضمان الجودة" ستجد رابط وحدة ضمان الجودة بالكلية للتواصل المباشر.' },
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   FUTURE FEATURES
+═══════════════════════════════════════════════════════════════ */
+const FUTURE_FEATURES = [
+  { icon:'🤖', title:'مساعد ذكاء اصطناعي أكاديمي', desc:'مساعد AI يجيب على استفساراتك الأكاديمية ويساعدك في جدولة مذاكرتك.', status:'soon' },
+  { icon:'📱', title:'تطبيق الجوال الرسمي', desc:'تطبيق متكامل لخدمات المنصة على iOS وAndroid مع إشعارات فورية.', status:'dev' },
+  { icon:'🗓️', title:'التقويم الأكاديمي التفاعلي', desc:'تقويم ذكي يتزامن مع جداولك ومواعيد امتحاناتك وتسليم واجباتك.', status:'soon' },
+  { icon:'💬', title:'غرف النقاش الجماعي', desc:'منصة مناقشة مباشرة بين الطلاب والأساتذة لكل مقرر دراسي.', status:'planned' },
+  { icon:'🏅', title:'نظام الشارات والإنجازات', desc:'اكسب شارات تحفيزية عند استخدامك للخدمات وإتمامك للمهام الأكاديمية.', status:'planned' },
+  { icon:'📊', title:'لوحة التحليلات الشخصية', desc:'تتبع تقدمك الأكاديمي، معدلاتك، ومقارنتها بإحصائيات الكلية.', status:'dev' },
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   MINI PROGRESS CONFIG
+═══════════════════════════════════════════════════════════════ */
+const MINI_PROGRESS_DATA = {
+  student: [
+    { label:'الخدمات الإلكترونية', val:85 },
+    { label:'خدمات الامتحانات',    val:72 },
+    { label:'الشؤون الأكاديمية',   val:68 },
+  ],
+  graduate: [
+    { label:'توثيق الشهادات',  val:60 },
+    { label:'الدراسات العليا', val:88 },
+    { label:'الأبحاث والنشر',  val:75 },
+  ],
+  doctor: [
+    { label:'إدارة المقررات', val:90 },
+    { label:'البحث العلمي',   val:80 },
+    { label:'متابعة الطلاب',  val:65 },
   ],
 };
 
 /* ═══════════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════════ */
-const state = {
+let STATE = {
   role: 'طالب',
-  activeCat: 'all',
-  query: '',
+  activeCategory: 'all',
+  searchQuery: '',
   view: 'grid',
-  notifOpen: false,
+  favorites: new Set(),
+  notifCount: 3,
+  servicesData: [],
+  catsData: [],
+  filteredServices: [],
 };
 
-/* helpers */
-const $ = id => document.getElementById(id);
-function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-
-/* ── ROLE DATA ACCESSORS ─────────────────────────────────────── */
-function getCats()     { return state.role === 'خريج' ? GRADUATE_CATS  : state.role === 'دكتور' ? DOCTOR_CATS  : STUDENT_CATS;  }
-function getServices() { return state.role === 'خريج' ? GRADUATE_SERVICES : state.role === 'دكتور' ? DOCTOR_SERVICES : STUDENT_SERVICES; }
-function getFaqs()     { return FAQS[state.role] || FAQS['طالب']; }
-
 /* ═══════════════════════════════════════════════════════════════
-   APPLY ROLE THEME
+   HELPERS
 ═══════════════════════════════════════════════════════════════ */
-function applyRole(role) {
-  state.role = role;
-  document.documentElement.setAttribute('data-role', role);
-
-  /* Role badge */
-  const badge = $('roleBadge');
-  if (badge) {
-    const labels = { 'طالب':'طالب', 'خريج':'خريج', 'دكتور':'دكتور / أستاذ' };
-    badge.innerHTML = `<span class="rb-dot"></span>${esc(labels[role] || role)}`;
-  }
-
-  /* Page title */
-  const t = $('topbarTitle');
-  if (t) t.textContent = role === 'دكتور' ? 'لوحة أعضاء هيئة التدريس' : role === 'خريج' ? 'بوابة الخريجين' : 'خدمات الطلاب';
-
-  /* Hero */
-  const cfg = ROLE_CONFIG[role] || ROLE_CONFIG['طالب'];
-  const ht = $('heroTitle');
-  if (ht) ht.innerHTML = cfg.heroTitle;
-  const hp = $('heroPill');
-  if (hp) hp.textContent = cfg.heroPill;
-  const hs = $('heroSub');
-  if (hs) hs.textContent = cfg.heroSub;
-  const hsi = $('heroSearchInput');
-  if (hsi) hsi.placeholder = cfg.heroSearch;
-
-  /* Stats */
-  const statsEl = $('heroStats');
-  if (statsEl) {
-    statsEl.innerHTML = cfg.stats.map((s, i) => `
-      ${i > 0 ? '<div class="hero-stat-div"></div>' : ''}
-      <div class="hero-stat"><strong>${esc(s.val)}</strong><span>${esc(s.label)}</span></div>
-    `).join('');
-  }
-
-  /* Mini progress — role-specific labels */
-  renderMiniProgress(role);
-
-  /* Re-render everything */
-  state.activeCat = 'all';
-  state.query = '';
-  const si = $('searchInput');
-  if (si) si.value = '';
-  const hi = $('heroSearchInput');
-  if (hi) hi.value = '';
-
-  renderCats();
-  renderServices();
-  renderFAQ();
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MINI PROGRESS
-═══════════════════════════════════════════════════════════════ */
-function renderMiniProgress(role) {
-  const el = $('miniProgress');
-  if (!el) return;
-
-  const data = {
-    'طالب': [
-      { label:'إنجاز المقررات', val:'72%' },
-      { label:'ساعات التدريب',  val:'45%' },
-      { label:'نسبة الحضور',    val:'88%' },
-    ],
-    'خريج': [
-      { label:'اكتمال الملف المهني', val:'60%' },
-      { label:'التواصل الشبكي',      val:'40%' },
-      { label:'طلبات التوظيف',       val:'25%' },
-    ],
-    'دكتور': [
-      { label:'نشر الأبحاث',      val:'55%' },
-      { label:'رصد الدرجات',      val:'80%' },
-      { label:'تقييم الطلاب',     val:'90%' },
-    ],
-  };
-
-  const rows = data[role] || data['طالب'];
-  el.innerHTML = `<h4>نظرة سريعة</h4>` + rows.map(r => `
-    <div class="mp-row">
-      <div class="mp-top"><span>${esc(r.label)}</span><span>${esc(r.val)}</span></div>
-      <div class="mp-bar"><div class="mp-fill" style="--w:${r.val}"></div></div>
-    </div>
-  `).join('');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RENDER CATEGORIES
-═══════════════════════════════════════════════════════════════ */
-function renderCats() {
-  const cats = getCats();
-  const svcs = getServices();
-  const countMap = {};
-  svcs.forEach(s => { countMap[s.cat] = (countMap[s.cat] || 0) + 1; });
-
-  function buildItems(listEl) {
-    if (!listEl) return;
-    listEl.innerHTML = cats.map(c => {
-      const count = c.id === 'all' ? svcs.length : (countMap[c.id] || 0);
-      return `
-        <li class="cat-item${c.id === state.activeCat ? ' active' : ''}"
-            data-cat="${esc(c.id)}" role="tab"
-            aria-selected="${c.id === state.activeCat}"
-            tabindex="0">
-          <span class="ci-icon">${c.icon}</span>
-          <span class="ci-label">${esc(c.label)}</span>
-          <span class="ci-count">${count}</span>
-        </li>`;
-    }).join('');
-
-    listEl.querySelectorAll('.cat-item').forEach(item => {
-      item.addEventListener('click', () => selectCat(item.dataset.cat));
-      item.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCat(item.dataset.cat); }
-      });
-    });
-  }
-
-  buildItems($('catList'));
-  buildItems($('catListMobile'));
-
-  /* Update result count label & active cat name */
-  updateFilterBar();
-}
-
-function selectCat(cat) {
-  state.activeCat = cat;
-  const cats = getCats();
-  const found = cats.find(c => c.id === cat);
-
-  /* Sync active state */
-  ['catList', 'catListMobile'].forEach(id => {
-    const list = $(id);
-    if (!list) return;
-    list.querySelectorAll('.cat-item').forEach(i => {
-      const isActive = i.dataset.cat === cat;
-      i.classList.toggle('active', isActive);
-      i.setAttribute('aria-selected', String(isActive));
-    });
-  });
-
-  updateFilterBar();
-  renderServices();
-
-  if (window.innerWidth < 1100) {
-    const layout = $('servicesLayout');
-    if (layout) layout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function getServicesForRole(role) {
+  switch(role) {
+    case 'خريج':  return { services: GRADUATE_SERVICES, cats: GRADUATE_CATS };
+    case 'دكتور': return { services: DOCTOR_SERVICES,  cats: DOCTOR_CATS   };
+    default:       return { services: STUDENT_SERVICES, cats: STUDENT_CATS  };
   }
 }
 
-function updateFilterBar() {
-  const cats   = getCats();
-  const svcs   = getFilteredServices();
-  const found  = cats.find(c => c.id === state.activeCat);
-  const nameEl = $('activeCatName');
-  const countEl= $('resultCount');
-  if (nameEl)  nameEl.textContent = found ? found.label : 'جميع الخدمات';
-  if (countEl) countEl.textContent = `${svcs.length} خدمة`;
+function showToast(msg, type = 'info', duration = 2800) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(() => toast.remove(), 350);
+  }, duration);
+}
+
+function openUrl(url) {
+  if (!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   RENDER SERVICES
+   FIREBASE AUTH
 ═══════════════════════════════════════════════════════════════ */
-function getFilteredServices() {
-  const q = state.query.trim().toLowerCase();
-  return getServices().filter(s => {
-    const catOk = state.activeCat === 'all' || s.cat === state.activeCat;
-    const qOk   = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q));
-    return catOk && qOk;
-  });
-}
-
-function renderServices() {
-  const grid  = $('servicesGrid');
-  const skel  = $('skeletonGrid');
-  const empty = $('emptyState');
-  if (!grid) return;
-
-  const list = getFilteredServices();
-  updateFilterBar();
-
-  if (list.length === 0) {
-    grid.classList.add('hidden');
-    if (empty) empty.classList.remove('hidden');
+function initFirebaseAuth() {
+  if (typeof firebase === 'undefined' || !firebase.auth) {
+    // Dev fallback
+    loadRoleUI('طالب', { displayName:'طالب تجريبي', photoURL:null });
     return;
   }
-
-  if (empty) empty.classList.add('hidden');
-  grid.classList.remove('hidden');
-  grid.className = `services-grid${state.view === 'list' ? ' list-view' : ''}`;
-
-  grid.innerHTML = list.map((s, i) => `
-    <article class="svc-card" role="listitem"
-             style="--delay:${Math.min(i * 35, 380)}ms"
-             data-id="${esc(s.id)}">
-      <div class="card-icon ${esc(s.ib)}">${s.icon}</div>
-      <div class="card-body">
-        <h3 class="card-title">${esc(s.title)}</h3>
-        <p class="card-desc">${esc(s.desc)}</p>
-        <div class="card-tags">${s.tags.map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}</div>
-      </div>
-      <div class="card-action">
-        <button class="btn-card${s.outline ? ' outline' : ''}"
-                onclick="handleCardAction('${esc(s.id)}')">
-          ${esc(s.btn)}
-        </button>
-      </div>
-    </article>
-  `).join('');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RENDER FAQ
-═══════════════════════════════════════════════════════════════ */
-function renderFAQ() {
-  const grid = $('faqGrid');
-  if (!grid) return;
-  const faqs = getFaqs();
-  grid.innerHTML = faqs.map((f, i) => `
-    <div class="faq-item" data-faq="${i}">
-      <button class="faq-q" onclick="toggleFAQ(${i})" aria-expanded="false">
-        <span>${esc(f.q)}</span>
-        <span class="faq-chevron">▼</span>
-      </button>
-      <div class="faq-ans" id="faq-ans-${i}">
-        <p>${esc(f.a)}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-window.toggleFAQ = function(i) {
-  const item   = document.querySelector(`.faq-item[data-faq="${i}"]`);
-  const wasOpen = item && item.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(el => {
-    el.classList.remove('open');
-    el.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+  firebase.auth().onAuthStateChanged(async user => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    let role = 'طالب';
+    try {
+      const db = firebase.firestore();
+      const snap = await db.collection('users').doc(user.uid).get();
+      if (snap.exists) role = snap.data().role || 'طالب';
+    } catch(e) { console.warn('Firestore read failed, using default role'); }
+    loadRoleUI(role, user);
   });
-  if (!wasOpen && item) {
-    item.classList.add('open');
-    item.querySelector('.faq-q').setAttribute('aria-expanded', 'true');
-  }
-};
+}
+
+function loadRoleUI(role, user) {
+  STATE.role = role;
+  document.body.setAttribute('data-role', role);
+
+  // Sidebar user
+  const name = user?.displayName || 'المستخدم';
+  const avatar = user?.photoURL || 'assets/images/user.png';
+  setEl('sidebarName', name);
+  setEl('sidebarRole', role);
+  const avatarEls = [document.getElementById('sidebarAvatar'), document.getElementById('chipAvatar')];
+  avatarEls.forEach(el => { if(el) el.src = avatar; });
+
+  // Role badge
+  const badge = document.getElementById('roleBadge');
+  if (badge) badge.innerHTML = `<span class="rb-dot"></span>${role}`;
+
+  // Load all role-specific UI
+  applyRoleContent();
+  const data = getServicesForRole(role);
+  STATE.servicesData = data.services;
+  STATE.catsData = data.cats;
+  STATE.filteredServices = [...data.services];
+
+  renderQuickWidgets();
+  renderCategories();
+  renderMiniProgress();
+  renderServices();
+  renderFAQ();
+  renderFutureFeatures();
+  loadFavorites();
+}
 
 /* ═══════════════════════════════════════════════════════════════
-   RENDER FUTURE FEATURES
+   ROLE CONTENT
 ═══════════════════════════════════════════════════════════════ */
-const FUTURE = [
-  { icon:'🌐', bg:'ib-grad',    badge:'قريباً',          title:'مجتمع الخريجين Alumni',           desc:'منصة تواصل اجتماعي لخريجي الكلية للتشبيك المهني وتبادل الخبرات والفرص.', tags:['مجتمع','تواصل','خريجون'] },
-  { icon:'💼', bg:'ib-training', badge:'تحت التطوير',     title:'نظام التدريب والتوظيف',           desc:'منصة ربط الطلاب بفرص التدريب والوظائف الحصرية مع الشركات الشريكة.', tags:['توظيف','تدريب','شركات'] },
-  { icon:'🤝', bg:'ib-affairs',  badge:'مقترح',           title:'منصة الإرشاد والمنتورينج',        desc:'ربط الطلاب الجدد بالخريجين الناجحين لتبادل الخبرات والتوجيه المهني.', tags:['إرشاد','منتور','مجتمع'] },
-  { icon:'🎨', bg:'ib-forms',    badge:'مقترح',           title:'معرض الأعمال Portfolio',          desc:'منصة لعرض أعمال الطلاب والخريجين في مجالات التصميم والإعلام والتربية الفنية.', tags:['portfolio','إبداع','أعمال'] },
-  { icon:'📊', bg:'ib-doctor',   badge:'مقترح',           title:'لوحة التحليلات الأكاديمية',       desc:'تحليلات ذكية للأداء الأكاديمي مع توقعات ونصائح مخصصة لتحسين مستواك.', tags:['AI','تحليلات','أكاديمي'] },
-  { icon:'🏛️', bg:'ib-elearn',   badge:'قريباً',          title:'مركز التعلم مدى الحياة',          desc:'برامج ودورات تعليمية متخصصة للطلاب والخريجين وأعضاء هيئة التدريس.', tags:['تعلم','تطوير','مستمر'] },
-];
+function applyRoleContent() {
+  const cfg = ROLE_CONFIG[STATE.role] || ROLE_CONFIG['طالب'];
+  setHtml('heroPill',    cfg.heroPill);
+  setHtml('heroTitle',   cfg.heroTitle);
+  setHtml('heroSub',     cfg.heroSub);
+  const hsi = document.getElementById('heroSearchInput');
+  if (hsi) hsi.placeholder = cfg.heroSearch;
+  const si = document.getElementById('searchInput');
+  if (si) si.placeholder = cfg.heroSearch.split('،')[0] + '...';
 
-function renderFuture() {
-  const grid = $('futureGrid');
-  if (!grid) return;
-  grid.innerHTML = FUTURE.map(f => `
-    <div class="future-card">
-      <span class="future-badge">${esc(f.badge)}</span>
-      <div class="future-icon ${esc(f.bg)}">${f.icon}</div>
-      <h3>${esc(f.title)}</h3>
-      <p>${esc(f.desc)}</p>
-      <div class="future-tags">${f.tags.map(t => `<span class="future-tag">${esc(t)}</span>`).join('')}</div>
-    </div>
-  `).join('');
+  // Stats
+  const statsEl = document.getElementById('heroStats');
+  if (statsEl && cfg.stats) {
+    statsEl.innerHTML = cfg.stats.map((s,i) =>
+      `${i>0?'<div class="hero-stat-div"></div>':''}<div class="hero-stat"><strong>${s.val}</strong><span>${s.label}</span></div>`
+    ).join('');
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
    QUICK WIDGETS
 ═══════════════════════════════════════════════════════════════ */
-function renderWidgets() {
-  const container = $('quickWidgets');
+function renderQuickWidgets() {
+  const container = document.getElementById('quickWidgets');
   if (!container) return;
-
-  const byRole = {
-    'طالب': [
-      { cat:'academic', icon:'📖', label:'الخدمات الأكاديمية' },
-      { cat:'exam',     icon:'📋', label:'خدمات الامتحانات' },
-      { cat:'training', icon:'🏆', label:'التدريب والورش' },
-      { cat:'forms',    icon:'⬇️', label:'النماذج والتحميلات' },
-    ],
-    'خريج': [
-      { cat:'docs',     icon:'📜', label:'توثيق الشهادات' },
-      { cat:'jobs',     icon:'💼', label:'فرص العمل' },
-      { cat:'network',  icon:'🌐', label:'شبكة الخريجين' },
-      { cat:'fellowship', icon:'🏆', label:'الزمالات والمنح' },
-    ],
-    'دكتور': [
-      { cat:'courses',  icon:'📖', label:'إدارة المقررات' },
-      { cat:'research', icon:'🔬', label:'البحث العلمي' },
-      { cat:'students', icon:'👥', label:'متابعة الطلاب' },
-      { cat:'schedule', icon:'📅', label:'الجداول' },
-    ],
-  };
-
-  const svcs = getServices();
-  const countMap = {};
-  svcs.forEach(s => { countMap[s.cat] = (countMap[s.cat] || 0) + 1; });
-
-  const items = byRole[state.role] || byRole['طالب'];
-  container.innerHTML = items.map(w => `
-    <div class="widget-card" role="button" tabindex="0" data-cat="${esc(w.cat)}">
+  const cfg = ROLE_CONFIG[STATE.role];
+  const widgets = cfg?.quickWidgets || [];
+  container.innerHTML = widgets.map(w => `
+    <div class="widget-card" onclick="openUrl('${w.url}')">
       <div class="widget-icon">${w.icon}</div>
       <div class="widget-info">
-        <span class="widget-label">${esc(w.label)}</span>
-        <span class="widget-count">${countMap[w.cat] || 0} خدمة</span>
+        <span class="widget-label">${w.label}</span>
+        <span class="widget-count">${w.count}</span>
       </div>
-      <span class="widget-arrow"><i class="ni ni-chevron-left"></i></span>
+      <span class="widget-arrow ni ni-external"></span>
     </div>
   `).join('');
+}
 
-  container.querySelectorAll('.widget-card').forEach(card => {
-    card.addEventListener('click', () => selectCat(card.dataset.cat));
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCat(card.dataset.cat); }
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORIES
+═══════════════════════════════════════════════════════════════ */
+function renderCategories() {
+  const lists = ['catList', 'catListMobile'];
+  lists.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = STATE.catsData.map(cat => {
+      const count = cat.id === 'all'
+        ? STATE.servicesData.length
+        : STATE.servicesData.filter(s => s.cat === cat.id).length;
+      return `
+        <li class="cat-item ${STATE.activeCategory === cat.id ? 'active' : ''}"
+            data-cat="${cat.id}" role="tab" aria-selected="${STATE.activeCategory === cat.id}">
+          <span class="ci-icon">${cat.icon}</span>
+          <span class="ci-label">${cat.label}</span>
+          ${count > 0 ? `<span class="ci-count">${count}</span>` : ''}
+        </li>
+      `;
+    }).join('');
+    el.querySelectorAll('.cat-item').forEach(item => {
+      item.addEventListener('click', () => {
+        selectCategory(item.dataset.cat);
+        // Close mobile drawer
+        const drawer = document.getElementById('catDrawer');
+        if (drawer?.classList.contains('open')) toggleDrawer(false);
+      });
     });
   });
+}
+
+function selectCategory(catId) {
+  STATE.activeCategory = catId;
+  applyFilters();
+  renderCategories();
+  const catName = STATE.catsData.find(c => c.id === catId)?.label || 'جميع الخدمات';
+  setEl('activeCatName', catName);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MINI PROGRESS
+═══════════════════════════════════════════════════════════════ */
+function renderMiniProgress() {
+  const el = document.getElementById('miniProgress');
+  if (!el) return;
+  const key = ROLE_CONFIG[STATE.role]?.dataKey || 'student';
+  const rows = MINI_PROGRESS_DATA[key] || [];
+  el.innerHTML = `<h4>📈 نسبة الاستخدام</h4>` + rows.map(r => `
+    <div class="mp-row">
+      <div class="mp-top"><span>${r.label}</span><span>${r.val}%</span></div>
+      <div class="mp-bar"><div class="mp-fill" style="--w:${r.val}%;width:${r.val}%"></div></div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SERVICES RENDERING
+═══════════════════════════════════════════════════════════════ */
+function applyFilters() {
+  let list = [...STATE.servicesData];
+  if (STATE.activeCategory !== 'all') {
+    list = list.filter(s => s.cat === STATE.activeCategory);
+  }
+  if (STATE.searchQuery.trim()) {
+    const q = STATE.searchQuery.trim().toLowerCase();
+    list = list.filter(s =>
+      s.title.toLowerCase().includes(q) ||
+      s.desc.toLowerCase().includes(q)  ||
+      (s.tags||[]).some(t => t.toLowerCase().includes(q))
+    );
+  }
+  STATE.filteredServices = list;
+  renderServices();
+}
+
+function renderServices() {
+  const skeleton   = document.getElementById('skeletonGrid');
+  const grid       = document.getElementById('servicesGrid');
+  const emptyState = document.getElementById('emptyState');
+  const countEl    = document.getElementById('resultCount');
+
+  if (!grid) return;
+  if (skeleton) skeleton.classList.add('hidden');
+  grid.classList.remove('hidden');
+
+  const total = STATE.filteredServices.length;
+  if (countEl) countEl.textContent = `${total} خدمة`;
+
+  if (total === 0) {
+    grid.innerHTML = '';
+    if (emptyState) emptyState.classList.remove('hidden');
+    return;
+  }
+  if (emptyState) emptyState.classList.add('hidden');
+
+  grid.innerHTML = STATE.filteredServices.map(svc => buildServiceCard(svc)).join('');
+
+  // Animate cards in
+  grid.querySelectorAll('.svc-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(18px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity .35s ease, transform .35s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i * 40);
+  });
+
+  // Attach fav listeners
+  grid.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      toggleFavorite(btn.dataset.id);
+      btn.classList.toggle('active');
+    });
+  });
+}
+
+function buildServiceCard(svc) {
+  const isFav = STATE.favorites.has(svc.id);
+  const badge = svc.hot    ? 'hot-badge'
+               : svc.isNew ? 'new-badge'
+               : '';
+  return `
+    <article class="svc-card ${badge}" role="listitem" onclick="openUrl('${svc.url}')">
+      <div class="svc-card-top">
+        <div class="svc-icon ${svc.ib}">${svc.icon}</div>
+        <span class="svc-ext-badge"><i class="ni ni-external"></i> رابط خارجي</span>
+      </div>
+      <div class="svc-card-body">
+        <h3>${svc.title}</h3>
+        <p>${svc.desc}</p>
+        ${svc.tags?.length ? `<div class="svc-tags">${svc.tags.map(t=>`<span class="svc-tag">${t}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="svc-card-footer">
+        ${svc.outline
+          ? `<button class="svc-btn-outline" onclick="event.stopPropagation();openUrl('${svc.url}')">${svc.btn}</button>`
+          : `<button class="svc-btn" onclick="event.stopPropagation();openUrl('${svc.url}')">${svc.btn}</button>`
+        }
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${svc.id}" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}">⭐</button>
+      </div>
+    </article>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAVORITES (localStorage)
+═══════════════════════════════════════════════════════════════ */
+function loadFavorites() {
+  try {
+    const saved = localStorage.getItem(`gc_favs_${STATE.role}`);
+    if (saved) STATE.favorites = new Set(JSON.parse(saved));
+  } catch(e) {}
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem(`gc_favs_${STATE.role}`, JSON.stringify([...STATE.favorites]));
+  } catch(e) {}
+}
+
+function toggleFavorite(id) {
+  if (STATE.favorites.has(id)) {
+    STATE.favorites.delete(id);
+    showToast('تمت الإزالة من المفضلة', 'info');
+  } else {
+    STATE.favorites.add(id);
+    showToast('تمت الإضافة للمفضلة ⭐', 'success');
+  }
+  saveFavorites();
 }
 
 /* ═══════════════════════════════════════════════════════════════
    SEARCH
 ═══════════════════════════════════════════════════════════════ */
-function setupSearch() {
-  const topInput  = $('searchInput');
-  const heroInput = $('heroSearchInput');
-  const heroBtn   = $('heroSearchBtn');
-  const dropdown  = $('searchDropdown');
+function initSearch() {
+  const heroInput = document.getElementById('heroSearchInput');
+  const heroBtn   = document.getElementById('heroSearchBtn');
+  const topInput  = document.getElementById('searchInput');
+  const dropdown  = document.getElementById('searchDropdown');
 
-  function doSearch(val) {
-    state.query = val.trim();
-    state.activeCat = 'all';
-    renderCats();
-    renderServices();
-    const layout = $('servicesLayout');
-    if (layout) layout.scrollIntoView({ behavior:'smooth', block:'start' });
-  }
+  const handleHeroSearch = () => {
+    const q = heroInput?.value || '';
+    STATE.searchQuery = q;
+    STATE.activeCategory = 'all';
+    applyFilters();
+    renderCategories();
+    // Scroll to services
+    document.getElementById('servicesLayout')?.scrollIntoView({ behavior:'smooth', block:'start' });
+  };
 
-  function buildDropdown(val) {
+  heroInput?.addEventListener('keydown', e => { if(e.key === 'Enter') handleHeroSearch(); });
+  heroBtn?.addEventListener('click', handleHeroSearch);
+
+  // Topbar search with dropdown
+  const handleTopSearch = debounce(q => {
     if (!dropdown) return;
-    if (!val.trim()) { dropdown.innerHTML = ''; return; }
-    const hits = getServices()
-      .filter(s => s.title.toLowerCase().includes(val.toLowerCase()) || s.tags.some(t => t.toLowerCase().includes(val.toLowerCase())))
-      .slice(0, 6);
-    dropdown.innerHTML = hits.length
-      ? hits.map(s => `<li data-title="${esc(s.title)}"><span>${s.icon}</span><span>${esc(s.title)}</span><span class="sd-cat">${esc(s.tags[0]||'')}</span></li>`).join('')
-      : `<li style="pointer-events:none;color:var(--text-muted)">لا توجد نتائج</li>`;
-    dropdown.querySelectorAll('li[data-title]').forEach(li => {
-      li.addEventListener('click', () => {
-        const v = li.dataset.title;
-        if (topInput) topInput.value = v;
-        if (heroInput) heroInput.value = v;
-        dropdown.innerHTML = '';
-        doSearch(v);
-      });
-    });
-  }
+    if (!q.trim()) { dropdown.innerHTML = ''; return; }
+    const results = STATE.servicesData.filter(s =>
+      s.title.toLowerCase().includes(q.toLowerCase()) ||
+      (s.tags||[]).some(t => t.includes(q))
+    ).slice(0, 7);
 
-  if (topInput) {
-    topInput.addEventListener('input', e => { buildDropdown(e.target.value); if (!e.target.value) { state.query = ''; renderServices(); } });
-    topInput.addEventListener('keydown', e => { if (e.key === 'Enter') { doSearch(e.target.value); dropdown.innerHTML = ''; } if (e.key === 'Escape') dropdown.innerHTML = ''; });
-  }
-  if (heroInput) {
-    heroInput.addEventListener('keydown', e => { if (e.key === 'Enter') { if (topInput) topInput.value = heroInput.value; doSearch(heroInput.value); } });
-  }
-  if (heroBtn) {
-    heroBtn.addEventListener('click', () => { if (heroInput) { if (topInput) topInput.value = heroInput.value; doSearch(heroInput.value); } });
-  }
-  document.addEventListener('click', e => { if (dropdown && !e.target.closest('.search-wrap')) dropdown.innerHTML = ''; });
-}
+    if (!results.length) { dropdown.innerHTML = '<li style="padding:12px;color:var(--text-muted);font-size:.8rem">لا توجد نتائج</li>'; return; }
+    dropdown.innerHTML = results.map(s => `
+      <li onclick="openUrl('${s.url}')">
+        <span>${s.icon}</span>
+        <span style="flex:1">${s.title}</span>
+        <span class="sd-cat">${s.tags?.[0]||''}</span>
+      </li>
+    `).join('');
+  }, 280);
 
-/* ═══════════════════════════════════════════════════════════════
-   NOTIFICATIONS
-═══════════════════════════════════════════════════════════════ */
-function setupNotifications() {
-  const btn     = $('notifBtn');
-  const panel   = $('notifPanel');
-  const overlay = $('notifOverlay');
-  const badge   = $('notifBadge');
-  const markAll = $('markAllRead');
-  const empty   = $('notifEmpty');
+  topInput?.addEventListener('input', e => handleTopSearch(e.target.value));
+  topInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      STATE.searchQuery = e.target.value;
+      STATE.activeCategory = 'all';
+      applyFilters();
+      renderCategories();
+      if (dropdown) dropdown.innerHTML = '';
+    }
+    if (e.key === 'Escape') { if(dropdown) dropdown.innerHTML = ''; }
+  });
 
-  const open  = () => { state.notifOpen = true;  panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); overlay.classList.remove('hidden'); };
-  const close = () => { state.notifOpen = false; panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); overlay.classList.add('hidden'); };
-
-  if (btn) btn.addEventListener('click', e => { e.stopPropagation(); state.notifOpen ? close() : open(); });
-  if (overlay) overlay.addEventListener('click', close);
-
-  if (panel) {
-    panel.addEventListener('click', e => {
-      const cb = e.target.closest('.notif-close');
-      if (!cb) return;
-      e.stopPropagation();
-      const item = panel.querySelector(`.notif-item[data-id="${cb.dataset.id}"]`);
-      if (item) { item.style.cssText = 'opacity:0;transform:translateX(-16px);transition:all .22s ease'; setTimeout(() => { item.remove(); updateBadge(); checkEmpty(); }, 220); }
-    });
-  }
-
-  if (markAll) {
-    markAll.addEventListener('click', () => {
-      panel.querySelectorAll('.notif-item.unread').forEach(i => i.classList.remove('unread'));
-      if (badge) { badge.textContent = '0'; badge.style.display = 'none'; }
-    });
-  }
-
-  function updateBadge() {
-    const c = panel ? panel.querySelectorAll('.notif-item').length : 0;
-    if (badge) { badge.textContent = c; badge.style.display = c > 0 ? 'flex' : 'none'; }
-  }
-  function checkEmpty() {
-    const list = $('notifList');
-    if (!list || !empty) return;
-    if (!list.querySelector('.notif-item')) { list.classList.add('hidden'); empty.classList.remove('hidden'); }
-  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap') && dropdown) dropdown.innerHTML = '';
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
    VIEW TOGGLE
 ═══════════════════════════════════════════════════════════════ */
-function setupViewToggle() {
+function initViewToggle() {
   document.querySelectorAll('.vbtn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      state.view = btn.dataset.view;
-      renderServices();
-    });
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE NAV
-═══════════════════════════════════════════════════════════════ */
-function setupMobileNav() {
-  const toggle  = $('menuToggle');
-  const sidebar = document.querySelector('.main-sidebar');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.addEventListener('click', e => {
-      if (sidebar.classList.contains('open') && !e.target.closest('.main-sidebar') && !e.target.closest('#menuToggle'))
-        sidebar.classList.remove('open');
-    });
-  }
-}
-
-window.closeDrawer = function() {
-  const d = $('catDrawer'), o = $('drawerOverlay');
-  if (d) { d.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
-  if (o) o.classList.add('hidden');
-};
-
-function setupCatDrawer() {
-  const btn     = $('catToggleMobile');
-  const drawer  = $('catDrawer');
-  const overlay = $('drawerOverlay');
-  const closeBtn= $('closeDrawer');
-  if (btn && drawer) btn.addEventListener('click', () => { drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); if (overlay) overlay.classList.remove('hidden'); });
-  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-  if (overlay)  overlay.addEventListener('click', closeDrawer);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CARD ACTION / RESET
-═══════════════════════════════════════════════════════════════ */
-window.handleCardAction = function(id) {
-  const s = getServices().find(x => x.id === id);
-  if (!s) return;
-  showToast(`تم الانتقال إلى: ${s.title}`, 'info');
-};
-
-window.resetFilters = function() {
-  state.query = '';
-  const si = $('searchInput'); if (si) si.value = '';
-  const hi = $('heroSearchInput'); if (hi) hi.value = '';
-  selectCat('all');
-};
-
-function showToast(msg, type) {
-  if (typeof showMessage === 'function') { showMessage(msg, type); return; }
-  const el = document.createElement('div');
-  const colors = { info:'#667eea', success:'#10b981', error:'#ef4444' };
-  el.textContent = msg;
-  el.style.cssText = `position:fixed;top:72px;left:50%;transform:translateX(-50%);background:${colors[type]||colors.info};color:#fff;padding:9px 20px;border-radius:999px;font-size:.82rem;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);font-family:inherit`;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   AUTH + ROLE DETECTION
-═══════════════════════════════════════════════════════════════ */
-function initAuth() {
-  if (typeof waitForFirebase !== 'function') return;
-
-  waitForFirebase(() => {
-    const unsub = auth.onAuthStateChanged(async user => {
-      unsub();
-      if (!user) { window.location.href = 'index.html'; return; }
-
-      const data = await getCurrentUserData(user.uid);
-      if (!data) return;
-
-      /* Sidebar user info */
-      const nameEl = $('sidebarName'), roleEl = $('sidebarRole');
-      const avatarEl = $('sidebarAvatar'), chipEl = $('chipAvatar');
-      if (nameEl) nameEl.textContent = data.name || user.email;
-      if (roleEl) roleEl.textContent = data.role || 'طالب';
-      if (data.imageUrl) { if (avatarEl) avatarEl.src = data.imageUrl; if (chipEl) chipEl.src = data.imageUrl; }
-
-      /* Apply role-based theme and content */
-      const role = data.role && ROLE_CONFIG[data.role] ? data.role : 'طالب';
-      applyRole(role);
-
-      /* Online status */
-      if (typeof db !== 'undefined') {
-        db.collection('users').doc(user.uid).update({
-          online: true,
-          lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(() => {});
-        window.addEventListener('beforeunload', () => {
-          if (typeof updateOnlineStatus === 'function') updateOnlineStatus(false);
-        });
+      STATE.view = btn.dataset.view;
+      const grid = document.getElementById('servicesGrid');
+      if (grid) {
+        if (STATE.view === 'list') grid.classList.add('list-view');
+        else grid.classList.remove('list-view');
       }
     });
   });
 }
 
-window.logout = async function() {
-  if (!confirm('هل تريد تسجيل الخروج؟')) return;
-  if (typeof logoutUser === 'function') {
-    const r = await logoutUser();
-    if (r.success) window.location.href = 'index.html';
+/* ═══════════════════════════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════════════════════════ */
+function initNotifications() {
+  const btn      = document.getElementById('notifBtn');
+  const panel    = document.getElementById('notifPanel');
+  const overlay  = document.getElementById('notifOverlay');
+  const markAll  = document.getElementById('markAllRead');
+  const badge    = document.getElementById('notifBadge');
+  const empty    = document.getElementById('notifEmpty');
+  const list     = document.getElementById('notifList');
+
+  function openPanel() {
+    panel?.classList.add('open');
+    panel?.setAttribute('aria-hidden','false');
+    overlay?.classList.remove('hidden');
   }
-};
+  function closePanel() {
+    panel?.classList.remove('open');
+    panel?.setAttribute('aria-hidden','true');
+    overlay?.classList.add('hidden');
+  }
+
+  btn?.addEventListener('click', e => { e.stopPropagation(); panel?.classList.contains('open') ? closePanel() : openPanel(); });
+  overlay?.addEventListener('click', closePanel);
+
+  // Close individual notifications
+  document.querySelectorAll('.notif-close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const item = closeBtn.closest('.notif-item');
+      item?.remove();
+      updateNotifCount();
+    });
+  });
+
+  markAll?.addEventListener('click', () => {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    STATE.notifCount = 0;
+    if (badge) badge.classList.add('hidden');
+    showToast('تم تحديد كل الإشعارات كمقروءة ✅', 'success');
+  });
+
+  function updateNotifCount() {
+    const unread = document.querySelectorAll('.notif-item.unread').length;
+    const total  = document.querySelectorAll('.notif-item').length;
+    STATE.notifCount = unread;
+    if (badge) {
+      if (unread === 0) badge.classList.add('hidden');
+      else { badge.classList.remove('hidden'); badge.textContent = unread; }
+    }
+    if (total === 0 && empty) { empty.classList.remove('hidden'); if(list) list.classList.add('hidden'); }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════════════════════ */
+function renderFAQ() {
+  const container = document.getElementById('faqGrid');
+  if (!container) return;
+  const key = ROLE_CONFIG[STATE.role]?.dataKey || 'student';
+  const items = FAQ_DATA[key] || FAQ_DATA.student;
+  container.innerHTML = items.map((item, i) => `
+    <div class="faq-item" data-idx="${i}">
+      <div class="faq-q" onclick="toggleFAQ(${i})">
+        <span class="fq-icon">${item.icon}</span>
+        <span>${item.q}</span>
+        <span class="fq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">${item.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFAQ(idx) {
+  document.querySelectorAll('.faq-item').forEach((item, i) => {
+    if (i === idx) item.classList.toggle('open');
+    else item.classList.remove('open');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FUTURE FEATURES
+═══════════════════════════════════════════════════════════════ */
+function renderFutureFeatures() {
+  const container = document.getElementById('futureGrid');
+  if (!container) return;
+  const statusLabels = { soon:'قريباً جداً', dev:'قيد التطوير', planned:'مقترحة' };
+  container.innerHTML = FUTURE_FEATURES.map(f => `
+    <div class="future-card">
+      <button class="fc-vote" onclick="showToast('شكراً لتصويتك! 🗳️','success')">👍 دعم الفكرة</button>
+      <div class="fc-icon">${f.icon}</div>
+      <div class="fc-title">${f.title}</div>
+      <div class="fc-desc">${f.desc}</div>
+      <span class="fc-status ${f.status}">${statusLabels[f.status]||f.status}</span>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE SIDEBAR & DRAWER
+═══════════════════════════════════════════════════════════════ */
+function initMobileNav() {
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar    = document.getElementById('mainSidebar');
+
+  menuToggle?.addEventListener('click', () => {
+    menuToggle.classList.toggle('open');
+    sidebar?.classList.toggle('open');
+  });
+
+  // Mobile cat drawer
+  const catBtn  = document.getElementById('catToggleMobile');
+  catBtn?.addEventListener('click', () => toggleDrawer(true));
+
+  const closeDrawer = document.getElementById('closeDrawer');
+  closeDrawer?.addEventListener('click', () => toggleDrawer(false));
+
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  drawerOverlay?.addEventListener('click', () => toggleDrawer(false));
+}
+
+function toggleDrawer(open) {
+  const drawer  = document.getElementById('catDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  if (open) {
+    drawer?.classList.add('open');
+    drawer?.setAttribute('aria-hidden','false');
+    overlay?.classList.remove('hidden');
+  } else {
+    drawer?.classList.remove('open');
+    drawer?.setAttribute('aria-hidden','true');
+    overlay?.classList.add('hidden');
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    SKELETON → REAL
 ═══════════════════════════════════════════════════════════════ */
-function simulateLoading() {
-  setTimeout(() => {
-    const sk = $('skeletonGrid'), gr = $('servicesGrid');
-    if (sk) sk.classList.add('hidden');
-    if (gr) gr.classList.remove('hidden');
-  }, 800);
+function showSkeleton() {
+  const skeleton = document.getElementById('skeletonGrid');
+  const grid     = document.getElementById('servicesGrid');
+  if (skeleton) skeleton.classList.remove('hidden');
+  if (grid)     grid.classList.add('hidden');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DOM HELPERS
+═══════════════════════════════════════════════════════════════ */
+function setEl(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function setHtml(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGOUT
+═══════════════════════════════════════════════════════════════ */
+function logout() {
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().signOut().then(() => {
+      window.location.href = 'login.html';
+    }).catch(() => { window.location.href = 'login.html'; });
+  } else {
+    window.location.href = 'login.html';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET FILTERS
+═══════════════════════════════════════════════════════════════ */
+function resetFilters() {
+  STATE.searchQuery = '';
+  STATE.activeCategory = 'all';
+  const heroInput = document.getElementById('heroSearchInput');
+  const topInput  = document.getElementById('searchInput');
+  if (heroInput) heroInput.value = '';
+  if (topInput)  topInput.value  = '';
+  applyFilters();
+  renderCategories();
+  setEl('activeCatName', 'جميع الخدمات');
 }
 
 /* ═══════════════════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  /* Initial render with default role (طالب) — replaced after auth */
-  applyRole('طالب');
-  renderWidgets();
-  renderFuture();
-  setupSearch();
-  setupViewToggle();
-  setupNotifications();
-  setupMobileNav();
-  setupCatDrawer();
+  showSkeleton();
+  initFirebaseAuth();
+  initSearch();
+  initViewToggle();
+  initNotifications();
+  initMobileNav();
 
-  /* Auth (will call applyRole again with real role) */
-  initAuth();
-  simulateLoading();
+  // Animated progress bars on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.mp-fill').forEach(fill => {
+          const w = fill.style.getPropertyValue('--w') || fill.getAttribute('data-w');
+          fill.style.width = w;
+        });
+      }
+    });
+  }, { threshold:.3 });
+
+  const prog = document.getElementById('miniProgress');
+  if (prog) observer.observe(prog);
 });
