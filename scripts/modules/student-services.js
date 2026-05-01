@@ -119,7 +119,7 @@ const STUDENT_SERVICES = [
     desc:'تحميل دليل الطالب المحدث لعام 2026 المشتمل على كافة اللوائح والإجراءات.',
     tags:['إلكتروني','دليل','تحميل'],
     btn:'تحميل الدليل',
-    url:'https://drive.google.com/file/d/12pstEld4I1q21sVBUbbdlISP16YgFJfi/view',
+    url:'https://fsed.bu.edu.eg/students',
     isNew:true,
   },
   /* ── ACADEMIC ── */
@@ -341,7 +341,7 @@ const STUDENT_SERVICES = [
     desc:'تحميل أحدث إصدار من دليل الطالب المشتمل على اللوائح والإجراءات الرسمية.',
     tags:['نماذج','دليل','لوائح'],
     btn:'تحميل الدليل',
-    url:'https://drive.google.com/file/d/12pstEld4I1q21sVBUbbdlISP16YgFJfi/view',
+    url:'https://fsed.bu.edu.eg/students',
     isNew:true,
   },
   {
@@ -1915,7 +1915,7 @@ function renderInternships() {
           </span>
           <button class="internship-card__apply ${isApplied ? 'disabled' : ''}"
                   onclick="applyToInternship('${int.id}')"
-                  ${isApplied ? 'disabled' : ''}>
+                  ${isApplied ? 'disabled' : ''}
             ${isApplied
               ? '<i class="fa-solid fa-check"></i> قدمت بالفعل'
               : '<i class="fa-solid fa-paper-plane"></i> قدم الآن'}

@@ -11,7 +11,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'عرض وتحميل جداول المحاضرات والامتحانات للفصل الحالي',
       icon: 'fa-calendar-days',
       iconType: 'primary',
-      url: 'https://fsed.bu.edu.eg/ar/study-schedules',
+      url: 'https://fsed.bu.edu.eg/students/study-schedules',
       badge: 'new',
       category: 'academic'
     },
@@ -21,7 +21,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'الاطلاع على نتائج الامتحانات النهائية والفصلية',
       icon: 'fa-chart-line',
       iconType: 'success',
-      url: 'https://fsed.bu.edu.eg/ar/exam-results',
+      url: 'https://fsed.bu.edu.eg/students/exams-results',
       badge: 'popular',
       category: 'academic'
     },
@@ -31,7 +31,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'تسجيل وإضافة وحذف المقررات الدراسية للفصل الدراسي',
       icon: 'fa-user-plus',
       iconType: 'warning',
-      url: 'https://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+      url: 'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
       category: 'academic'
     },
     {
@@ -40,7 +40,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'الوصول إلى الكتب والمصادر التعليمية الإلكترونية',
       icon: 'fa-book',
       iconType: 'secondary',
-      url: 'https://fsed.bu.edu.eg/ar/library',
+      url: 'https://fsed.bu.edu.eg/library/library-services',
       badge: 'featured',
       category: 'academic'
     },
@@ -50,7 +50,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'الوصول إلى منصات التعلم الإلكتروني والمحاضرات المسجلة',
       icon: 'fa-laptop',
       iconType: 'primary',
-      url: 'https://fsed.bu.edu.eg/ar/e-learning',
+      url: 'https://fsed.bu.edu.eg/students/learning',
       category: 'academic'
     },
     {
@@ -59,7 +59,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'تحميل نماذج امتحانات سابقة لجميع المقررات',
       icon: 'fa-file-lines',
       iconType: 'success',
-      url: 'https://fsed.bu.edu.eg/ar/exam-models',
+      url: 'https://fsed.bu.edu.eg/students/models-answers',
       category: 'academic'
     },
     {
@@ -68,7 +68,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'المشاركة في الأنشطة والفعاليات الطلابية',
       icon: 'fa-users',
       iconType: 'primary',
-      url: 'https://fsed.bu.edu.eg/ar/student-activities',
+      url: 'https://fsed.bu.edu.eg/students/youth-care',
       category: 'academic'
     },
     {
@@ -77,7 +77,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'حجز مواعيد الإرشاد الأكاديمي والدعم الدراسي',
       icon: 'fa-chalkboard-teacher',
       iconType: 'secondary',
-      url: 'https://fsed.bu.edu.eg/ar/academic-advising',
+      url: 'https://fsed.bu.edu.eg/students/complaints-receiving-mechanism',
       category: 'academic'
     }
   ],
@@ -88,7 +88,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'طلب واستخراج شهادة التخرج والبيانات التكميلية',
       icon: 'fa-graduation-cap',
       iconType: 'success',
-      url: 'https://fsed.bu.edu.eg/ar/graduation-certificate',
+      url: 'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
       badge: 'new',
       category: 'academic'
     },
@@ -98,37 +98,37 @@ const ENHANCED_SERVICES_DATA = {
       description: 'خدمات توثيق الشهادات للخريجين للسفر والعمل',
       icon: 'fa-certificate',
       iconType: 'warning',
-      url: 'https://fsed.bu.edu.eg/ar/certificate-attestation',
+      url: 'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
       category: 'academic'
     },
     {
       id: 'g3',
       title: 'فرص العمل للخريجين',
-      description: 'بحث عن فرص عمل متخصصة للخريجين',
+      description: 'تصفح فرص العمل والتوظيف المتاحة لخريجي الكلية',
       icon: 'fa-briefcase',
       iconType: 'success',
-      url: 'https://www.bayt.com/',
+      url: 'https://fsed.bu.edu.eg/students/graduate-follow-up-office',
       badge: 'popular',
       category: 'careers'
     },
     {
       id: 'g4',
-      title: 'منصة LinkedIn',
-      description: 'بناء ملف احترافي والتواصل مع الشركات',
-      icon: 'fa-linkedin',
+      title: 'الدراسات العليا',
+      description: 'التسجيل في برامج الماجستير والدكتوراه بالكلية',
+      icon: 'fa-user-graduate',
       iconType: 'primary',
-      url: 'https://www.linkedin.com/',
+      url: 'https://fsed.bu.edu.eg/graduate-studies',
       badge: 'featured',
-      category: 'careers'
+      category: 'academic'
     },
     {
       id: 'g5',
-      title: 'وظائف حكومية',
-      description: 'الوظائف الحكومية المتاحة للخريجين',
-      icon: 'fa-landmark',
+      title: 'المجلة العلمية',
+      description: 'نشر الأبحاث في المجلة العلمية المحكمة للكلية',
+      icon: 'fa-flask',
       iconType: 'secondary',
-      url: 'https://www.egypthr.com/',
-      category: 'careers'
+      url: 'https://sjse.journals.ekb.eg/',
+      category: 'academic'
     }
   ],
   doctor: [
@@ -138,16 +138,16 @@ const ENHANCED_SERVICES_DATA = {
       description: 'رفع المحاضرات والمواد التعليمية وإدارة المحتوى',
       icon: 'fa-book-open',
       iconType: 'secondary',
-      url: 'https://fsed.bu.edu.eg/ar/staff/courses',
+      url: 'https://fsed.bu.edu.eg/students/learning',
       category: 'academic'
     },
     {
       id: 'd2',
-      title: 'المجلات العلمية',
-      description: 'نشر الأبحاث في المجلات العلمية المعتمدة',
+      title: 'المجلة العلمية',
+      description: 'نشر الأبحاث في المجلة العلمية المحكمة للكلية',
       icon: 'fa-flask',
       iconType: 'secondary',
-      url: 'https://fsed.bu.edu.eg/ar/scientific-journal',
+      url: 'https://sjse.journals.ekb.eg/',
       badge: 'featured',
       category: 'academic'
     },
@@ -157,7 +157,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'متابعة سجلات الحضور والدرجات والتقارير الأكاديمية',
       icon: 'fa-users',
       iconType: 'warning',
-      url: 'https://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
+      url: 'http://mis.bu.edu.eg/benha_new/Registration/ED_Login.aspx',
       category: 'academic'
     },
     {
@@ -166,7 +166,7 @@ const ENHANCED_SERVICES_DATA = {
       description: 'إدارة جداول المحاضرات والامتحانات والساعات المكتبية',
       icon: 'fa-calendar',
       iconType: 'primary',
-      url: 'https://fsed.bu.edu.eg/ar/staff/schedules',
+      url: 'https://fsed.bu.edu.eg/study-schedules',
       category: 'academic'
     },
     {
@@ -175,17 +175,17 @@ const ENHANCED_SERVICES_DATA = {
       description: 'إدارة المشاريع البحثية والنشر العلمي',
       icon: 'fa-microscope',
       iconType: 'success',
-      url: 'https://fsed.bu.edu.eg/ar/research',
+      url: 'https://fsed.bu.edu.eg/graduate-studies/scientific-research-ethics-charter',
       badge: 'hot',
       category: 'academic'
     },
     {
       id: 'd6',
-      title: 'المؤتمرات العلمية',
-      description: 'المشاركة في المؤتمرات والفعاليات العلمية',
-      icon: 'fa-users-gear',
+      title: 'ضمان الجودة',
+      description: 'التواصل مع وحدة ضمان الجودة ومراجعة البرامج الأكاديمية',
+      icon: 'fa-award',
       iconType: 'primary',
-      url: 'https://fsed.bu.edu.eg/ar/conferences',
+      url: 'https://fsed.bu.edu.eg/units-and-centers/quality-assurance-unit',
       category: 'academic'
     }
   ],
@@ -365,17 +365,10 @@ function getBadgeText(badge) {
 }
 
 // Load Internship Opportunities
+// NOTE: internshipGrid is managed by student-services.js → renderInternships()
+// This function is intentionally a no-op to avoid overwriting the real data.
 function loadInternshipOpportunities() {
-  console.log('💼 Loading internship opportunities...');
-  
-  const grid = document.getElementById('internshipGrid');
-  if (!grid) return;
-  
-  const internships = ENHANCED_SERVICES_DATA.internship;
-  
-  grid.innerHTML = internships.map(internship => createInternshipCard(internship)).join('');
-  
-  console.log(`✅ Loaded ${internships.length} internship opportunities`);
+  console.log('ℹ️ loadInternshipOpportunities: skipped — managed by student-services.js');
 }
 
 // Create Internship Card HTML
@@ -487,24 +480,14 @@ function handleQuickAction(action) {
   }
 }
 
-// Service Actions
-function openService(serviceId) {
-  const service = findService(serviceId);
-  if (service && service.url && service.url !== '#') {
-    window.open(service.url, '_blank');
-    showToast('جاري فتح الخدمة...', 'success');
+// Service Actions — receives the URL directly from the card onclick
+function openService(url) {
+  if (url && url !== '#' && url.startsWith('http')) {
+    window.open(url, '_blank', 'noopener,noreferrer');
   } else {
-    // Fallback to job websites if URL is undefined or invalid
-    const fallbackUrls = [
-      'https://www.wuzzuf.net/',
-      'https://www.bayt.com/',
-      'https://www.linkedin.com/jobs/',
-      'https://www.egypthr.com/'
-    ];
-    
-    const randomJobSite = fallbackUrls[Math.floor(Math.random() * fallbackUrls.length)];
-    window.open(randomJobSite, '_blank');
-    showToast('جاري توجيهك لموقع توظيف...', 'info');
+    // Fallback to the faculty homepage
+    window.open('https://fsed.bu.edu.eg', '_blank', 'noopener,noreferrer');
+    showToast('جاري فتح موقع الكلية...', 'info');
   }
 }
 
