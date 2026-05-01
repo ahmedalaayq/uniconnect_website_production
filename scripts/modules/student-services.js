@@ -966,6 +966,23 @@ function initFirebaseAuth() {
         
         // Update online status
         await updateOnlineStatus(true);
+
+        // تحميل IDs الفرص التي تقدّم لها المستخدم (للكروت)
+        try {
+          const db = firebase.firestore();
+          const snapshot = await db
+            .collection('internship_applications')
+            .where('userId', '==', user.uid)
+            .get();
+          snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            if (data.internshipId) internshipState.appliedIds.add(data.internshipId);
+          });
+          updateInternshipStats();
+          renderInternships();
+        } catch (e) {
+          console.warn('Could not load applied internships:', e);
+        }
         
       } catch (error) {
         console.error('Auth state change error:', error);
@@ -1789,17 +1806,10 @@ let internshipState = {
 };
 
 function initInternshipSection() {
-  // Only show for graduates
-  const section = document.getElementById('internshipSection');
+  // Works for all roles — internship cards visible to all
+  const section = document.getElementById('internshipShowcase');
   if (!section) return;
-  
-  if (STATE.role !== 'خريج') {
-    section.style.display = 'none';
-    return;
-  }
-  
-  section.style.display = 'block';
-  
+
   // Update stats
   updateInternshipStats();
   
@@ -1818,10 +1828,7 @@ function initInternshipSection() {
 }
 
 function updateInternshipStats() {
-  const totalEl = document.getElementById('totalOpportunities');
-  const appliedEl = document.getElementById('appliedCount');
-  
-  if (totalEl) totalEl.textContent = INTERNSHIP_DATA.length;
+  const appliedEl = document.getElementById('applicationsCount');
   if (appliedEl) appliedEl.textContent = internshipState.appliedIds.size;
 }
 
@@ -1988,25 +1995,3 @@ async function applyToInternship(id) {
     showToast('حدث خطأ أثناء التقديم: ' + error.message, 'error');
   }
 }
-
-// Load applied internship IDs from Firestore on page load
-firebase.auth().onAuthStateChanged(async (user) => {
-  if (!user) return;
-  try {
-    const db = firebase.firestore();
-    const snapshot = await db
-      .collection('internship_applications')
-      .where('userId', '==', user.uid)
-      .get();
-    snapshot.docs.forEach(doc => {
-      const data = doc.data();
-      if (data.internshipId) internshipState.appliedIds.add(data.internshipId);
-    });
-    updateInternshipStats();
-    renderInternships();
-  } catch (e) {
-    console.warn('Could not load applied internships from Firestore:', e);
-  }
-});
-
-

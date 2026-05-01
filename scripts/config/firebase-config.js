@@ -36,6 +36,8 @@
 
     window._firebaseReady = true;
     console.log('✓ Firebase ready');
+    // أطلق الحدث لأي مستمع سجّل نفسه قبل اكتمال التهيئة
+    window.dispatchEvent(new Event('firebaseReady'));
 
   } catch (e) {
     console.error('✗ Firebase init failed:', e);

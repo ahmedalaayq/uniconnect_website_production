@@ -24,7 +24,8 @@ class InternshipApplicationSystem {
     this.db = null;
     this.currentUser = null;
     this.applications = [];
-    this.init();
+    // لا نستدعي init() تلقائياً لتجنب تشغيل auth listeners متعددة
+    // يجب استدعاءها صراحةً: إما في DOMContentLoaded أو في showMyApplications
   }
 
   async init() {
@@ -33,14 +34,17 @@ class InternshipApplicationSystem {
       if (typeof firebase !== 'undefined' && firebase.firestore) {
         this.db = firebase.firestore();
         console.log('🔥 Firestore initialized for internship applications');
-        
-        // Get current user
-        firebase.auth().onAuthStateChanged(async (user) => {
-          if (user) {
-            this.currentUser = user;
-            await this.loadUserApplications();
-            console.log('👤 User authenticated:', user.email);
-          }
+
+        // Resolve with current user once auth state is known
+        await new Promise((resolve) => {
+          firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+              this.currentUser = user;
+              console.log('👤 User authenticated:', user.email);
+              await this.loadUserApplications();
+            }
+            resolve();
+          });
         });
       }
     } catch (error) {
@@ -120,26 +124,57 @@ class InternshipApplicationSystem {
   // Load user's applications
   async loadUserApplications() {
     try {
-      if (!this.currentUser || !this.db) return;
+      // إذا لم يكن هناك مستخدم أو DB، انتظر auth state أولاً
+      if (!this.currentUser) {
+        this.currentUser = await new Promise((resolve) => {
+          const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+            unsubscribe();
+            resolve(user);
+          });
+        });
+      }
 
+      if (!this.currentUser || !this.db) {
+        console.warn('⚠️ loadUserApplications: لا يوجد مستخدم أو DB');
+        return;
+      }
+
+      // ملاحظة: تم إزالة orderBy('appliedAt') لتجنب Composite Index
+      // نقوم بالترتيب client-side بعد التحميل
       const snapshot = await this.db
         .collection(COLLECTIONS.applications)
         .where('userId', '==', this.currentUser.uid)
-        .orderBy('appliedAt', 'desc')
         .get();
 
-      this.applications = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      this.applications = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => {
+          // الترتيب من الأحدث للأقدم client-side
+          const timeA = a.appliedAt?.toMillis?.() || a.appliedAt?.seconds * 1000 || 0;
+          const timeB = b.appliedAt?.toMillis?.() || b.appliedAt?.seconds * 1000 || 0;
+          return timeB - timeA;
+        });
 
-      console.log(`📋 Loaded ${this.applications.length} applications`);
-      
+      console.log(`📋 Loaded ${this.applications.length} applications from Firestore`);
+
       // Update UI if applications view exists
       this.updateApplicationsUI();
+      updateApplicationsCount();
 
     } catch (error) {
       console.error('❌ Error loading applications:', error);
+      // أظهر رسالة خطأ واضحة للمستخدم
+      const container = document.getElementById('myApplications');
+      if (container) {
+        container.innerHTML = `
+          <div class="empty-applications">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h3>فشل تحميل الطلبات</h3>
+            <p>${error.message || 'تحقق من اتصالك بالإنترنت'}</p>
+            <button class="btn btn--primary" onclick="internshipAppSystem.loadUserApplications()">إعادة المحاولة</button>
+          </div>
+        `;
+      }
     }
   }
 
@@ -507,10 +542,10 @@ async function showMyApplications() {
   document.getElementById('studentServicesSection').style.display = 'none';
   const internshipEl = document.getElementById('internshipShowcase');
   if (internshipEl) internshipEl.style.display = 'none';
-  
+
   // Show applications section
   document.getElementById('myApplicationsSection').style.display = 'block';
-  
+
   // Show loading state
   const container = document.getElementById('myApplications');
   if (container) {
@@ -522,13 +557,15 @@ async function showMyApplications() {
     `;
   }
 
-  // Ensure system is ready then LOAD from Firestore FIRST
+  // إذا لم يكن النظام جاهزاً، انتظر auth حقيقي بدلاً من setTimeout
   if (!internshipAppSystem) {
     internshipAppSystem = new InternshipApplicationSystem();
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // init() تنتظر auth state بنفسها، لا نحتاج setTimeout
+    await internshipAppSystem.init();
+  } else {
+    // النظام موجود مسبقاً — فقط أعد التحميل
+    await internshipAppSystem.loadUserApplications();
   }
-  
-  await internshipAppSystem.loadUserApplications();
 }
 
 function hideMyApplications() {
@@ -542,12 +579,7 @@ function hideMyApplications() {
 
 // Initialize system when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(() => {
-    internshipAppSystem = new InternshipApplicationSystem();
-    
-    // Update applications count after loading
-    setTimeout(() => {
-      updateApplicationsCount();
-    }, 3000);
-  }, 2000);
+  internshipAppSystem = new InternshipApplicationSystem();
+  // نستدعي init() صراحةً بعد إنشاء الكائن
+  internshipAppSystem.init();
 });
