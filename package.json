@@ -1,5 +1,9 @@
 {
+  "scripts": {
+    "start": "npx serve -s . -l 5000"
+  },
   "dependencies": {
-    "firebase": "^12.12.1"
+    "firebase": "^12.12.1",
+    "serve": "^14.2.6"
   }
 }
