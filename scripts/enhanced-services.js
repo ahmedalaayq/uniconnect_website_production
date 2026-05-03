@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════════
-   ENHANCED SERVICES FUNCTIONALITY
-   ═══════════════════════════════════════════════════════════════════ */
-
-// Enhanced Services Data
 const ENHANCED_SERVICES_DATA = {
   student: [
     {
